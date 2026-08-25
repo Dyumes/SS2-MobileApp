@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "137984252747",
+    "project_id": "jobinder-5a399",
+    "storage_bucket": "jobinder-5a399.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:137984252747:android:46a78d73356bd78bf5a6ce",
+        "android_client_info": {
+          "package_name": "com.example.jobinder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYA0WahOej24p4SVuf4821TmreIQ7lbpo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:137984252747:android:ebdbbb7cdc46b65cf5a6ce",
+        "android_client_info": {
+          "package_name": "com.example.task_manager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYA0WahOej24p4SVuf4821TmreIQ7lbpo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
