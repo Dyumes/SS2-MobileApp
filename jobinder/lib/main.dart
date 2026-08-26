@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:jobinder/providers/auth_provider.dart';
+import 'package:jobinder/services/firebase_auth_service.dart';
+import 'package:jobinder/view/login_view.dart';
 import 'package:jobinder/utils/theme.dart';
 import 'package:provider/provider.dart';
 
@@ -28,11 +31,19 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => JobProvider(FirestoreJobRepository()),
         ),
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(FirebaseAuthService()),
+        ),
+
       ],
-      child: MaterialApp(
-        title: 'Jobinder',
-        theme: buildThemeData(),
-        home: const JobView(),
+      child: Consumer<AuthProvider>(
+        builder: (context, auth, _) {
+          return MaterialApp(
+            title: 'Jobinder',
+            theme: buildThemeData(),
+            home: LoginView(), // Show the login view initially
+          );
+        },
       ),
     );
   }
