@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'Jobinder',
             theme: buildThemeData(),
-            home: LoginView(), // Show the login view initially
+            home: auth.user != null ? const JobView() : const LoginView(), // Show the login view initially
           );
         },
       ),

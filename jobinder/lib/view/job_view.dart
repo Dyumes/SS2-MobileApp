@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobinder/providers/auth_provider.dart';
 import 'package:jobinder/templates/templates.dart';
 import 'package:provider/provider.dart';
 import '../models/job_model.dart';
@@ -10,45 +11,38 @@ class JobView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final jobProvider = Provider.of<JobProvider>(context);
+    final authProvider = context.watch<AuthProvider>();
 
     return UnauthenticatedTemplate(
       child: Scaffold(
         appBar: AppBar(title: const Text('Jobs')),
         body: Column(
           children: [
-            // StreamBuilder<List<Job>>(
-            //   stream: jobProvider.jobs,
-            //   builder: (context, snapshot) {
+            Expanded(
+              child: StreamBuilder<List<Job>>(
+                stream: jobProvider.jobs,
+                builder: (context, snapshot) {
+                  final jobs = snapshot.data ?? [];
 
-            //     final jobs = snapshot.data ?? [];
-
-            //     return ListView.builder(
-            //       itemCount: jobs.length,
-            //       itemBuilder: (context, index) {
-            //         final job = jobs[index];
-            //         return ListTile(
-            //           leading: Text(job.name),
-            //           title: Text(job.details),
-            //         );
-            //       },
-            //     );
-            //   },
-            // ),
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Email',
+                  return ListView.builder(
+                    itemCount: jobs.length,
+                    itemBuilder: (context, index) {
+                      final job = jobs[index];
+                      return ListTile(
+                        leading: Text(job.name),
+                        title: Text(job.details),
+                      );
+                    },
+                  );
+                },
               ),
             ),
+
+            // Log out button
             ElevatedButton(
-              onPressed: () {},
-              child: const Text('Continuer'),
+              onPressed: () => authProvider.signOut(),
+              child: Icon(Icons.logout),
             ),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text('Profil'),
-              ),
-            )
           ],
         ),
       ),
