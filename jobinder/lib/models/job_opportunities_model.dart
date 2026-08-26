@@ -9,7 +9,6 @@ class JobOpportunities {
   final List<String> languages;
   final String name;
   final int salary;
-  final DateTime timestamp;
 
   JobOpportunities({
     required this.id,
@@ -22,7 +21,6 @@ class JobOpportunities {
     required this.languages,
     required this.name,
     required this.salary,
-    required this.timestamp,
   });
 
   
@@ -39,7 +37,6 @@ class JobOpportunities {
       languages: List<String>.from(data['languages'] ?? []),
       name: data['name'] ?? '',
       salary: data['salary'] ?? 0,
-      timestamp: data['timestamp'] ?? DateTime,
     );
   }
 
@@ -54,7 +51,6 @@ class JobOpportunities {
       'languages': languages,
       'name': name,
       'salary': salary,
-      'timestamp': timestamp,
     };
   }
 
@@ -69,7 +65,6 @@ class JobOpportunities {
     List<String>? languages,
     String? name,
     int? salary,
-    DateTime? timestamp,
   }) {
     return JobOpportunities(
       id: id ?? this.id,
@@ -82,7 +77,6 @@ class JobOpportunities {
       languages: languages ?? this.languages,
       name: name ?? this.name,
       salary: salary ?? this.salary,
-      timestamp: timestamp ?? this.timestamp,
     );
   }
 }

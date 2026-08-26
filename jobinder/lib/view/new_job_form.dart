@@ -211,7 +211,6 @@ class JobFormState extends State<JobForm> {
           languages: _languageController.text.split(',').map((e) => e.trim()).toList(),
           name: _nameController.text,
           salary: int.tryParse(_salaryController.text) ?? 0,
-          timestamp: DateTime.now(),
         ));
       } else {
         jobProvider.updateJob(widget.job!.copyWith(
@@ -225,7 +224,6 @@ class JobFormState extends State<JobForm> {
           languages: _languageController.text.split(',').map((e) => e.trim()).toList(),
           name: _nameController.text,
           salary: int.tryParse(_salaryController.text) ?? 0,
-          timestamp: DateTime.now(),
         ));
       }
       Navigator.of(context).pop();
