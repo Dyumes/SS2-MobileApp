@@ -4,6 +4,7 @@ class JobOpportunities {
   final String canton;
   final String city;
   final String degree;
+  final String jobName;
   final String description;
   final List<String> languages;
   final String name;
@@ -16,6 +17,7 @@ class JobOpportunities {
     required this.canton,
     required this.city,
     required this.degree,
+    required this.jobName,
     required this.description,
     required this.languages,
     required this.name,
@@ -30,6 +32,7 @@ class JobOpportunities {
       canton: data['canton'] ?? '',
       city: data['city'] ?? '',
       degree: data['degree'] ?? '',
+      jobName: data['jobName'] ?? '',
       description: data['description'] ?? '',
       languages: List<String>.from(data['languages'] ?? []),
       name: data['name'] ?? '',
@@ -44,6 +47,7 @@ class JobOpportunities {
       'canton': canton,
       'city': city,
       'degree': degree,
+      'jobName': jobName,
       'description': description,
       'languages': languages,
       'name': name,
