@@ -48,13 +48,27 @@ class JobFormState extends State<JobForm> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.job == null ? 'New Job' : 'Edit Job')),
+    body: SingleChildScrollView(
       child: Form(
         key: _formKey,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+              TextFormField(
+              controller:_nameController,
+              decoration: const InputDecoration(labelText: 'Job Name'),
+              maxLines:1,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter the job name';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _adressController,
               decoration: const InputDecoration(labelText: 'Adress'),
@@ -77,6 +91,28 @@ class JobFormState extends State<JobForm> {
                 return null;
               },
             ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _salaryController,
+              decoration: const InputDecoration(labelText: 'Salary'),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a salary';
+                }
+                if (int.tryParse(value) == null) {
+                  return 'Please enter a valid number';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _languageController,
+              decoration: const InputDecoration(labelText: 'Languages (comma separated)'),
+            ),
+            const SizedBox(height: 16),
+
             CheckboxListTile(
               title: const Text('Completed'),
               value: _isCompleted,
@@ -96,6 +132,7 @@ class JobFormState extends State<JobForm> {
           ],
         ),
       ),
+    ),
     );
   }
 
