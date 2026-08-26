@@ -4,7 +4,7 @@ import 'package:jobinder/templates/templates.dart';
 import 'package:jobinder/view/new_job_form.dart';
 import 'package:provider/provider.dart';
 import 'homepage_employer.dart';
-import '../models/job_model.dart';
+import '../models/job_opportunities_model.dart';
 import '../providers/job_provider.dart';
 
 class JobView extends StatelessWidget {
@@ -31,7 +31,8 @@ class JobView extends StatelessWidget {
                     final job = jobs[index];
                     return ListTile(
                       leading: Text(job.jobName),
-                      title: Text(job.description),
+                      title: Text(job.adress),
+                      subtitle: Text(job.description),
                     );
                   },
                 );

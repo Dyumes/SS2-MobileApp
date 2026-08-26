@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jobinder/models/job_opportunities_model.dart';
-import '../models/job_model.dart';
+import '../models/job_opportunities_model.dart';
 import 'job_repository.dart';
 
 class FirestoreJobRepository implements JobRepository {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   CollectionReference<Map<String, dynamic>> get _jobsRef =>
-      _db.collection('job');
+      _db.collection('job_opportunities');
 
   @override
   Stream<List<JobOpportunities>> watchJobs() {
@@ -24,5 +24,10 @@ class FirestoreJobRepository implements JobRepository {
   @override
   Future<void> updateJob(JobOpportunities job, String userId) async {
     await _jobsRef.doc(job.id).update(job.toMap());
+  }
+
+  @override
+  Future<void> deleteJob(String jobId, String userId) async {
+    await _jobsRef.doc(jobId).delete();
   }
 }
