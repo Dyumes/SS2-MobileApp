@@ -70,6 +70,40 @@ class JobFormState extends State<JobForm> {
             ),
             const SizedBox(height: 16),
             TextFormField(
+              controller: _descriptionController,
+              decoration: const InputDecoration(labelText: 'Description'),
+              maxLines: 4,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a description';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _cantonController,
+              decoration: const InputDecoration(labelText: 'Canton'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a canton';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _cityController,
+              decoration: const InputDecoration(labelText: 'City'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a city';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
               controller: _adressController,
               decoration: const InputDecoration(labelText: 'Adress'),
               validator: (value) {
@@ -81,12 +115,11 @@ class JobFormState extends State<JobForm> {
             ),
             const SizedBox(height: 16),
             TextFormField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(labelText: 'Description'),
-              maxLines: 4,
+              controller: _degreeController,
+              decoration: const InputDecoration(labelText: 'Degree'),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter a description';
+                  return 'Please enter a degree';
                 }
                 return null;
               },

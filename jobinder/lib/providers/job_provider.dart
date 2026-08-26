@@ -11,8 +11,13 @@ class JobProvider extends ChangeNotifier {
 
   Stream<List<JobOpportunities>> get jobs => _repository.watchJobs();
 
+  void updateAuth(AuthProvider auth) {
+    _authProvider = auth;
+  }
+
   Future<void> addJob(JobOpportunities job) async {
     final userId = _authProvider?.user?.uid;
+    print('userId = $userId');
     if (userId == null) return;
     await _repository.addJob(job, userId);
   }

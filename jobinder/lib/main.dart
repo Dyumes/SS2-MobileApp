@@ -29,21 +29,17 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => JobProvider(FirestoreJobRepository()),
-        ),
-        ChangeNotifierProvider(
           create: (_) => AuthProvider(FirebaseAuthService()),
         ),
-
+        ChangeNotifierProxyProvider<AuthProvider, JobProvider>(
+          create: (_) => JobProvider(FirestoreJobRepository()),
+          update: (_, auth, jobProvider) => jobProvider!..updateAuth(auth),
+        ),
       ],
-      child: Consumer<AuthProvider>(
-        builder: (context, auth, _) {
-          return MaterialApp(
-            title: 'Jobinder',
-            theme: buildThemeData(),
-            home: JobView(), // Show the login view initially
-          );
-        },
+      child: MaterialApp(
+        title: 'Jobinder',
+        theme: buildThemeData(),
+        home: const LoginView(),
       ),
     );
   }
