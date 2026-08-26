@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:jobinder/utils/theme.dart';
 import 'package:provider/provider.dart';
 
-import 'firebase_options.dart';
+import 'utils/firebase_options.dart';
 import 'repositories/firestore_job_repository.dart';
 import 'providers/job_provider.dart';
 import 'view/job_view.dart';
@@ -30,10 +31,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Jobinder',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
+        theme: buildThemeData(),
         home: const JobView(),
       ),
     );
