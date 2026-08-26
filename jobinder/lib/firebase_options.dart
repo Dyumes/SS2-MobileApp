@@ -64,7 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '137984252747',
     projectId: 'jobinder-5a399',
     storageBucket: 'jobinder-5a399.firebasestorage.app',
-    iosBundleId: 'com.example.jobinder',
+    iosBundleId: 'ch.hevs.jobinder',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '137984252747',
     projectId: 'jobinder-5a399',
     storageBucket: 'jobinder-5a399.firebasestorage.app',
-    iosBundleId: 'com.example.jobinder',
+    iosBundleId: 'ch.hevs.jobinder',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

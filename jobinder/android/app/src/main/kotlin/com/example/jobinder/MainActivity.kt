@@ -1,4 +1,4 @@
-package com.example.jobinder
+package ch.hevs.jobinder
 
 import io.flutter.embedding.android.FlutterActivity
 
