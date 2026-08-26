@@ -130,7 +130,7 @@ class JobFormState extends State<JobForm> {
       final jobProvider = Provider.of<JobProvider>(context, listen: false);
 
       if (widget.job == null) {
-        jobProvider.addJob(Job(
+        jobProvider.addJob(JobOpportunities(
           id: '',
           adress: _adressController.text,
           canton: _cantonController.text,

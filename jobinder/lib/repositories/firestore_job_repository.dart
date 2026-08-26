@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:jobinder/models/job_opportunities_model.dart';
 import '../models/job_model.dart';
 import 'job_repository.dart';
 
@@ -9,9 +10,19 @@ class FirestoreJobRepository implements JobRepository {
       _db.collection('job');
 
   @override
-  Stream<List<Job>> watchJobs() {
+  Stream<List<JobOpportunities>> watchJobs() {
     return _jobsRef.snapshots().map((snapshot) => snapshot.docs.map((doc) {
-          return Job.fromMap(doc.data(), doc.id);
+          return JobOpportunities.fromMap(doc.data(), doc.id);
         }).toList());
+  }
+
+  @override
+  Future<void> addJob(JobOpportunities job, String userId) async {
+    await _jobsRef.add(job.toMap());
+  }
+
+  @override
+  Future<void> updateJob(JobOpportunities job, String userId) async {
+    await _jobsRef.doc(job.id).update(job.toMap());
   }
 }

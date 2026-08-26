@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:jobinder/providers/auth_provider.dart';
+import 'package:jobinder/services/firebase_auth_service.dart';
+import 'package:jobinder/view/login_view.dart';
+import 'package:jobinder/utils/theme.dart';
 import 'package:provider/provider.dart';
 
-import 'firebase_options.dart';
+import 'utils/firebase_options.dart';
 import 'repositories/firestore_job_repository.dart';
 import 'providers/job_provider.dart';
 import 'view/job_view.dart';
@@ -27,14 +31,19 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => JobProvider(FirestoreJobRepository()),
         ),
-      ],
-      child: MaterialApp(
-        title: 'Jobinder',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(FirebaseAuthService()),
         ),
-        home: const JobView(),
+
+      ],
+      child: Consumer<AuthProvider>(
+        builder: (context, auth, _) {
+          return MaterialApp(
+            title: 'Jobinder',
+            theme: buildThemeData(),
+            home: JobView(), // Show the login view initially
+          );
+        },
       ),
     );
   }

@@ -25,6 +25,8 @@ class JobOpportunities {
     required this.timestamp,
   });
 
+  
+
   factory JobOpportunities.fromMap(Map<String, dynamic> data, String docId) {
     return JobOpportunities(
       id: docId,
@@ -54,5 +56,33 @@ class JobOpportunities {
       'salary': salary,
       'timestamp': timestamp,
     };
+  }
+
+  JobOpportunities copyWith({
+    String? id,
+    String? adress,
+    String? canton,
+    String? city,
+    String? degree,
+    String? jobName,
+    String? description,
+    List<String>? languages,
+    String? name,
+    int? salary,
+    DateTime? timestamp,
+  }) {
+    return JobOpportunities(
+      id: id ?? this.id,
+      adress: adress ?? this.adress,
+      canton: canton ?? this.canton,
+      city: city ?? this.city,
+      degree: degree ?? this.degree,
+      jobName: jobName ?? this.jobName,
+      description: description ?? this.description,
+      languages: languages ?? this.languages,
+      name: name ?? this.name,
+      salary: salary ?? this.salary,
+      timestamp: timestamp ?? this.timestamp,
+    );
   }
 }

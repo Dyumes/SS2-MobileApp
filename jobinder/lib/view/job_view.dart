@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:jobinder/models/job_opportunities_model.dart';
+import 'package:jobinder/templates/templates.dart';
+import 'package:jobinder/view/new_job_form.dart';
 import 'package:provider/provider.dart';
 import 'homepage_employer.dart';
 import '../models/job_model.dart';
@@ -16,7 +19,7 @@ class JobView extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: StreamBuilder<List<Job>>(
+            child: StreamBuilder<List<JobOpportunities>>(
               stream: jobProvider.jobs,
               builder: (context, snapshot) {
 
@@ -27,8 +30,8 @@ class JobView extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final job = jobs[index];
                     return ListTile(
-                      leading: Text(job.name),
-                      title: Text(job.details),
+                      leading: Text(job.jobName),
+                      title: Text(job.description),
                     );
                   },
                 );
@@ -41,7 +44,7 @@ class JobView extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomePage()),
+                    MaterialPageRoute(builder: (context) => const JobForm()),
                   );
                 },
                 child: const Text('HOMEPAGE'),
