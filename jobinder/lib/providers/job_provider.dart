@@ -39,6 +39,12 @@ class JobProvider extends ChangeNotifier {
     await _repository.updateJob(job, userId);
   }
 
+  Future<void> deleteJob(String jobId) async {
+    final employerId = await _resolveEmployerId();
+    if (employerId == null) return;
+    await _repository.deleteJob(jobId, employerId);
+  }
+
   Future<String> companyName(String employerId) => _repository.getCompanyName(employerId);
 
   Future<String?> currentCompanyName() async {

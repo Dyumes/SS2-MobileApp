@@ -19,6 +19,8 @@ ThemeData buildThemeData() {
     scaffoldBackgroundColor: const Color(0xFFFFF8FA),
 
     textTheme: buildTextTheme(base.textTheme),
+    scrollbarTheme: const ScrollbarThemeData(),
+    splashFactory: NoSplash.splashFactory,
 
     appBarTheme: const AppBarTheme(
       elevation: 0,

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class JobOpportunities {
+  final String id;
   final String employer_user;
   final String degree;
   final String jobName;
@@ -10,6 +11,7 @@ class JobOpportunities {
   final int salary;
 
   JobOpportunities({
+    this.id = '',
     required this.employer_user,
     required this.degree,
     required this.jobName,
@@ -22,6 +24,7 @@ class JobOpportunities {
 
   factory JobOpportunities.fromMap(Map<String, dynamic> data, String docId) {
     return JobOpportunities(
+      id: docId,
       employer_user: (data['employer_user'] as DocumentReference?)?.id ?? '',
             degree: data['degree'] ?? '',
       jobName: data['jobName'] ?? '',
@@ -43,6 +46,7 @@ class JobOpportunities {
   }
 
   JobOpportunities copyWith({
+    String? id,
     String? employer_user,
     String? degree,
     String? jobName,
@@ -51,6 +55,7 @@ class JobOpportunities {
     int? salary,
   }) {
     return JobOpportunities(
+      id: id ?? this.id,
       employer_user: employer_user ?? this.employer_user,
       degree: degree ?? this.degree,
       jobName: jobName ?? this.jobName,

@@ -67,6 +67,7 @@ class JobFormState extends State<JobForm> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
+                  textAlign: TextAlign.center,
                   _companyName ?? '...',
                   style: Theme.of(context).textTheme.titleMedium
                       ?.copyWith(color: Theme.of(context).disabledColor),
