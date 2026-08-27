@@ -109,14 +109,7 @@ class LoginViewState extends State<LoginView> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    final navigator = Navigator.of(context);
-
-    final success = await authProvider.signInWithEmailAndPassword(email, password);
-
-    if (success) {
-      navigator.pushReplacement(
-        MaterialPageRoute(builder: (_) => const JobView()),
-      );
-    }
+    // Sign in
+    await authProvider.signInWithEmailAndPassword(email, password);
   }
 }

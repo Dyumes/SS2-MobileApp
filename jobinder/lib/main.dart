@@ -41,6 +41,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'Jobinder',
             theme: buildThemeData(),
+            // Page changes automatically when user authenticates or logs out
             home: auth.user != null ? const JobView() : const LoginView(), // Show the login view initially
           );
         },
