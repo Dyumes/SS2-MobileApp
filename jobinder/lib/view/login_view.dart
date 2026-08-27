@@ -108,6 +108,7 @@ class LoginViewState extends State<LoginView> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
+    // Sign in
     await authProvider.signInWithEmailAndPassword(email, password);
   }
 }
