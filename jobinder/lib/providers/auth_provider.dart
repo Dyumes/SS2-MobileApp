@@ -6,7 +6,6 @@ import 'package:jobinder/models/student_model.dart';
 import 'package:jobinder/repositories/firestore_user_repository.dart';
 import 'package:jobinder/repositories/user_repository.dart';
 import '../services/auth_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 /// Provider class for managing authentication state and actions, which notifies listeners on changes.

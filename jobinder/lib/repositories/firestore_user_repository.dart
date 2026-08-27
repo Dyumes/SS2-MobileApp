@@ -42,4 +42,22 @@ class FirestoreUserRepository implements UserRepository {
     await _usersRef.doc(userId).set(usr.toMap());
     await _employersRef.doc(userId).set(employer.toMap());
   }
+
+  @override
+  Future<Employer> getEmployerByUid(String uid) async {
+    final query = await _db
+        .collection('employer')
+        .doc(uid)
+        .get();
+
+    // if (query.docs.isEmpty) return null;
+    return Employer.fromMap(query.data()!, query.id);
+  }
+
+  @override
+  Future<AppUser> getUser(String uid) async {
+    final snap = await _db.collection('user').doc(uid).get();
+    // if (!snap.exists) return null;
+    return AppUser.fromMap(snap.data()!, uid);
+  }
 }

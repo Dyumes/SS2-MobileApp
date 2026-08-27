@@ -7,4 +7,7 @@ abstract class UserRepository {
   Stream<List<AppUser>> watchUsers();
   Future<void> addStudentUser(AppUser user, Student student, String userId);
   Future<void> addEmployerUser(AppUser user, Employer employer, String userId);
+
+  Future<Employer?> getEmployerByUid(String uid);
+  Future<AppUser?> getUser(String uid);
 }
