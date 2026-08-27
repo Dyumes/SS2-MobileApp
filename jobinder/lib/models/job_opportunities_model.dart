@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+
 class JobOpportunities {
   final String employer_user;
   final String degree;
@@ -19,8 +22,8 @@ class JobOpportunities {
 
   factory JobOpportunities.fromMap(Map<String, dynamic> data, String docId) {
     return JobOpportunities(
-      employer_user: data['employer_user'] ?? '',
-      degree: data['degree'] ?? '',
+      employer_user: (data['employer_user'] as DocumentReference?)?.id ?? '',
+            degree: data['degree'] ?? '',
       jobName: data['jobName'] ?? '',
       description: data['description'] ?? '',
       languages: List<String>.from(data['languages'] ?? []),
