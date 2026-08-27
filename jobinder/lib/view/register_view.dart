@@ -3,8 +3,8 @@ import 'package:jobinder/models/appuser_model.dart';
 import 'package:jobinder/models/employer_model.dart';
 import 'package:jobinder/models/student_model.dart';
 import 'package:provider/provider.dart';
-
 import '../providers/auth_provider.dart';
+import '../widgets/list_form_field.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -16,12 +16,23 @@ class RegisterView extends StatefulWidget {
 class RegisterViewState extends State<RegisterView> {
   // Controllers to manage input fields
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _companyNameController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   String? _selectedRole; // For ToggleButtons
+  List<Skill> _skills = [];
+  List<Company> _companies = [];
+  String? _selectedCanton;
 
   final String _studentRole = "student";
   final String _employerRole = "employer";
+
+  final List<String> cantons = ["AG", "AI", "AR", "BE", "BL", "BS", "FR", "GE", "GL", "GR", "JU", "LU", "NE", "NW", "OW", "SG", "SH", "SO", "SZ", "TG", "TI", "UR", "VD", "VS", "ZG", "ZH"];
 
   @override
   Widget build(BuildContext context) {
@@ -32,106 +43,364 @@ class RegisterViewState extends State<RegisterView> {
       appBar: AppBar(title: Text('Register')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              // Role selection
-              Text('Choose a role', style: textTheme.labelLarge),
-              Wrap(
-                spacing: 10.0,
-                children: [
-                  ChoiceChip(
-                    label: Text('Student'),
-                    selected: _selectedRole == _studentRole,
-                    onSelected: (bool selected) {
-                      setState(() {
-                        _selectedRole = selected ? _studentRole : null;
-                      });
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                // Role selection
+                Text('Choose a role', style: textTheme.labelLarge),
+                Wrap(
+                  spacing: 10.0,
+                  children: [
+                    ChoiceChip(
+                      label: Text('Student'),
+                      selected: _selectedRole == _studentRole,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          _selectedRole = selected ? _studentRole : null;
+                        });
+                      },
+                    ),
+                    ChoiceChip(
+                      label: Text('Employer'),
+                      selected: _selectedRole == "employer",
+                      onSelected: (bool selected) {
+                        setState(() {
+                          _selectedRole = selected ? _employerRole : null;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Global information",
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+          
+                // Email
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(labelText: 'Email'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter an email';
+                    }
+                    final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                    if (!regex.hasMatch(value)) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+          
+                // Name
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: 'Name'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    final regex = RegExp(r'^[a-zA-Z .-]+$');
+                    if (!regex.hasMatch(value)) {
+                      return 'Please enter a valid name (no special chars aside from "-" and ".")';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+          
+                // Surname
+                TextFormField(
+                  controller: _surnameController,
+                  decoration: const InputDecoration(labelText: 'Surname'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your surname';
+                    }
+                    final regex = RegExp(r'^[a-zA-Z .-]+$');
+                    if (!regex.hasMatch(value)) {
+                      return 'Please enter a valid surname (no special chars aside from "-" and ".")';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+          
+                // Password
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: const InputDecoration(labelText: 'Password'),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters long';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+          
+                // Confirm Password
+                TextFormField(
+                  controller: _confirmPasswordController,
+                  decoration: const InputDecoration(labelText: 'Confirm password'),
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please confirm your password';
+                    }
+                    if (value != _passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                ),
+          
+                // Role-dependant fields
+                if (_selectedRole == _studentRole) ...[
+                  const SizedBox(height: 16),
+
+                  // Surname
+                  TextFormField(
+                    controller: _addressController,
+                    decoration: const InputDecoration(labelText: 'Address'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter an address';
+                      }
+                      return null;
                     },
                   ),
-                  ChoiceChip(
-                    label: Text('Employer'),
-                    selected: _selectedRole == "employer",
-                    onSelected: (bool selected) {
-                      setState(() {
-                        _selectedRole = selected ? _employerRole : null;
-                      });
+                  const SizedBox(height: 20),
+
+                  // Skills
+                  ListFormField<Skill>(
+                    label: 'Skills',
+          
+                    onChanged: (skills) {
+                      _skills = skills;
+                    },
+          
+                    itemForm: (context, addItem) {
+                      final controller = TextEditingController();
+          
+                      return TextFormField(
+                        controller: controller,
+                        decoration: const InputDecoration(
+                          labelText: 'Skill',
+                          suffixIcon: Icon(Icons.add),
+                        ),
+                        onFieldSubmitted: (_) {
+                          if (controller.text.trim().isNotEmpty) {
+                            addItem(Skill(controller.text.trim()));
+                            controller.clear();
+                          }
+                        },
+                      );
+                    },
+          
+                    itemBuilder: (context, skill, remove) {
+                      return Chip(
+                        label: Text(skill.name),
+                        onDeleted: remove,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+          
+                  ListFormField<Company>(
+                    label: 'Work history',
+          
+                    onChanged: (companies) {
+                      _companies = companies;
+                    },
+          
+                    itemForm: (context, addItem) {
+                      final nameController = TextEditingController();
+                      final linkController = TextEditingController();
+          
+                      return Column(
+                        children: [
+                          TextFormField(
+                            controller: nameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Company name',
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: linkController,
+                            decoration: const InputDecoration(
+                              labelText: 'Website',
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: SizedBox(
+                              width: 200,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (nameController.text.trim().isEmpty) return;
+                                        
+                                  addItem(
+                                    Company(
+                                      name: nameController.text.trim(),
+                                      link: linkController.text.trim(),
+                                    ),
+                                  );
+                                },
+                                child: const Text('Add'),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+          
+                    itemBuilder: (context, company, remove) {
+                      return ListTile(
+                        title: Text(company.name),
+                        subtitle: Text(company.link),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: remove,
+                        ),
+                      );
                     },
                   ),
                 ],
-              ),
+          
+                if (_selectedRole == _employerRole) ...[
+                  const SizedBox(height: 20),
 
-              // Email
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an email';
-                  }
-                  final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                  if (!regex.hasMatch(value)) {
-                    return 'Please enter a valid email';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Company",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
 
-              // Password
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a password';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters long';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
+                  const SizedBox(height: 8),
 
-              // Error message display
-              if (authProvider.errorMessage != null) ...[
-                Text(
-                  authProvider.errorMessage!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                  // Name
+                  TextFormField(
+                    controller: _companyNameController,
+                    decoration: const InputDecoration(labelText: 'Name'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your company name';
+                      }
+                      final regex = RegExp(r'^[a-zA-Z .-]+$');
+                      if (!regex.hasMatch(value)) {
+                        return 'Please enter a valid name (no special chars aside from "-" and ".")';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Canton & City
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          decoration: const InputDecoration(labelText: 'Canton'),
+                          items: cantons.map((country) {
+                            return DropdownMenuItem(
+                              value: country,
+                              child: Text(country),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            _selectedCanton = value;
+                          },
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Please select a canton';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _cityController,
+                          decoration: const InputDecoration(labelText: 'City'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter your company's city";
+                            }
+                            final regex = RegExp(r'^[a-zA-Z .-]+$');
+                            if (!regex.hasMatch(value)) {
+                              return 'Please enter a valid city (no special chars aside from "-" and ".")';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Surname
+                  TextFormField(
+                    controller: _addressController,
+                    decoration: const InputDecoration(labelText: 'Address'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter an address';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+                
+                const SizedBox(height: 40),
+          
+                // Register button
+                ElevatedButton(
+                  onPressed: authProvider.isLoading
+                      ? null
+                      : () => _authenticate(context),
+                  child: authProvider.isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text("Register"),
                 ),
-              const SizedBox(height: 10),
+          
+                // Return to login button
+                TextButton(
+                  onPressed: authProvider.isLoading
+                      ? null
+                      : () {
+                          context.read<AuthProvider>().clearError();
+                          Navigator.pop(
+                            context,
+                          ); // Navigate back to the previous screen
+                        },
+                  child: Text('Already have an account?'),
+                ),
               ],
-
-              // Register button
-              ElevatedButton(
-                onPressed: authProvider.isLoading
-                    ? null
-                    : () => _authenticate(context),
-                child: authProvider.isLoading
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text("Register"),
-              ),
-
-              // Return to login button
-              TextButton(
-                onPressed: authProvider.isLoading
-                    ? null
-                    : () {
-                        context.read<AuthProvider>().clearError();
-                        Navigator.pop(
-                          context,
-                        ); // Navigate back to the previous screen
-                      },
-                child: Text('Already have an account?'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -176,4 +445,20 @@ class RegisterViewState extends State<RegisterView> {
       navigator.pop(); // Navigate back to the previous screen
     }
   }
+}
+
+class Skill {
+  final String name;
+
+  Skill(this.name);
+}
+
+class Company {
+  final String name;
+  final String link;
+
+  Company({
+    required this.name,
+    required this.link,
+  });
 }

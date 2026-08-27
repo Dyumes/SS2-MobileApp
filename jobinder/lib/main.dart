@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:jobinder/main_screen.dart';
 import 'package:jobinder/providers/auth_provider.dart';
 import 'package:jobinder/services/firebase_auth_service.dart';
 import 'package:jobinder/view/login_view.dart';
@@ -9,7 +10,6 @@ import 'package:provider/provider.dart';
 import 'utils/firebase_options.dart';
 import 'repositories/firestore_job_repository.dart';
 import 'providers/job_provider.dart';
-import 'view/job_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'Jobinder',
             theme: buildThemeData(),
-            home: auth.user != null ? const JobView() : const LoginView(), // Show the login view initially
+            home: auth.user != null ? const MainScreen() : const LoginView(), // Show the login view initially
           );
         },
       ),
