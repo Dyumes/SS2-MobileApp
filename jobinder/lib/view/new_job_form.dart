@@ -13,14 +13,10 @@ class JobForm extends StatefulWidget {
 }
 
 class JobFormState extends State<JobForm> {
-  final TextEditingController _adressController = TextEditingController();
-  final TextEditingController _cantonController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
   final TextEditingController _degreeController = TextEditingController();
   final TextEditingController _jobNameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _languageController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _salaryController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
@@ -34,14 +30,10 @@ class JobFormState extends State<JobForm> {
   void initState() {
     super.initState();
     if (widget.job != null) {
-      _adressController.text = widget.job!.adress;
-      _cantonController.text = widget.job!.description;
-      _cityController.text = widget.job!.city;
       _degreeController.text = widget.job!.degree;
       _jobNameController.text = widget.job!.jobName;
       _descriptionController.text = widget.job!.description;
       _languageController.text = widget.job!.languages.join(', ');
-      _nameController.text = widget.job!.name;
       _salaryController.text = widget.job!.salary.toString();
     }
   }
@@ -57,17 +49,6 @@ class JobFormState extends State<JobForm> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-              TextFormField(
-              controller:_nameController,
-              decoration: const InputDecoration(labelText: 'Job Name'),
-              maxLines:1,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter the job name';
-                }
-                return null;
-              },
-            ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _descriptionController,
@@ -81,38 +62,8 @@ class JobFormState extends State<JobForm> {
               },
             ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _cantonController,
-              decoration: const InputDecoration(labelText: 'Canton'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a canton';
-                }
-                return null;
-              },
-            ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _cityController,
-              decoration: const InputDecoration(labelText: 'City'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a city';
-                }
-                return null;
-              },
-            ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _adressController,
-              decoration: const InputDecoration(labelText: 'Adress'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter an adress';
-                }
-                return null;
-              },
-            ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _degreeController,
@@ -201,28 +152,20 @@ class JobFormState extends State<JobForm> {
 
       if (widget.job == null) {
         jobProvider.addJob(JobOpportunities(
-          id: '',
-          adress: _adressController.text,
-          canton: _cantonController.text,
-          city: _cityController.text,
+          employer_user: "test",
           degree: _degreeController.text,
           jobName: _jobNameController.text,
           description: _descriptionController.text,
           languages: _languageController.text.split(',').map((e) => e.trim()).toList(),
-          name: _nameController.text,
           salary: int.tryParse(_salaryController.text) ?? 0,
         ));
       } else {
         jobProvider.updateJob(widget.job!.copyWith(
-          id: '',
-          adress: _adressController.text,
-          canton: _cantonController.text,
-          city: _cityController.text,
+          employer_user: "test",
           degree: _degreeController.text,
           jobName: _jobNameController.text,
           description: _descriptionController.text,
           languages: _languageController.text.split(',').map((e) => e.trim()).toList(),
-          name: _nameController.text,
           salary: int.tryParse(_salaryController.text) ?? 0,
         ));
       }

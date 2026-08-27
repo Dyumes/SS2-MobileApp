@@ -31,7 +31,7 @@ class JobView extends StatelessWidget {
                     final job = jobs[index];
                     return ListTile(
                       leading: Text(job.jobName),
-                      title: Text(job.adress),
+                      title: Text(job.degree),
                       subtitle: Text(job.description),
                     );
                   },
