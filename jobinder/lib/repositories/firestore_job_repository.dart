@@ -23,7 +23,7 @@ class FirestoreJobRepository implements JobRepository {
 
   @override
   Future<void> updateJob(JobOpportunities job, String userId) async {
-    await _jobsRef.doc(job.id).update(job.toMap());
+    await _jobsRef.doc(job.employer_user).update(job.toMap());
   }
 
   @override
