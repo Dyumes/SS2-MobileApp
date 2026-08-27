@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobinder/templates/templates.dart';
 import 'package:jobinder/view/job_view.dart';
 import 'package:jobinder/view/login_view.dart';
+import 'package:jobinder/view/employer_profile.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -16,7 +17,7 @@ class _MainScreenState extends State<MainScreen> {
   final pages = const [
     JobView(),
     JobView(),
-    JobView(),
+    EmployerProfileView(),
   ];
 
   @override
@@ -29,6 +30,7 @@ class _MainScreenState extends State<MainScreen> {
         });
       },
       child: pages[currentIndex],
+
     );
   }
 }

@@ -1,22 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+
 class Employer {
   final String user_id;
   final String canton;
   final String city;
-  final String entrepiseName;
+  final String entrepriseName;
 
   Employer({
     required this.user_id,
     required this.canton,
     required this.city,
-    required this.entrepiseName,
+    required this.entrepriseName,
   });
 
   factory Employer.fromMap(Map<String, dynamic> data, String docId) {
     return Employer(
-      user_id: data['user_id'] ?? '',
+      user_id: (data['user_id'] as DocumentReference?)?.id ?? '',
       canton: data['canton'] ?? '',
       city: data['city'] ?? '',
-      entrepiseName: data['entrepiseName'] ?? '',
+      entrepriseName: data['entreprise_name'] ?? '',
     );
   }
 
@@ -25,7 +28,7 @@ class Employer {
       'user_id': user_id,
       'canton': canton,
       'city': city,
-      'entrepiseName': entrepiseName,
+      'entrepiseName': entrepriseName,
     };
   }
 
@@ -39,7 +42,7 @@ class Employer {
       user_id: user_id ?? this.user_id,
       canton: canton ?? this.canton,
       city: city ?? this.city,
-      entrepiseName: entrepiseName ?? this.entrepiseName,
+      entrepriseName: entrepiseName ?? this.entrepriseName,
     );
   }
 }
