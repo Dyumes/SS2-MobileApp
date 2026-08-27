@@ -20,10 +20,8 @@ class JobProvider extends ChangeNotifier {
   Future<String?> _resolveEmployerId() async {
     if (_employerUserId != null) return _employerUserId;
     final uid = _authProvider?.user?.uid;
-    print('1. uid = $uid');
     if (uid == null) return null;
-    _employerUserId = await _repository.getCompanyName(uid);
-    print('2. employerId = $_employerUserId');
+    _employerUserId = await _repository.getEmployerUserId(uid);
     return _employerUserId;
   }
 

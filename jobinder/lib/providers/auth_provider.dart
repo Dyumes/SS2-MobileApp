@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 /// Provider class for managing authentication state and actions, which notifies listeners on changes.
 class AuthProvider with ChangeNotifier {
@@ -27,10 +29,24 @@ class AuthProvider with ChangeNotifier {
     );
   }
 
-  Future<bool> registerWithEmailAndPassword(String email, String password) {
-    return _authenticate(
+
+  Future<bool> registerWithEmailAndPassword(String email, String password) async {
+    final ok = await _authenticate(
       () => _authService.registerWithEmailAndPassword(email, password),
     );
+    if (!ok) return false;
+
+    final uid = _authService.currentUser?.uid;
+    if (uid == null) return false;
+
+    await FirebaseFirestore.instance.collection('user').doc(uid).set({
+      'email': email,
+      'name': '',
+      'surname': '',
+      'adress': '',
+    });
+
+    return true;
   }
 
   Future<bool> _authenticate(Future<String?> Function() action) async {

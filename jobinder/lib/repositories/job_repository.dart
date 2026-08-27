@@ -9,4 +9,5 @@ abstract class JobRepository {
   Future<void> updateJob(JobOpportunities job, String userId);
   Future<void> deleteJob(String jobId, String userId);
   Future<String> getCompanyName(String? ref);
+  Future<String?> getEmployerUserId(String uid);
 }

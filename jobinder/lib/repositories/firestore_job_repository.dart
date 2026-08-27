@@ -33,12 +33,11 @@ class FirestoreJobRepository implements JobRepository {
   }
 
   Future<String?> getEmployerUserId(String uid) async {
-    final query = await _db.collection('job_opportunities')
-        .where('employer_user', isEqualTo: _db.doc('user/$uid'))
+    final query = await _db.collection('employer')
+        .where('user_id', isEqualTo: _db.doc('user/$uid'))
         .limit(1)
         .get();
 
-    print('docs trouvés : ${query.docs.length}');
     if (query.docs.isEmpty) return null;
     return query.docs.first.id;
   }
