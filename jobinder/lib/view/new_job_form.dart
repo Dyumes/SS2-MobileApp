@@ -25,7 +25,6 @@ class JobFormState extends State<JobForm> {
 
   final _formKey = GlobalKey<FormState>();
 
-  bool _isCompleted = false;
   String? _imageUrl;
   bool _isUploading = false;
   String? _uploadError;
@@ -143,17 +142,6 @@ class JobFormState extends State<JobForm> {
             TextFormField(
               controller: _languageController,
               decoration: const InputDecoration(labelText: 'Languages (comma separated)'),
-            ),
-            const SizedBox(height: 16),
-
-            CheckboxListTile(
-              title: const Text('Completed'),
-              value: _isCompleted,
-              onChanged: (bool? value) {
-                setState(() {
-                  _isCompleted = value ?? false;
-                });
-              },
             ),
             const SizedBox(height: 16),
             _buildImageSection(context),
