@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jobinder/models/appuser_model.dart';
+import 'package:jobinder/models/employer_model.dart';
+import 'package:jobinder/models/student_model.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
@@ -147,10 +149,18 @@ class RegisterViewState extends State<RegisterView> {
 
     final navigator = Navigator.of(context);
 
-    final success = await authProvider.registerStudentWithEmailAndPassword(
+    // final success = await authProvider.registerStudentWithEmailAndPassword(
+    //   email,
+    //   password,
+    //   AppUser(name: "Test1", surname: "Test2", address: "123 Main St", email: email),
+    //   Student(skills: ["C#", "JavaScript"], history: ":o")
+    // );
+
+    final success = await authProvider.registerEmployerWithEmailAndPassword(
       email,
       password,
-      AppUser(name: "Test1", surname: "Test2", address: "123 Main St", email: email)
+      AppUser(name: "Test1", surname: "Test2", address: "123 Main St", email: email),
+      Employer(enterpriseName: "HES-SO", canton: "Valais", city: "Sion")
     );
 
     if (success) {

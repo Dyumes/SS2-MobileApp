@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:jobinder/models/appuser_model.dart';
+import 'package:jobinder/models/employer_model.dart';
+import 'package:jobinder/models/student_model.dart';
 import 'package:jobinder/repositories/firestore_user_repository.dart';
 import 'package:jobinder/repositories/user_repository.dart';
 import '../services/auth_service.dart';
@@ -35,6 +37,7 @@ class AuthProvider with ChangeNotifier {
     String email,
     String password,
     AppUser user,
+    Student student,
   ) {
     Future<String?> registerUser() async {
       UserRepository userRepository = FirestoreUserRepository();
@@ -43,7 +46,7 @@ class AuthProvider with ChangeNotifier {
         password,
       );
       if (error == null) {
-        await userRepository.addUser(user, _authService.currentUser!.uid);
+        await userRepository.addStudentUser(user, student, _authService.currentUser!.uid);
       }
       return error;
     }
@@ -51,10 +54,20 @@ class AuthProvider with ChangeNotifier {
     return _authenticate(() => registerUser());
   }
 
-  Future<bool> registerEmployeeWithEmailAndPassword(String email, String password) {
-    return _authenticate(
-      () => _authService.registerWithEmailAndPassword(email, password),
-    );
+  Future<bool> registerEmployerWithEmailAndPassword(String email, String password, AppUser user, Employer employer) {
+    Future<String?> registerUser() async {
+      UserRepository userRepository = FirestoreUserRepository();
+      String? error = await _authService.registerWithEmailAndPassword(
+        email,
+        password,
+      );
+      if (error == null) {
+        await userRepository.addEmployerUser(user, employer, _authService.currentUser!.uid);
+      }
+      return error;
+    }
+
+    return _authenticate(() => registerUser());
   }
 
   Future<bool> _authenticate(Future<String?> Function() action) async {
