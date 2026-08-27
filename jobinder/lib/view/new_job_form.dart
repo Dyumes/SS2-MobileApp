@@ -13,15 +13,15 @@ class JobForm extends StatefulWidget {
 }
 
 class JobFormState extends State<JobForm> {
-  final TextEditingController _degreeController = TextEditingController();
   final TextEditingController _jobNameController = TextEditingController();
+  final TextEditingController _degreeController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _languageController = TextEditingController();
   final TextEditingController _salaryController = TextEditingController();
+  String? _companyName;
 
   final _formKey = GlobalKey<FormState>();
 
-  String? _imageUrl;
   bool _isUploading = false;
   String? _uploadError;
 
@@ -35,12 +35,13 @@ class JobFormState extends State<JobForm> {
       _languageController.text = widget.job!.languages.join(', ');
       _salaryController.text = widget.job!.salary.toString();
     }
+    _loadCompanyName();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.job == null ? 'New Job' : 'Edit Job')),
+      appBar: AppBar(title: Text(widget.job == null ? 'Create Job offer' : 'Edit Job')),
     body: SingleChildScrollView(
       child: Form(
         key: _formKey,
@@ -48,6 +49,25 @@ class JobFormState extends State<JobForm> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  _companyName ?? '...',
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(color: Theme.of(context).disabledColor),
+                ),
+              ),
+            TextFormField(
+              controller: _jobNameController,
+              decoration: const InputDecoration(labelText: 'Job\'s name'),
+              maxLines: 1,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a name for the job';
+                }
+                return null;
+              },
+            ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _descriptionController,
@@ -60,9 +80,6 @@ class JobFormState extends State<JobForm> {
                 return null;
               },
             ),
-            const SizedBox(height: 16),
-            const SizedBox(height: 16),
-            const SizedBox(height: 16),
             const SizedBox(height: 16),
             TextFormField(
               controller: _degreeController,
@@ -95,8 +112,6 @@ class JobFormState extends State<JobForm> {
               decoration: const InputDecoration(labelText: 'Languages (comma separated)'),
             ),
             const SizedBox(height: 16),
-            _buildImageSection(context),
-            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _isUploading ? null : () => _saveJob(context),
               child: Text(widget.job == null ? 'Save Job' : 'Update Job'),
@@ -108,39 +123,13 @@ class JobFormState extends State<JobForm> {
     );
   }
 
-  Widget _buildImageSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (_imageUrl != null) ...[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              _imageUrl!,
-              height: 160,
-              fit: BoxFit.cover,
-            ),
-          ),
-          const SizedBox(height: 8),
-        ],
-        if (_uploadError != null) ...[
-          Text(
-            _uploadError!,
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
-          ),
-          const SizedBox(height: 8),
-        ],
-      ],
-    );
-  }
-
   void _saveJob(BuildContext context) {
     if (_formKey.currentState?.validate() ?? false) {
       final jobProvider = Provider.of<JobProvider>(context, listen: false);
 
       if (widget.job == null) {
         jobProvider.addJob(JobOpportunities(
-          employer_user: "test",
+          employer_user: '',
           degree: _degreeController.text,
           jobName: _jobNameController.text,
           description: _descriptionController.text,
@@ -149,7 +138,7 @@ class JobFormState extends State<JobForm> {
         ));
       } else {
         jobProvider.updateJob(widget.job!.copyWith(
-          employer_user: "test",
+          employer_user: '',
           degree: _degreeController.text,
           jobName: _jobNameController.text,
           description: _descriptionController.text,
@@ -159,5 +148,13 @@ class JobFormState extends State<JobForm> {
       }
       Navigator.of(context).pop();
     }
+  }
+
+  void _loadCompanyName() async {
+    final jobProvider = Provider.of<JobProvider>(context, listen: false);
+    final name = await jobProvider.currentCompanyName();
+    setState(() {
+      _companyName = name;
+    });
   }
 }

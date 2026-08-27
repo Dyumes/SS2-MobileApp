@@ -16,9 +16,10 @@ class FirestoreJobRepository implements JobRepository {
         }).toList());
   }
 
+
   @override
   Future<void> addJob(JobOpportunities job, String userId) async {
-    await _jobsRef.add(job.toMap());
+    await _jobsRef.add({...job.toMap(), 'employer_user': _db.doc('employer/$userId')});
   }
 
   @override
@@ -29,5 +30,22 @@ class FirestoreJobRepository implements JobRepository {
   @override
   Future<void> deleteJob(String jobId, String userId) async {
     await _jobsRef.doc(jobId).delete();
+  }
+
+  Future<String?> getEmployerUserId(String uid) async {
+    final query = await _db.collection('job_opportunities')
+        .where('employer_user', isEqualTo: _db.doc('user/$uid'))
+        .limit(1)
+        .get();
+
+    print('docs trouvés : ${query.docs.length}');
+    if (query.docs.isEmpty) return null;
+    return query.docs.first.id;
+  }
+
+  @override
+  Future<String> getCompanyName(String? employerId) async {
+    final snap = await _db.collection('employer').doc(employerId).get();
+    return snap.data()?['entreprise_name'] ?? '—';
   }
 }

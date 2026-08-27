@@ -6,6 +6,7 @@ import 'auth_provider.dart';
 class JobProvider extends ChangeNotifier {
   final JobRepository _repository;
   AuthProvider? _authProvider;
+  String? _employerUserId;
 
   JobProvider(this._repository);
 
@@ -13,11 +14,23 @@ class JobProvider extends ChangeNotifier {
 
   void updateAuth(AuthProvider auth) {
     _authProvider = auth;
+    _employerUserId = null;
   }
+
+  Future<String?> _resolveEmployerId() async {
+    if (_employerUserId != null) return _employerUserId;
+    final uid = _authProvider?.user?.uid;
+    print('1. uid = $uid');
+    if (uid == null) return null;
+    _employerUserId = await _repository.getCompanyName(uid);
+    print('2. employerId = $_employerUserId');
+    return _employerUserId;
+  }
+
 
   Future<void> addJob(JobOpportunities job) async {
     final userId = _authProvider?.user?.uid;
-    print('userId = $userId');
+    //print('userId = $userId');
     if (userId == null) return;
     await _repository.addJob(job, userId);
   }
@@ -26,5 +39,13 @@ class JobProvider extends ChangeNotifier {
     final userId = _authProvider?.user?.uid;
     if (userId == null) return;
     await _repository.updateJob(job, userId);
+  }
+
+  Future<String> companyName(String employerId) => _repository.getCompanyName(employerId);
+
+  Future<String?> currentCompanyName() async {
+    final employerId = await _resolveEmployerId();
+    if (employerId == null) return null;
+    return _repository.getCompanyName(employerId);
   }
 }
