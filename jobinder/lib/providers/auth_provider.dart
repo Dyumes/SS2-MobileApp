@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:jobinder/models/appuser_model.dart';
+import 'package:jobinder/models/employer_model.dart';
+import 'package:jobinder/models/student_model.dart';
+import 'package:jobinder/repositories/firestore_user_repository.dart';
+import 'package:jobinder/repositories/user_repository.dart';
 import '../services/auth_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 /// Provider class for managing authentication state and actions, which notifies listeners on changes.
@@ -29,24 +33,42 @@ class AuthProvider with ChangeNotifier {
     );
   }
 
+  /// Registers a student with email and password, and adds the user to the Firestore database.
+  Future<bool> registerStudentWithEmailAndPassword(
+    String email,
+    String password,
+    AppUser user,
+    Student student,
+  ) {
+    Future<String?> registerUser() async {
+      UserRepository userRepository = FirestoreUserRepository();
+      String? error = await _authService.registerWithEmailAndPassword(
+        email,
+        password,
+      );
+      if (error == null) {
+        await userRepository.addStudentUser(user, student, _authService.currentUser!.uid);
+      }
+      return error;
+    }
 
-  Future<bool> registerWithEmailAndPassword(String email, String password) async {
-    final ok = await _authenticate(
-      () => _authService.registerWithEmailAndPassword(email, password),
-    );
-    if (!ok) return false;
+    return _authenticate(() => registerUser());
+  }
 
-    final uid = _authService.currentUser?.uid;
-    if (uid == null) return false;
+  Future<bool> registerEmployerWithEmailAndPassword(String email, String password, AppUser user, Employer employer) {
+    Future<String?> registerUser() async {
+      UserRepository userRepository = FirestoreUserRepository();
+      String? error = await _authService.registerWithEmailAndPassword(
+        email,
+        password,
+      );
+      if (error == null) {
+        await userRepository.addEmployerUser(user, employer, _authService.currentUser!.uid);
+      }
+      return error;
+    }
 
-    await FirebaseFirestore.instance.collection('user').doc(uid).set({
-      'email': email,
-      'name': '',
-      'surname': '',
-      'adress': '',
-    });
-
-    return true;
+    return _authenticate(() => registerUser());
   }
 
   Future<bool> _authenticate(Future<String?> Function() action) async {
