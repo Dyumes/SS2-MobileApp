@@ -38,6 +38,21 @@ class JobFormState extends State<JobForm> {
     _loadCompanyName();
   }
 
+  void _updateLanguageText() {
+    final selected = <String>[];
+    if (checkboxValue1) selected.add('French');
+    if (checkboxValue2) selected.add('German');
+    if (checkboxValue3) selected.add('Italian');
+    if (checkboxValue4) selected.add('English');
+    
+    _languageController.text = selected.join(', ');
+}
+
+  bool checkboxValue1 = false;
+  bool checkboxValue2 = false;
+  bool checkboxValue3 = false;
+  bool checkboxValue4 = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,6 +72,7 @@ class JobFormState extends State<JobForm> {
                       ?.copyWith(color: Theme.of(context).disabledColor),
                 ),
               ),
+            // Input job name
             TextFormField(
               controller: _jobNameController,
               decoration: const InputDecoration(labelText: 'Job\'s name'),
@@ -68,29 +84,27 @@ class JobFormState extends State<JobForm> {
                 return null;
               },
             ),
+
+            // Input degree
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(labelText: 'Description'),
-              maxLines: 4,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a description';
+            DropdownMenu<String>(
+              initialSelection: _degreeController.text.isNotEmpty ? _degreeController.text : null,
+              label: const Text('Degree'),
+              dropdownMenuEntries: const [
+                DropdownMenuEntry(value: 'Bachelor', label: 'Bachelor'),
+                DropdownMenuEntry(value: 'Master', label: 'Master'),
+                DropdownMenuEntry(value: 'PhD', label: 'PhD'),
+              ],
+              onSelected: (String? value) {
+                if (value != null) {
+                  setState(() {
+                    _degreeController.text = value;
+                  });
                 }
-                return null;
               },
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _degreeController,
-              decoration: const InputDecoration(labelText: 'Degree'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a degree';
-                }
-                return null;
-              },
-            ),
+
+            // Input salary
             const SizedBox(height: 16),
             TextFormField(
               controller: _salaryController,
@@ -106,10 +120,62 @@ class JobFormState extends State<JobForm> {
                 return null;
               },
             ),
+
+            // Input languages
+            const SizedBox(height: 16),
+            CheckboxListTile(
+              title: const Text('French'),
+              value: checkboxValue1,
+              onChanged: (bool? value) {
+                setState(() {
+                  checkboxValue1 = value ?? false;
+                  _updateLanguageText();
+                });
+              },
+            ),
+            CheckboxListTile(
+              title: const Text('German'),
+              value: checkboxValue2,
+              onChanged: (bool? value) {
+                setState(() {
+                  checkboxValue2 = value ?? false;
+                  _updateLanguageText();
+                });
+              },
+            ),
+            CheckboxListTile(
+              title: const Text('Italian'),
+              value: checkboxValue3,
+              onChanged: (bool? value) {
+                setState(() {
+                  checkboxValue3 = value ?? false;
+                  _updateLanguageText();
+                });
+              },
+            ),
+            CheckboxListTile(
+              title: const Text('English'),
+              value: checkboxValue4,
+              onChanged: (bool? value) {
+                setState(() {
+                  checkboxValue4 = value ?? false;
+                  _updateLanguageText();
+                });
+              },
+            ),
+
+            // Input description
             const SizedBox(height: 16),
             TextFormField(
-              controller: _languageController,
-              decoration: const InputDecoration(labelText: 'Languages (comma separated)'),
+              controller: _descriptionController,
+              decoration: const InputDecoration(labelText: 'Description'),
+              maxLines: 4,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a description';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -123,6 +189,7 @@ class JobFormState extends State<JobForm> {
     );
   }
 
+  // Save or update the job offer to firestore
   void _saveJob(BuildContext context) {
     if (_formKey.currentState?.validate() ?? false) {
       final jobProvider = Provider.of<JobProvider>(context, listen: false);
