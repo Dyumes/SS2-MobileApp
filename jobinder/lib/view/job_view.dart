@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobinder/models/job_opportunities_model.dart';
 import 'package:jobinder/templates/templates.dart';
 import 'package:jobinder/view/new_job_form.dart';
+import 'package:jobinder/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'homepage_employer.dart';
 import '../models/job_opportunities_model.dart';
@@ -13,6 +14,7 @@ class JobView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final jobProvider = Provider.of<JobProvider>(context);
+    final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Your Job Offers'), backgroundColor: Colors.white, surfaceTintColor: Colors.transparent,),
