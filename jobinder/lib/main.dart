@@ -10,6 +10,8 @@ import 'package:provider/provider.dart';
 import 'utils/firebase_options.dart';
 import 'repositories/firestore_job_repository.dart';
 import 'providers/job_provider.dart';
+import 'providers/employer_provider.dart';
+import 'repositories/firestore_employer_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,12 +31,16 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => JobProvider(FirestoreJobRepository()),
-        ),
-        ChangeNotifierProvider(
           create: (_) => AuthProvider(FirebaseAuthService()),
         ),
-
+        ChangeNotifierProxyProvider<AuthProvider, JobProvider>(
+          create: (_) => JobProvider(FirestoreJobRepository()),
+          update: (_, auth, jobProvider) => jobProvider!..updateAuth(auth),
+        ),
+        ChangeNotifierProxyProvider<AuthProvider, EmployerProvider>(
+          create: (_) => EmployerProvider(FirestoreEmployerRepository()),
+          update: (_, auth, employerProvider) => employerProvider!..updateAuth(auth),
+        ),
       ],
       child: Consumer<AuthProvider>(
         builder: (context, auth, _) {

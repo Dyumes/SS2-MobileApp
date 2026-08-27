@@ -55,10 +55,15 @@ class AuthenticatedTemplate extends StatelessWidget {
           children: [
             const SizedBox(height: 24),
 
-            const _AppLogo(),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: _AppLogo(),
+              ),
+            ),
 
             const SizedBox(height: 16),
-
             Expanded(
               child: child,
             ),
@@ -96,10 +101,11 @@ class _AppLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      'images/logo.png',
-      width: 120,
-      height: 120,
+      'images/image.png',
+      width: 64,
+      height: 64,
       fit: BoxFit.contain,
     );
   }
 }
+
