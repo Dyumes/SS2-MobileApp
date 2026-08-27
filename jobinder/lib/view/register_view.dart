@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobinder/models/appuser_model.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
@@ -93,6 +94,15 @@ class RegisterViewState extends State<RegisterView> {
               ),
               const SizedBox(height: 20),
 
+              // Error message display
+              if (authProvider.errorMessage != null) ...[
+                Text(
+                  authProvider.errorMessage!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              const SizedBox(height: 10),
+              ],
+
               // Register button
               ElevatedButton(
                 onPressed: authProvider.isLoading
@@ -137,9 +147,10 @@ class RegisterViewState extends State<RegisterView> {
 
     final navigator = Navigator.of(context);
 
-    final success = await authProvider.registerWithEmailAndPassword(
+    final success = await authProvider.registerStudentWithEmailAndPassword(
       email,
       password,
+      AppUser(name: "Test1", surname: "Test2", address: "123 Main St", email: email)
     );
 
     if (success) {
@@ -150,6 +161,8 @@ class RegisterViewState extends State<RegisterView> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Account successfully created!")),
       );
+
+      context.read<AuthProvider>().clearError();
       navigator.pop(); // Navigate back to the previous screen
     }
   }

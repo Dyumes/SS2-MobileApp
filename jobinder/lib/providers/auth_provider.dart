@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:jobinder/models/appuser_model.dart';
+import 'package:jobinder/repositories/firestore_user_repository.dart';
+import 'package:jobinder/repositories/user_repository.dart';
 import '../services/auth_service.dart';
 
 /// Provider class for managing authentication state and actions, which notifies listeners on changes.
@@ -27,7 +30,28 @@ class AuthProvider with ChangeNotifier {
     );
   }
 
-  Future<bool> registerWithEmailAndPassword(String email, String password) {
+  /// Registers a student with email and password, and adds the user to the Firestore database.
+  Future<bool> registerStudentWithEmailAndPassword(
+    String email,
+    String password,
+    AppUser user,
+  ) {
+    Future<String?> registerUser() async {
+      UserRepository userRepository = FirestoreUserRepository();
+      String? error = await _authService.registerWithEmailAndPassword(
+        email,
+        password,
+      );
+      if (error == null) {
+        await userRepository.addUser(user, _authService.currentUser!.uid);
+      }
+      return error;
+    }
+
+    return _authenticate(() => registerUser());
+  }
+
+  Future<bool> registerEmployeeWithEmailAndPassword(String email, String password) {
     return _authenticate(
       () => _authService.registerWithEmailAndPassword(email, password),
     );
