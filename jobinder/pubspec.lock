@@ -30,8 +30,10 @@ packages:
     description:
       name: characters
       sha256: faf38497bda5ead2a8c7615f4f7939df04333478bf32e4173fcb06d428b5716b
+      sha256: faf38497bda5ead2a8c7615f4f7939df04333478bf32e4173fcb06d428b5716b
       url: "https://pub.dev"
     source: hosted
+    version: "1.4.1"
     version: "1.4.1"
   clock:
     dependency: transitive
@@ -213,16 +215,20 @@ packages:
     description:
       name: matcher
       sha256: "31bd099b47c10cd1aeb55146a2d46ce0277630ecef3f7dae54ad7873f36696cd"
+      sha256: "31bd099b47c10cd1aeb55146a2d46ce0277630ecef3f7dae54ad7873f36696cd"
       url: "https://pub.dev"
     source: hosted
+    version: "0.12.20"
     version: "0.12.20"
   material_color_utilities:
     dependency: transitive
     description:
       name: material_color_utilities
       sha256: "9c337007e82b1889149c82ed242ed1cb24a66044e30979c44912381e9be4c48b"
+      sha256: "9c337007e82b1889149c82ed242ed1cb24a66044e30979c44912381e9be4c48b"
       url: "https://pub.dev"
     source: hosted
+    version: "0.13.0"
     version: "0.13.0"
   meta:
     dependency: transitive
@@ -330,8 +336,10 @@ packages:
     description:
       name: vector_math
       sha256: f36f9f3be64c6198714492bb455c11056e33e2f85d9a0b676a48301e44fdcf47
+      sha256: f36f9f3be64c6198714492bb455c11056e33e2f85d9a0b676a48301e44fdcf47
       url: "https://pub.dev"
     source: hosted
+    version: "2.4.2"
     version: "2.4.2"
   vm_service:
     dependency: transitive
