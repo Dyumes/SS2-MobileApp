@@ -495,13 +495,13 @@ class RegisterViewState extends State<RegisterView> {
       _studentRole => await authProvider.registerStudentWithEmailAndPassword(
           email,
           password,
-          AppUser(name: name, surname: surname, address: address, email: email),
+          AppUser(name: name, surname: surname, address: address, email: email, role: "student"),
           Student(skills: skills, history: history)
         ),
       _employerRole => await authProvider.registerEmployerWithEmailAndPassword(
           email,
           password,
-          AppUser(name: name, surname: surname, address: address, email: email),
+          AppUser(name: name, surname: surname, address: address, email: email, role: "employer"),
           Employer(companyName: companyName, canton: canton!, city: city)
         ),
       _ => false

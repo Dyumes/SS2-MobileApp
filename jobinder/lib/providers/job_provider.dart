@@ -10,7 +10,7 @@ class JobProvider extends ChangeNotifier {
 
   JobProvider(this._repository);
 
-  Stream<List<JobOpportunities>> get jobs => _repository.watchJobs();
+  Stream<List<JobOpportunities>> get jobs => _repository.watchJobsByEmployer(_authProvider?.user?.uid ?? '');
 
   void updateAuth(AuthProvider auth) {
     _authProvider = auth;

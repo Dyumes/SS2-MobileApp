@@ -39,6 +39,7 @@ class AuthProvider with ChangeNotifier {
     String password,
     AppUser user,
     Student student,
+    
   ) {
     Future<String?> registerUser() async {
       UserRepository userRepository = FirestoreUserRepository();
@@ -95,4 +96,8 @@ class AuthProvider with ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
   }
+
+
+
+  
 }

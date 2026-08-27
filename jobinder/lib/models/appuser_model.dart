@@ -4,6 +4,7 @@ class AppUser {
   final String surname;
   final String address;
   final String email;
+  final String role;
 
   AppUser({
     this.id = '',
@@ -11,6 +12,7 @@ class AppUser {
     required this.surname,
     required this.address,
     required this.email,
+    required this.role,
   });
 
   factory AppUser.fromMap(Map<String, dynamic> map, String docId) {
@@ -19,7 +21,8 @@ class AppUser {
       name: map['name'] ?? '',
       surname: map['surname'] ?? '',
       address: map['address'] ?? '',
-      email: map['email'] ?? ''
+      email: map['email'] ?? '',
+      role: map['role'] ?? '',
     );
   }
 
@@ -29,6 +32,7 @@ class AppUser {
       'surname': surname,
       'address': address,
       'email': email,
+      'role': role,
     };
   }
 }
