@@ -14,6 +14,7 @@ class _HomePageStudentState extends State<HomePageStudent> {
   static const String _fixedImageUrl = 'https://picsum.photos/600/400';
   int _currentIndex = 0;
 
+  // Increment index to show the next job
   void _nextCard() {
     setState(() {
       _currentIndex++;
@@ -27,7 +28,28 @@ class _HomePageStudentState extends State<HomePageStudent> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Home Page'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search',
+                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.grey[200],
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
+
+      // Listen to the job opportunities stream
       body: StreamBuilder<List<JobOpportunities>>(
         stream: jobProvider.jobs,
         builder: (context, snapshot) {
@@ -45,17 +67,17 @@ class _HomePageStudentState extends State<HomePageStudent> {
           }
 
           final currentJob = jobs[_currentIndex];
-
+          // Card stack
           return Column(
             children: [
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16),
                   child: Stack(
                     children: [
                       if (_currentIndex + 1 < jobs.length)
                         Transform.scale(
-                          scale: 0.95,
+                          scale: 1,
                           child: _buildJobCard(context, jobs[_currentIndex + 1]),
                         ),
 
@@ -65,6 +87,7 @@ class _HomePageStudentState extends State<HomePageStudent> {
                 ),
               ),
 
+              // Action buttons
               Padding(
                 padding: const EdgeInsets.only(bottom: 24.0),
                 child: Row(
@@ -103,6 +126,7 @@ class _HomePageStudentState extends State<HomePageStudent> {
     );
   }
 
+  // Job details
   Widget _buildJobCard(BuildContext context, JobOpportunities job) {
     return Card(
       elevation: 4,
@@ -114,16 +138,16 @@ class _HomePageStudentState extends State<HomePageStudent> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            flex: 3,
+            flex: 2,
             child: Image.network(
               _fixedImageUrl,
               fit: BoxFit.cover,
             ),
           ),
           Expanded(
-            flex: 2,
+            flex: 3,
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -155,6 +179,7 @@ class _HomePageStudentState extends State<HomePageStudent> {
     );
   }
 
+  // Job details pop up
   void _showJobDetails(BuildContext context, JobOpportunities job) {
     showDialog(
       context: context,
