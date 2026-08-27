@@ -1,12 +1,12 @@
 class Employer {
   final String id;
-  final String enterpriseName;
+  final String companyName;
   final String canton;
   final String city;
 
   Employer({
     this.id = '',
-    required this.enterpriseName,
+    required this.companyName,
     required this.canton,
     required this.city,
   });
@@ -14,7 +14,7 @@ class Employer {
   factory Employer.fromMap(Map<String, dynamic> map, String docId) {
     return Employer(
       id: docId,
-      enterpriseName: map['enterprise_name'] ?? '',
+      companyName: map['enterprise_name'] ?? '',
       canton: map['canton'] ?? '',
       city: map['city'] ?? '',
     );
@@ -22,7 +22,7 @@ class Employer {
 
   Map<String, dynamic> toMap() {
     return {
-      'enterprise_name': enterpriseName,
+      'enterprise_name': companyName,
       'canton': canton,
       'city': city,
     };

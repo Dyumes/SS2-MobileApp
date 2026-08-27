@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:jobinder/models/appuser_model.dart';
 import 'package:jobinder/models/employer_model.dart';
 import 'package:jobinder/models/student_model.dart';
@@ -26,11 +27,11 @@ class RegisterViewState extends State<RegisterView> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedRole; // For ToggleButtons
   List<Skill> _skills = [];
-  List<Company> _companies = [];
+  List<History> _companies = [];
   String? _selectedCanton;
 
-  final String _studentRole = "student";
-  final String _employerRole = "employer";
+  static const String _studentRole = "student";
+  static const String _employerRole = "employer";
 
   final List<String> cantons = ["AG", "AI", "AR", "BE", "BL", "BS", "FR", "GE", "GL", "GR", "JU", "LU", "NE", "NW", "OW", "SG", "SH", "SO", "SZ", "TG", "TI", "UR", "VD", "VS", "ZG", "ZH"];
 
@@ -221,7 +222,7 @@ class RegisterViewState extends State<RegisterView> {
                   ),
                   const SizedBox(height: 16),
           
-                  ListFormField<Company>(
+                  ListFormField<History>(
                     label: 'Work history',
           
                     onChanged: (companies) {
@@ -231,6 +232,8 @@ class RegisterViewState extends State<RegisterView> {
                     itemForm: (context, addItem) {
                       final nameController = TextEditingController();
                       final linkController = TextEditingController();
+                      final startDateController = TextEditingController();
+                      final endDateController = TextEditingController();
           
                       return Column(
                         children: [
@@ -248,6 +251,60 @@ class RegisterViewState extends State<RegisterView> {
                             ),
                           ),
                           const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextFormField(
+                                  controller: startDateController,
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Start date',
+                                  ),
+                                  onTap: () async {
+                                    final date = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(1900),
+                                      lastDate: DateTime.now(),
+                                    );
+                                    if (date != null) {
+                                      startDateController.text =
+                                          '${date.day.toString().padLeft(2, '0')}/'
+                                          '${date.month.toString().padLeft(2, '0')}/'
+                                          '${date.year}';
+                                    }
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: TextFormField(
+                                  controller: endDateController,
+                                  readOnly: true,
+                                  decoration: const InputDecoration(
+                                    labelText: 'End date',
+                                  ),
+                                  onTap: () async {
+                                    final date = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(1900),
+                                      lastDate: DateTime.now(),
+                                    );
+                                
+                                    if (date != null) {
+                                      endDateController.text =
+                                          '${date.day.toString().padLeft(2, '0')}/'
+                                          '${date.month.toString().padLeft(2, '0')}/'
+                                          '${date.year}';
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 8),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: SizedBox(
@@ -255,11 +312,17 @@ class RegisterViewState extends State<RegisterView> {
                               child: ElevatedButton(
                                 onPressed: () {
                                   if (nameController.text.trim().isEmpty) return;
-                                        
+                                  
                                   addItem(
-                                    Company(
-                                      name: nameController.text.trim(),
+                                    History(
+                                      company: nameController.text.trim(),
                                       link: linkController.text.trim(),
+                                      startDate: startDateController.text.isNotEmpty
+                                          ? DateFormat('dd/MM/yyyy').parse(startDateController.text)
+                                          : null,
+                                      endDate: endDateController.text.isNotEmpty
+                                          ? DateFormat('dd/MM/yyyy').parse(endDateController.text)
+                                          : null,
                                     ),
                                   );
                                 },
@@ -273,7 +336,7 @@ class RegisterViewState extends State<RegisterView> {
           
                     itemBuilder: (context, company, remove) {
                       return ListTile(
-                        title: Text(company.name),
+                        title: Text(company.company),
                         subtitle: Text(company.link),
                         trailing: IconButton(
                           icon: const Icon(Icons.close),
@@ -415,23 +478,36 @@ class RegisterViewState extends State<RegisterView> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final email = _emailController.text;
     final password = _passwordController.text;
+    final name = _nameController.text;
+    final surname = _surnameController.text;
+    final address = _addressController.text;
+    final skills = _skills.map((s) => s.name).toList();
+    final history = _companies;
+
+    final companyName = _companyNameController.text;
+    final canton = _selectedCanton;
+    final city = _cityController.text;
+
 
     final navigator = Navigator.of(context);
 
-    // final success = await authProvider.registerStudentWithEmailAndPassword(
-    //   email,
-    //   password,
-    //   AppUser(name: "Test1", surname: "Test2", address: "123 Main St", email: email),
-    //   Student(skills: ["C#", "JavaScript"], history: ":o")
-    // );
+    final success = switch (_selectedRole) {
+      _studentRole => await authProvider.registerStudentWithEmailAndPassword(
+          email,
+          password,
+          AppUser(name: name, surname: surname, address: address, email: email),
+          Student(skills: skills, history: history)
+        ),
+      _employerRole => await authProvider.registerEmployerWithEmailAndPassword(
+          email,
+          password,
+          AppUser(name: name, surname: surname, address: address, email: email),
+          Employer(companyName: companyName, canton: canton!, city: city)
+        ),
+      _ => false
+    };
 
-    final success = await authProvider.registerEmployerWithEmailAndPassword(
-      email,
-      password,
-      AppUser(name: "Test1", surname: "Test2", address: "123 Main St", email: email),
-      Employer(enterpriseName: "HES-SO", canton: "Valais", city: "Sion")
-    );
-
+    
     if (success) {
       // Check if widget is still mounted before showing SnackBar
       if (!context.mounted) return;
@@ -451,14 +527,4 @@ class Skill {
   final String name;
 
   Skill(this.name);
-}
-
-class Company {
-  final String name;
-  final String link;
-
-  Company({
-    required this.name,
-    required this.link,
-  });
 }
