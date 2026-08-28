@@ -25,7 +25,7 @@ class RegisterViewState extends State<RegisterView> {
   final TextEditingController _companyNameController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  String? _selectedRole; // For ToggleButtons
+  String? _selectedRole = _studentRole; // For ToggleButtons
   List<Skill> _skills = [];
   List<History> _companies = [];
   String? _selectedCanton;
@@ -59,7 +59,9 @@ class RegisterViewState extends State<RegisterView> {
                       selected: _selectedRole == _studentRole,
                       onSelected: (bool selected) {
                         setState(() {
-                          _selectedRole = selected ? _studentRole : null;
+                          if (selected) {
+                            _selectedRole = _studentRole;
+                          }
                         });
                       },
                     ),
@@ -68,7 +70,9 @@ class RegisterViewState extends State<RegisterView> {
                       selected: _selectedRole == "employer",
                       onSelected: (bool selected) {
                         setState(() {
-                          _selectedRole = selected ? _employerRole : null;
+                          if (selected) {
+                            _selectedRole = _employerRole;
+                          }
                         });
                       },
                     ),
