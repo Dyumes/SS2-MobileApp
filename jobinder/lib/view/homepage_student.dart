@@ -51,7 +51,7 @@ class _HomePageStudentState extends State<HomePageStudent> {
 
       // Listen to the job opportunities stream
       body: StreamBuilder<List<JobOpportunities>>(
-        stream: jobProvider.jobs,
+        stream: jobProvider.studentjobs,
         builder: (context, snapshot) {
           final jobs = snapshot.data ?? [];
 

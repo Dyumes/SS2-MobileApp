@@ -38,6 +38,13 @@ class _MainScreenState extends State<MainScreen> {
     if (mounted) setState(() => loading = false);
   }
 
+  Widget get firstPage {
+    if (role == 'student') return const HomePageStudent();
+    if (role == 'employer') return const JobView();
+    print("Role is null or unrecognized, defaulting to JobView");
+    return const JobView(); 
+  }
+
   Widget get middlePage {
     if (role == 'student') return const HomePageStudent();
     if (role == 'employer') return const JobView();
@@ -53,7 +60,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   List<Widget> get pages => [
-        const JobView(),
+        firstPage,
         middlePage,
         finalPage,
       ];
