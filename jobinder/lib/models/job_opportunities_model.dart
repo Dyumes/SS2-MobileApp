@@ -9,6 +9,10 @@ class JobOpportunities {
   final String description;
   final List<String> languages;
   final int salary;
+  final int workloadPercentage;
+  final String industry;
+  final DateTime timestamp;
+  final DateTime deadline;
 
   JobOpportunities({
     this.id = '',
@@ -18,6 +22,10 @@ class JobOpportunities {
     required this.description,
     required this.languages,
     required this.salary,
+    required this.workloadPercentage,
+    required this.industry,
+    required this.timestamp,
+    required this.deadline,
   });
 
   
@@ -31,6 +39,10 @@ class JobOpportunities {
       description: data['description'] ?? '',
       languages: List<String>.from(data['languages'] ?? []),
       salary: data['salary'] ?? 0,
+      workloadPercentage: data['workloadPercentage'] ?? 0,
+      industry: data['industry'] ?? '',
+      timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      deadline: (data['deadline'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
@@ -42,6 +54,10 @@ class JobOpportunities {
       'description': description,
       'languages': languages,
       'salary': salary,
+      'workloadPercentage': workloadPercentage,
+      'industry': industry,
+      'timestamp': Timestamp.fromDate(timestamp),
+      'deadline': Timestamp.fromDate(deadline),
     };
   }
 
@@ -53,6 +69,10 @@ class JobOpportunities {
     String? description,
     List<String>? languages,
     int? salary,
+    int? workloadPercentage,
+    String? industry,
+    DateTime? timestamp,
+    DateTime? deadline,
   }) {
     return JobOpportunities(
       id: id ?? this.id,
@@ -62,6 +82,10 @@ class JobOpportunities {
       description: description ?? this.description,
       languages: languages ?? this.languages,
       salary: salary ?? this.salary,
+      workloadPercentage: workloadPercentage ?? this.workloadPercentage,
+      industry: industry ?? this.industry,
+      timestamp: timestamp ?? this.timestamp,
+      deadline: deadline ?? this.deadline,
     );
   }
 }

@@ -18,6 +18,10 @@ class JobFormState extends State<JobForm> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _languageController = TextEditingController();
   final TextEditingController _salaryController = TextEditingController();
+  final TextEditingController _workloadPercentageController = TextEditingController();
+  final TextEditingController _industryController = TextEditingController();
+  final TextEditingController _timestampController = TextEditingController();
+  final TextEditingController _deadlineController = TextEditingController();
   String? _companyName;
 
   final _formKey = GlobalKey<FormState>();
@@ -34,6 +38,10 @@ class JobFormState extends State<JobForm> {
       _descriptionController.text = widget.job!.description;
       _languageController.text = widget.job!.languages.join(', ');
       _salaryController.text = widget.job!.salary.toString();
+      _workloadPercentageController.text = widget.job!.workloadPercentage?.toString() ?? '';
+      _industryController.text = widget.job!.industry;
+      _timestampController.text = widget.job!.timestamp?.toString() ?? '';
+      _deadlineController.text = widget.job!.deadline?.toString() ?? '';
     }
     _loadCompanyName();
   }
@@ -46,7 +54,24 @@ class JobFormState extends State<JobForm> {
     if (checkboxValue4) selected.add('English');
     
     _languageController.text = selected.join(', ');
-}
+  }
+
+  Future<void> _selectDeadline(BuildContext context) async {
+    final DateTime initialDate = DateTime.tryParse(_deadlineController.text) ?? DateTime.now();
+
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        _deadlineController.text = pickedDate.toIso8601String().split('T')[0];
+      });
+    }
+  }
 
   bool checkboxValue1 = false;
   bool checkboxValue2 = false;
@@ -109,7 +134,7 @@ class JobFormState extends State<JobForm> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _salaryController,
-              decoration: const InputDecoration(labelText: 'Salary'),
+              decoration: const InputDecoration(labelText: 'Hourly Salary (CHF)'),
               keyboardType: TextInputType.number,
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -117,6 +142,24 @@ class JobFormState extends State<JobForm> {
                 }
                 if (int.tryParse(value) == null) {
                   return 'Please enter a valid number';
+                }
+                return null;
+              },
+            ),
+
+            const SizedBox(height: 16),
+
+            TextFormField(
+              controller: _workloadPercentageController,
+              decoration: const InputDecoration(labelText: 'Workload Percentage (%)'),
+              keyboardType: TextInputType.number,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a workload percentage';
+                }
+                final intValue = int.tryParse(value);
+                if (intValue == null || intValue < 0 || intValue > 100) {
+                  return 'Please enter a valid percentage between 0 and 100';
                 }
                 return null;
               },
@@ -165,6 +208,34 @@ class JobFormState extends State<JobForm> {
               },
             ),
 
+            const SizedBox(height: 16),
+
+            DropdownMenu<String>(
+              initialSelection: _industryController.text.isNotEmpty ? _industryController.text : null,
+              label: const Text('Industry'),
+              dropdownMenuEntries: const [
+                DropdownMenuEntry(value: 'Education', label: 'Education'),
+                DropdownMenuEntry(value: 'Manufacturing', label: 'Manufacturing'),
+                DropdownMenuEntry(value: 'Healthcare', label: 'Healthcare'),
+                DropdownMenuEntry(value: 'Finance', label: 'Finance'),
+                DropdownMenuEntry(value: 'IT', label: 'IT'),
+                DropdownMenuEntry(value: 'Energy', label: 'Energy'),
+                DropdownMenuEntry(value: 'Hospitality', label: 'Hospitality'),
+                DropdownMenuEntry(value: 'Public sector', label: 'Public sector'),
+                DropdownMenuEntry(value: 'Consulting', label: 'Consulting'),
+                DropdownMenuEntry(value: 'Pharma', label: 'Pharma'),
+                DropdownMenuEntry(value: 'Construction', label: 'Construction'),
+                DropdownMenuEntry(value: 'Retail', label: 'Retail'),
+              ],
+              onSelected: (String? value) {
+                if (value != null) {
+                  setState(() {
+                    _industryController.text = value;
+                  });
+                }
+              },
+            ),
+
             // Input description
             const SizedBox(height: 16),
             TextFormField(
@@ -178,6 +249,28 @@ class JobFormState extends State<JobForm> {
                 return null;
               },
             ),
+
+            const SizedBox(height: 16),
+
+            TextFormField(
+              controller: _deadlineController,
+              readOnly: true,
+              decoration: InputDecoration(
+                labelText: 'Deadline',
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.calendar_today),
+                  onPressed: () => _selectDeadline(context),
+                ),
+              ),
+              onTap: () => _selectDeadline(context),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please select a deadline';
+                }
+                return null;
+              },
+            ),
+
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _isUploading ? null : () => _saveJob(context),
@@ -203,6 +296,10 @@ class JobFormState extends State<JobForm> {
           description: _descriptionController.text,
           languages: _languageController.text.split(',').map((e) => e.trim()).toList(),
           salary: int.tryParse(_salaryController.text) ?? 0,
+          workloadPercentage: int.tryParse(_workloadPercentageController.text) ?? 0,
+          industry: _industryController.text,
+          deadline: DateTime.tryParse(_deadlineController.text) ?? DateTime.now(),
+          timestamp: DateTime.now(),
         ));
       } else {
         jobProvider.updateJob(widget.job!.copyWith(
@@ -212,6 +309,10 @@ class JobFormState extends State<JobForm> {
           description: _descriptionController.text,
           languages: _languageController.text.split(',').map((e) => e.trim()).toList(),
           salary: int.tryParse(_salaryController.text) ?? 0,
+          workloadPercentage: int.tryParse(_workloadPercentageController.text) ?? 0,
+          industry: _industryController.text,
+          deadline: DateTime.tryParse(_deadlineController.text) ?? DateTime.now(),
+          timestamp: DateTime.now(),
         ));
       }
       Navigator.of(context).pop();
