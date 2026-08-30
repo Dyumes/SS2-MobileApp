@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:jobinder/models/job_opportunities_model.dart';
 import 'package:jobinder/templates/templates.dart';
 import 'package:jobinder/view/new_job_form.dart';
@@ -95,7 +96,17 @@ class JobView extends StatelessWidget {
             const SizedBox(height: 8),
             Text('Languages: ${job.languages.join(', ')}'),
             const SizedBox(height: 8),
-            Text('Salary: \$${job.salary}'),
+            Text('Hourly salary: ${job.salary} CHF'),
+            const SizedBox(height: 8),
+            Text('Yearly salary: ${(42 * 4 * 12 * job.salary * job.workloadPercentage/100).round()} CHF'),
+            const SizedBox(height: 8),
+            Text('Workload: ${job.workloadPercentage}%'),
+            const SizedBox(height: 8),
+            Text('Industry: ${job.industry}'),
+            const SizedBox(height: 8),
+            Text('Start date: ${DateFormat('yyyy-MM-dd').format(job.timestamp)}'),
+            const SizedBox(height: 8),
+            Text('Deadline: ${DateFormat('yyyy-MM-dd').format(job.deadline)}'),
           ],
         ),
         actions: [
