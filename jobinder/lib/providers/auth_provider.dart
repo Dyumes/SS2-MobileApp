@@ -72,6 +72,7 @@ class AuthProvider with ChangeNotifier {
     return _authenticate(() => registerUser());
   }
 
+
   Future<bool> _authenticate(Future<String?> Function() action) async {
     _isLoading = true;
     _errorMessage = null;

@@ -55,6 +55,17 @@ class FirestoreUserRepository implements UserRepository {
   }
 
   @override
+  Future<Student> getStudentByUid(String uid) async {
+    final query = await _db
+        .collection('student')
+        .doc(uid)
+        .get();
+
+    // if (query.docs.isEmpty) return null;
+    return Student.fromMap(query.data()!, query.id);
+  }
+
+  @override
   Future<AppUser> getUser(String uid) async {
     final snap = await _db.collection('user').doc(uid).get();
     // if (!snap.exists) return null;

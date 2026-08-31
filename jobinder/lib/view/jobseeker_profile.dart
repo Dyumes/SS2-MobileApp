@@ -4,11 +4,11 @@ import 'package:jobinder/repositories/user_repository.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
-import '../models/employer_model.dart';
+import '../models/student_model.dart';
 import '../models/appuser_model.dart';
 
-class EmployerProfileView extends StatelessWidget {
-  const EmployerProfileView({super.key});
+class StudentProfileView extends StatelessWidget {
+  const StudentProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class EmployerProfileView extends StatelessWidget {
 
     return FutureBuilder(
       future: Future.wait([
-        userRepository.getEmployerByUid(user.uid),
+        userRepository.getStudentByUid(user.uid),
         userRepository.getUser(user.uid),
       ]),
       builder: (context, snapshot) {
@@ -57,14 +57,14 @@ class EmployerProfileView extends StatelessWidget {
         }
 
         // Get the results from Future.wait()
-        final employer = snapshot.data![0] as Employer;
+        final jobseeker = snapshot.data![0] as Student;
         final userData = snapshot.data![1] as AppUser;
 
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              employer.companyName,
+              "${userData.name} ${userData.surname}",
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
@@ -77,18 +77,20 @@ class EmployerProfileView extends StatelessWidget {
             ),
 
             _InfoRow(
-              label: 'Canton',
-              value: employer.canton,
-            ),
-
-            _InfoRow(
-              label: 'City',
-              value: employer.city,
+              label: 'History',
+              value: jobseeker.history?.isNotEmpty == true
+                  ? jobseeker.history!.first.company
+                  : 'No history',
             ),
 
             _InfoRow(
               label: 'Address',
               value: userData.address,
+            ),
+
+            _InfoRow(
+              label: 'Skills',
+              value: jobseeker.skills?.join(', ') ?? 'No skills listed',
             ),
 
             const SizedBox(height: 32),
@@ -105,21 +107,6 @@ class EmployerProfileView extends StatelessWidget {
                 minimumSize: const Size.fromHeight(48),
               ),
             ),
-/*
-            ElevatedButton.icon(
-              onPressed: () {
-                context.read<AuthProvider>().editEmployerProfile(employer, userData);
-              },
-              icon: const Icon(Icons.edit),
-              label: const Text('Edit Profile'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(48),
-              ),
-              
-            ),
-            */
           ],
         );
       },
