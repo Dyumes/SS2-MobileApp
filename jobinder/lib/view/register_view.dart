@@ -21,7 +21,8 @@ class RegisterViewState extends State<RegisterView> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _companyNameController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
@@ -88,7 +89,7 @@ class RegisterViewState extends State<RegisterView> {
                 ),
 
                 const SizedBox(height: 8),
-          
+
                 // Email
                 TextFormField(
                   controller: _emailController,
@@ -103,9 +104,33 @@ class RegisterViewState extends State<RegisterView> {
                     }
                     return null;
                   },
+                  /* //MORE VALIDATION FOR PASSWORD
+                  if (value == null || value.isEmpty) {
+                      return 'Please enter a password';
+                    }
+                    if (value.length < 8) {
+                      return 'At least 8 characters';
+                    }
+                    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                      return 'At least one uppercase letter';
+                    }
+                    if (!RegExp(r'[a-z]').hasMatch(value)) {
+                      return 'At least one lowercase letter';
+                    }
+                    if (!RegExp(r'[0-9]').hasMatch(value)) {
+                      return 'At least one digit';
+                    }
+                    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\/~`]').hasMatch(value)) {
+                      return 'At least one special character';
+                    }
+                    if (RegExp(r'(.)\1{2,}').hasMatch(value)) {
+                      return 'Avoid repeating the same character 3+ times';
+                    }
+                    return null;
+                  },*/
                 ),
                 const SizedBox(height: 16),
-          
+
                 // Name
                 TextFormField(
                   controller: _nameController,
@@ -122,7 +147,7 @@ class RegisterViewState extends State<RegisterView> {
                   },
                 ),
                 const SizedBox(height: 16),
-          
+
                 // Surname
                 TextFormField(
                   controller: _surnameController,
@@ -139,7 +164,7 @@ class RegisterViewState extends State<RegisterView> {
                   },
                 ),
                 const SizedBox(height: 16),
-          
+
                 // Password
                 TextFormField(
                   controller: _passwordController,
@@ -156,11 +181,13 @@ class RegisterViewState extends State<RegisterView> {
                   },
                 ),
                 const SizedBox(height: 16),
-          
+
                 // Confirm Password
                 TextFormField(
                   controller: _confirmPasswordController,
-                  decoration: const InputDecoration(labelText: 'Confirm password'),
+                  decoration: const InputDecoration(
+                    labelText: 'Confirm password',
+                  ),
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -172,7 +199,7 @@ class RegisterViewState extends State<RegisterView> {
                     return null;
                   },
                 ),
-          
+
                 // Role-dependant fields
                 if (_selectedRole == _studentRole) ...[
                   const SizedBox(height: 16),
@@ -193,14 +220,14 @@ class RegisterViewState extends State<RegisterView> {
                   // Skills
                   ListFormField<Skill>(
                     label: 'Skills',
-          
+
                     onChanged: (skills) {
                       _skills = skills;
                     },
-          
+
                     itemForm: (context, addItem) {
                       final controller = TextEditingController();
-          
+
                       return TextFormField(
                         controller: controller,
                         decoration: const InputDecoration(
@@ -215,29 +242,26 @@ class RegisterViewState extends State<RegisterView> {
                         },
                       );
                     },
-          
+
                     itemBuilder: (context, skill, remove) {
-                      return Chip(
-                        label: Text(skill.name),
-                        onDeleted: remove,
-                      );
+                      return Chip(label: Text(skill.name), onDeleted: remove);
                     },
                   ),
                   const SizedBox(height: 16),
-          
+
                   ListFormField<History>(
                     label: 'Work history',
-          
+
                     onChanged: (companies) {
                       _companies = companies;
                     },
-          
+
                     itemForm: (context, addItem) {
                       final nameController = TextEditingController();
                       final linkController = TextEditingController();
                       final startDateController = TextEditingController();
                       final endDateController = TextEditingController();
-          
+
                       return Column(
                         children: [
                           TextFormField(
@@ -294,7 +318,7 @@ class RegisterViewState extends State<RegisterView> {
                                       firstDate: DateTime(1900),
                                       lastDate: DateTime.now(),
                                     );
-                                
+
                                     if (date != null) {
                                       endDateController.text =
                                           '${date.day.toString().padLeft(2, '0')}/'
@@ -314,17 +338,23 @@ class RegisterViewState extends State<RegisterView> {
                               width: 200,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  if (nameController.text.trim().isEmpty) return;
-                                  
+                                  if (nameController.text.trim().isEmpty)
+                                    return;
+
                                   addItem(
                                     History(
                                       company: nameController.text.trim(),
                                       link: linkController.text.trim(),
-                                      startDate: startDateController.text.isNotEmpty
-                                          ? DateFormat('dd/MM/yyyy').parse(startDateController.text)
+                                      startDate:
+                                          startDateController.text.isNotEmpty
+                                          ? DateFormat(
+                                              'dd/MM/yyyy',
+                                            ).parse(startDateController.text)
                                           : null,
                                       endDate: endDateController.text.isNotEmpty
-                                          ? DateFormat('dd/MM/yyyy').parse(endDateController.text)
+                                          ? DateFormat(
+                                              'dd/MM/yyyy',
+                                            ).parse(endDateController.text)
                                           : null,
                                     ),
                                   );
@@ -336,7 +366,7 @@ class RegisterViewState extends State<RegisterView> {
                         ],
                       );
                     },
-          
+
                     itemBuilder: (context, company, remove) {
                       return ListTile(
                         title: Text(company.company),
@@ -349,7 +379,7 @@ class RegisterViewState extends State<RegisterView> {
                     },
                   ),
                 ],
-          
+
                 if (_selectedRole == _employerRole) ...[
                   const SizedBox(height: 20),
 
@@ -379,15 +409,15 @@ class RegisterViewState extends State<RegisterView> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Canton & City
                   Row(
                     children: [
                       DropdownMenu<String>(
                         label: const Text('Canton'),
                         dropdownMenuEntries: AppConstants.cantons
-                          .map((c) => DropdownMenuEntry(value: c, label: c))
-                          .toList(),
+                            .map((c) => DropdownMenuEntry(value: c, label: c))
+                            .toList(),
                         onSelected: (value) {
                           if (value != null) {
                             _selectedCanton = value;
@@ -427,9 +457,9 @@ class RegisterViewState extends State<RegisterView> {
                     },
                   ),
                 ],
-                
+
                 const SizedBox(height: 40),
-          
+
                 // Register button
                 ElevatedButton(
                   onPressed: authProvider.isLoading
@@ -443,7 +473,7 @@ class RegisterViewState extends State<RegisterView> {
                         )
                       : Text("Register"),
                 ),
-          
+
                 // Return to login button
                 TextButton(
                   onPressed: authProvider.isLoading
@@ -482,26 +512,36 @@ class RegisterViewState extends State<RegisterView> {
     final canton = _selectedCanton;
     final city = _cityController.text;
 
-
     final navigator = Navigator.of(context);
 
     final success = switch (_selectedRole) {
       _studentRole => await authProvider.registerStudentWithEmailAndPassword(
-          email,
-          password,
-          AppUser(name: name, surname: surname, address: address, email: email, role: "student"),
-          Student(skills: skills, history: history)
+        email,
+        password,
+        AppUser(
+          name: name,
+          surname: surname,
+          address: address,
+          email: email,
+          role: "student",
         ),
+        Student(skills: skills, history: history),
+      ),
       _employerRole => await authProvider.registerEmployerWithEmailAndPassword(
-          email,
-          password,
-          AppUser(name: name, surname: surname, address: address, email: email, role: "employer"),
-          Employer(companyName: companyName, canton: canton!, city: city)
+        email,
+        password,
+        AppUser(
+          name: name,
+          surname: surname,
+          address: address,
+          email: email,
+          role: "employer",
         ),
-      _ => false
+        Employer(companyName: companyName, canton: canton!, city: city),
+      ),
+      _ => false,
     };
 
-    
     if (success) {
       // Check if widget is still mounted before showing SnackBar
       if (!context.mounted) return;
