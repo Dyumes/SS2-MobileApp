@@ -3,9 +3,11 @@ import 'package:intl/intl.dart';
 import 'package:jobinder/repositories/firestore_user_repository.dart';
 import 'package:jobinder/repositories/user_repository.dart';
 import 'package:jobinder/utils/app_constants.dart';
+import 'package:jobinder/providers/job_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
+import 'package:jobinder/models/job_opportunities_model.dart';
 import '../models/student_model.dart';
 import '../models/appuser_model.dart';
 import '../widgets/profile_edit_dialog.dart';
@@ -24,7 +26,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
   final UserRepository _userRepository = FirestoreUserRepository();
   late Future<List<dynamic>> _future;
   String? _uid;
-  String _selectedStatus = 'submitted';
+  String _selectedStatus = 'applied';
 
   @override
   void didChangeDependencies() {
@@ -45,6 +47,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    final jobProvider = Provider.of<JobProvider>(context);
     final user = context.watch<AuthProvider>().user;
 
     if (user == null) {
@@ -59,8 +62,10 @@ class _StudentProfileViewState extends State<StudentProfileView> {
         }
         if (snapshot.hasError) {
           return Center(
-            child: Text('Error loading profile:\n${snapshot.error}',
-                textAlign: TextAlign.center),
+            child: Text(
+              'Error loading profile:\n${snapshot.error}',
+              textAlign: TextAlign.center,
+            ),
           );
         }
         if (!snapshot.hasData) {
@@ -85,7 +90,9 @@ class _StudentProfileViewState extends State<StudentProfileView> {
               child: CircleAvatar(
                 radius: 50,
                 backgroundColor: Colors.orange.shade100,
-                backgroundImage: const AssetImage('images/placeholder_PROFILE.jpg'),
+                backgroundImage: const AssetImage(
+                  'images/placeholder_PROFILE.jpg',
+                ),
               ),
             ),
 
@@ -94,7 +101,9 @@ class _StudentProfileViewState extends State<StudentProfileView> {
             _InfoRow(label: 'Email', value: user.email ?? ''),
             _InfoRow(
               label: 'History',
-              value: jobseeker.history?.map((item) => item.company).join(", ") ?? 'No history',
+              value:
+                  jobseeker.history?.map((item) => item.company).join(", ") ??
+                  'No history',
             ),
             _InfoRow(label: 'Address', value: userData.address),
             _InfoRow(
@@ -165,8 +174,8 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                     label: 'Submitted',
                     icon: Icons.pending,
                     color: Colors.blue,
-                    selected: _selectedStatus == 'submitted',
-                    onTap: () => setState(() => _selectedStatus = 'submitted'),
+                    selected: _selectedStatus == 'applied',
+                    onTap: () => setState(() => _selectedStatus = 'applied'),
                   ),
                 ),
                 Expanded(
@@ -192,7 +201,9 @@ class _StudentProfileViewState extends State<StudentProfileView> {
 
             const Divider(height: 1),
 
-            ApplicationsList(status: _selectedStatus),
+            const SizedBox(height: 10),
+
+            Expanded(child: ApplicationsList(status: _selectedStatus)),
 
             const SizedBox(height: 32),
 
@@ -229,7 +240,10 @@ class _InfoRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 110,
-            child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
           Expanded(child: Text(value)),
         ],
@@ -246,12 +260,18 @@ Future<bool?> showStudentEditDialog(
   required UserRepository userRepository,
 }) {
   final addressController = TextEditingController(text: userData.address);
-  final minSalaryController = TextEditingController(text: student.minSalary?.toString() ?? '');
-  final maxDistanceController = TextEditingController(text: student.maxDistance?.toString() ?? '');
+  final minSalaryController = TextEditingController(
+    text: student.minSalary?.toString() ?? '',
+  );
+  final maxDistanceController = TextEditingController(
+    text: student.maxDistance?.toString() ?? '',
+  );
 
   List<String> skills = List.from(student.skills ?? []);
   List<History> history = List.from(student.history ?? []);
-  String? degree = (student.degree?.isNotEmpty ?? false) ? student.degree : null;
+  String? degree = (student.degree?.isNotEmpty ?? false)
+      ? student.degree
+      : null;
 
   return showDialog<bool>(
     context: context,
@@ -271,8 +291,8 @@ Future<bool?> showStudentEditDialog(
             hintText: "No diploma",
             label: const Text('Degree'),
             dropdownMenuEntries: AppConstants.degrees
-              .map((d) => DropdownMenuEntry(value: d, label: d))
-              .toList(),
+                .map((d) => DropdownMenuEntry(value: d, label: d))
+                .toList(),
             onSelected: (String? value) {
               setDialogState(() {
                 degree = value;
@@ -282,7 +302,9 @@ Future<bool?> showStudentEditDialog(
           const SizedBox(height: 12),
           TextFormField(
             controller: minSalaryController,
-            decoration: const InputDecoration(labelText: 'Minimum Salary (CHF)'),
+            decoration: const InputDecoration(
+              labelText: 'Minimum Salary (CHF)',
+            ),
             keyboardType: TextInputType.number,
           ),
           const SizedBox(height: 12),
@@ -312,10 +334,8 @@ Future<bool?> showStudentEditDialog(
                 },
               );
             },
-            itemBuilder: (context, skill, remove) => Chip(
-              label: Text(skill),
-              onDeleted: remove,
-            ),
+            itemBuilder: (context, skill, remove) =>
+                Chip(label: Text(skill), onDeleted: remove),
           ),
           const SizedBox(height: 16),
           ListFormField<History>(
@@ -332,7 +352,9 @@ Future<bool?> showStudentEditDialog(
                 children: [
                   TextFormField(
                     controller: nameController,
-                    decoration: const InputDecoration(labelText: 'Company name'),
+                    decoration: const InputDecoration(
+                      labelText: 'Company name',
+                    ),
                   ),
                   const SizedBox(height: 8),
                   TextFormField(
@@ -346,7 +368,9 @@ Future<bool?> showStudentEditDialog(
                         child: TextFormField(
                           controller: startDateController,
                           readOnly: true,
-                          decoration: const InputDecoration(labelText: 'Start date'),
+                          decoration: const InputDecoration(
+                            labelText: 'Start date',
+                          ),
                           onTap: () async {
                             final date = await showDatePicker(
                               context: context,
@@ -368,7 +392,9 @@ Future<bool?> showStudentEditDialog(
                         child: TextFormField(
                           controller: endDateController,
                           readOnly: true,
-                          decoration: const InputDecoration(labelText: 'End date'),
+                          decoration: const InputDecoration(
+                            labelText: 'End date',
+                          ),
                           onTap: () async {
                             final date = await showDatePicker(
                               context: context,
@@ -400,10 +426,14 @@ Future<bool?> showStudentEditDialog(
                               company: nameController.text.trim(),
                               link: linkController.text.trim(),
                               startDate: startDateController.text.isNotEmpty
-                                  ? DateFormat('dd/MM/yyyy').parse(startDateController.text)
+                                  ? DateFormat(
+                                      'dd/MM/yyyy',
+                                    ).parse(startDateController.text)
                                   : null,
                               endDate: endDateController.text.isNotEmpty
-                                  ? DateFormat('dd/MM/yyyy').parse(endDateController.text)
+                                  ? DateFormat(
+                                      'dd/MM/yyyy',
+                                    ).parse(endDateController.text)
                                   : null,
                             ),
                           );
