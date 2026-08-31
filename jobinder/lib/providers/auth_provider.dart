@@ -13,16 +13,28 @@ class AuthProvider with ChangeNotifier {
   final AuthService _authService;
 
   User? _user;
+  AppUser? _appUser;
   bool _isLoading = false;
   String? _errorMessage;
 
+  Stream<List<AppUser>> get users => FirestoreUserRepository().watchUsers();
+
   User? get user => _user;
+  AppUser? get appUser => _appUser;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
   AuthProvider(this._authService) {
-    _authService.authStateChanges().listen((User? user) {
+    _authService.authStateChanges().listen((User? user) async {
+      UserRepository userRepository = FirestoreUserRepository();
       _user = user;
+      _appUser = null;
+
+      // Fetch AppUser details
+      if (user != null) {
+        _appUser = await userRepository.getUser(user.uid);
+      }
+
       notifyListeners();
     });
   }
@@ -96,8 +108,6 @@ class AuthProvider with ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
   }
-
-
 
   
 }
