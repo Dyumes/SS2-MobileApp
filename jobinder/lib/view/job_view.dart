@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'homepage_employer.dart';
 import '../models/job_opportunities_model.dart';
 import '../providers/job_provider.dart';
+import 'package:jobinder/view/job_details_view.dart';
 
 class JobView extends StatelessWidget {
   const JobView({super.key});
@@ -18,7 +19,11 @@ class JobView extends StatelessWidget {
     final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Your Job Offers'), backgroundColor: Colors.white, surfaceTintColor: Colors.transparent,),
+      appBar: AppBar(
+        title: const Text('Your Job Offers'),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: Column(
         children: [
           Container(
@@ -44,24 +49,31 @@ class JobView extends StatelessWidget {
             child: StreamBuilder<List<JobOpportunities>>(
               stream: jobProvider.jobs,
               builder: (context, snapshot) {
-
                 final jobs = snapshot.data ?? [];
 
                 return ScrollConfiguration(
-                  behavior: ScrollConfiguration.of(context).copyWith(overscroll: false),
-                  child: 
-                    ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                      itemCount: jobs.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final job = jobs[index];
+                  behavior: ScrollConfiguration.of(
+                    context,
+                  ).copyWith(overscroll: false),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                    itemCount: jobs.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final job = jobs[index];
                       return ListTile(
                         leading: Text(job.degree),
                         title: Text(job.jobName, textAlign: TextAlign.center),
-                        subtitle: Text(job.description, textAlign: TextAlign.center),
+                        subtitle: Text(
+                          job.description,
+                          textAlign: TextAlign.center,
+                        ),
                         trailing: IconButton(
-                          icon: const Icon(Icons.delete_outline, color: Colors.red),
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.red,
+                          ),
                           onPressed: () => _confirmDelete(context, job),
                         ),
                         onTap: () => _showDetails(context, job),
@@ -70,75 +82,47 @@ class JobView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       );
-                      },
-                    ),
+                    },
+                  ),
                 );
               },
             ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  void _showDetails(BuildContext context, JobOpportunities job) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(job.jobName),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Degree: ${job.degree}'),
-            const SizedBox(height: 8),
-            Text('Description: ${job.description}'),
-            const SizedBox(height: 8),
-            Text('Languages: ${job.languages.join(', ')}'),
-            const SizedBox(height: 8),
-            Text('Hourly salary: ${job.salary} CHF'),
-            const SizedBox(height: 8),
-            Text('Yearly salary: ${(42 * 4 * 12 * job.salary * job.workloadPercentage/100).round()} CHF'),
-            const SizedBox(height: 8),
-            Text('Workload: ${job.workloadPercentage}%'),
-            const SizedBox(height: 8),
-            Text('Industry: ${job.industry}'),
-            const SizedBox(height: 8),
-            Text('Start date: ${DateFormat('yyyy-MM-dd').format(job.timestamp)}'),
-            const SizedBox(height: 8),
-            Text('Deadline: ${DateFormat('yyyy-MM-dd').format(job.deadline)}'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Close'),
           ),
         ],
       ),
     );
   }
 
+  void _showDetails(BuildContext context, JobOpportunities job) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => JobDetailView(jobId: job.id)),
+    );
+  }
+
   void _confirmDelete(BuildContext context, JobOpportunities job) {
-  showDialog(
-    context: context,
-    builder: (dialogContext) => AlertDialog(
-      title: const Text('Delete this offer?'),
-      content: Text(job.jobName),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(dialogContext),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.pop(dialogContext);
-            Provider.of<JobProvider>(context, listen: false).deleteJob(job.id);
-          },
-          child: const Text('Delete', style: TextStyle(color: Colors.red)),
-        ),
-      ],
-    ),
-  );
-}
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete this offer?'),
+        content: Text(job.jobName),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              Provider.of<JobProvider>(
+                context,
+                listen: false,
+              ).deleteJob(job.id);
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
 }
