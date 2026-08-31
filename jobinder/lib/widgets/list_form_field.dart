@@ -64,16 +64,20 @@ class _ListFormFieldState<T> extends State<ListFormField<T>> {
 
         const SizedBox(height: 8),
 
-        ..._items.asMap().entries.map((entry) {
-          final index = entry.key;
-          final item = entry.value;
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: _items.asMap().entries.map((entry) {
+            final index = entry.key;
+            final item = entry.value;
 
-          return widget.itemBuilder(
-            context,
-            item,
-            () => _removeItem(index),
-          );
-        }),
+            return widget.itemBuilder(
+              context,
+              item,
+              () => _removeItem(index),
+            );
+          }).toList(),
+        ),
 
         const SizedBox(height: 8),
 

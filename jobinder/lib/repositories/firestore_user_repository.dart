@@ -75,15 +75,50 @@ class FirestoreUserRepository implements UserRepository {
   @override
   Future<void> updateStudentProfile(
     String uid, {
+    required String address,
     required List<String> skills,
     required List<History> history,
+    String? degree,
+    int? minSalary,
+    int? maxDistance
   }) async {
     await FirebaseFirestore.instance
         .collection('student')         
         .doc(uid)                      
         .update({
       'skills': skills,
-      'history': history.map((h) => h.toMap()).toList(),  
+      'history': history.map((h) => h.toMap()).toList(),
+      'degree': degree,
+      'minSalary': minSalary,
+      'maxDistance': maxDistance
+    });
+    await FirebaseFirestore.instance
+      .collection('user')
+      .doc(uid)
+      .update({
+        'address': address
+      });
+  }
+
+  @override
+  Future<void> updateEmployerProfile(
+    String uid, {
+    required String address,
+    required String canton,
+    required String city,
+  }) async {
+    await FirebaseFirestore.instance
+        .collection('employer')
+        .doc(uid)
+        .update({
+      'canton': canton,
+      'city': city,
+    });
+    await FirebaseFirestore.instance
+        .collection('user')
+        .doc(uid)
+        .update({
+      'address': address,
     });
   }
 }

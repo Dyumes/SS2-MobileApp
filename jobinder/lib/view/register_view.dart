@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:jobinder/models/appuser_model.dart';
 import 'package:jobinder/models/employer_model.dart';
 import 'package:jobinder/models/student_model.dart';
+import 'package:jobinder/utils/app_constants.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/list_form_field.dart';
@@ -32,8 +33,6 @@ class RegisterViewState extends State<RegisterView> {
 
   static const String _studentRole = "student";
   static const String _employerRole = "employer";
-
-  final List<String> cantons = ["AG", "AI", "AR", "BE", "BL", "BS", "FR", "GE", "GL", "GR", "JU", "LU", "NE", "NW", "OW", "SG", "SH", "SO", "SZ", "TG", "TI", "UR", "VD", "VS", "ZG", "ZH"];
 
   @override
   Widget build(BuildContext context) {
@@ -387,7 +386,12 @@ class RegisterViewState extends State<RegisterView> {
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           decoration: const InputDecoration(labelText: 'Canton'),
-                          items: cantons.map((country) {
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                            color: Color(0xFF222222),
+                          ),
+                          items: AppConstants.cantons.map((country) {
                             return DropdownMenuItem(
                               value: country,
                               child: Text(country),
@@ -425,7 +429,7 @@ class RegisterViewState extends State<RegisterView> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Surname
+                  // Address
                   TextFormField(
                     controller: _addressController,
                     decoration: const InputDecoration(labelText: 'Address'),
