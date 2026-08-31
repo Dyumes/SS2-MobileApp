@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:jobinder/main_screen.dart';
 import 'package:jobinder/providers/auth_provider.dart';
 import 'package:jobinder/services/firebase_auth_service.dart';
+import 'package:jobinder/view/admin_page.dart';
 import 'package:jobinder/view/login_view.dart';
 import 'package:jobinder/utils/theme.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +42,17 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'Jobinder',
             theme: buildThemeData(),
-            home: auth.user != null ? const MainScreen() : const LoginView(), // Show the login view initially
+            home: () {
+              if (auth.user == null) {
+                return const LoginView();
+              } else {
+                if (auth.appUser != null && auth.appUser?.role == 'admin') {
+                  return const AdminPage();
+                } else {
+                  return const MainScreen();
+                }
+              }
+            }()
           );
         },
       ),
