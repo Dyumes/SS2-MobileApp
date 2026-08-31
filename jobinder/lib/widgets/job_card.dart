@@ -9,7 +9,7 @@ class JobCard extends StatelessWidget {
   final String studentUid;
   final UserRepository userRepository;
 
-  static const String _fixedImageUrl = 'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Garen_0.jpg';
+  static const String _fixedImageUrl = 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab';
 
   const JobCard({
     super.key,

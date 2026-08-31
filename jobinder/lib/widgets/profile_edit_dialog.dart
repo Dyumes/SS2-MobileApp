@@ -16,7 +16,6 @@ class ProfileEditDialog extends StatefulWidget {
   final String title;
   final List<Widget> fields;
 
-  /// Doit lever une exception en cas d'échec (elle sera affichée à l'utilisateur).
   final Future<void> Function() onSave;
 
   @override

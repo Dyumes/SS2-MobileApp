@@ -252,7 +252,6 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-// --- Inchangé par rapport à ta v2 : le dialogue d'édition avec tes widgets ---
 Future<bool?> showStudentEditDialog(
   BuildContext context, {
   required Student student,
