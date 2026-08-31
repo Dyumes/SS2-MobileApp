@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobinder/repositories/job_repository.dart';
 import 'package:provider/provider.dart';
 import '../models/job_opportunities_model.dart';
 import '../providers/job_provider.dart';
@@ -9,6 +10,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:jobinder/repositories/firestore_user_repository.dart';
+import 'package:jobinder/repositories/firestore_job_repository.dart';
+
 import 'package:jobinder/repositories/user_repository.dart';
 import 'package:intl/intl.dart';
 
@@ -27,6 +30,7 @@ class _HomePageStudentState extends State<HomePageStudent> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
+  final JobRepository _jobRepository = FirestoreJobRepository();
   final UserRepository _userRepository = FirestoreUserRepository();
 
   @override
@@ -35,11 +39,21 @@ class _HomePageStudentState extends State<HomePageStudent> {
     super.dispose();
   }
 
-  // Increment index to show the next job
+  /// Increment index to show the next job
   void _nextCard() {
+
     setState(() {
       _currentIndex++;
     });
+  }
+
+  void _applyCard(JobOpportunities job) {
+    _jobRepository.updateStatus(
+      job.id,
+      context.read<AuthProvider>().user!.uid,
+      'applied',
+    );
+    _nextCard();
   }
 
   @override
@@ -104,7 +118,9 @@ class _HomePageStudentState extends State<HomePageStudent> {
 
           // Filter job names
           final jobs = allJobs.where((job) {
-            return job.jobName.toLowerCase().contains(_searchQuery);
+            final matchesSearch = job.jobName.toLowerCase().contains(_searchQuery);
+            final notApplied = !(job.studentApplication?.containsKey(context.read<AuthProvider>().user?.uid) ?? false) ;
+            return matchesSearch && notApplied;
           }).toList();
 
           if (jobs.isEmpty || _currentIndex >= jobs.length) {
@@ -119,6 +135,7 @@ class _HomePageStudentState extends State<HomePageStudent> {
           }
 
           final currentJob = jobs[_currentIndex];
+          
           // Card stack
           return Column(
             children: [
@@ -163,7 +180,7 @@ class _HomePageStudentState extends State<HomePageStudent> {
 
                     FloatingActionButton.large(
                       heroTag: 'like_btn',
-                      onPressed: _nextCard,
+                      onPressed: () => _applyCard(currentJob),
                       backgroundColor: Colors.white,
                       elevation: 4,
                       child: const Icon(Icons.favorite, color: Color.fromARGB(255, 255, 0, 0), size: 36),
