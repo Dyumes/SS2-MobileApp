@@ -4,6 +4,9 @@ import '../models/job_opportunities_model.dart';
 import '../providers/job_provider.dart';
 import '../providers/auth_provider.dart';
 import '../models/employer_model.dart';
+import '../models/appuser_model.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import 'package:jobinder/repositories/firestore_user_repository.dart';
 import 'package:jobinder/repositories/user_repository.dart';
@@ -127,10 +130,10 @@ class _HomePageStudentState extends State<HomePageStudent> {
                       if (_currentIndex + 1 < jobs.length)
                         Transform.scale(
                           scale: 1,
-                          child: _buildJobCard(context, jobs[_currentIndex + 1]),
+                          child: _buildJobCard(context, jobs[_currentIndex + 1], user.uid),
                         ),
 
-                      _buildJobCard(context, currentJob),
+                      _buildJobCard(context, currentJob, user.uid),
                     ],
                   ),
                 ),
@@ -175,10 +178,12 @@ class _HomePageStudentState extends State<HomePageStudent> {
     );
   }
 
-  Widget _buildJobCard(BuildContext context, JobOpportunities job) {
+  Widget _buildJobCard(BuildContext context, JobOpportunities job, String studentUid) {
     return FutureBuilder(
       future: Future.wait([
         _userRepository.getEmployerByUid(job.employer_user),
+        _userRepository.getUser(job.employer_user),
+        _userRepository.getUser(studentUid),
       ]),
       builder: (context, snapshot) {
         // Loading
@@ -205,6 +210,8 @@ class _HomePageStudentState extends State<HomePageStudent> {
         }
 
         final employer = snapshot.data![0] as Employer;
+        final userData = snapshot.data![1] as AppUser;
+        final studentData = snapshot.data![2] as AppUser;
 
         return Card(
           elevation: 4,
@@ -230,27 +237,122 @@ class _HomePageStudentState extends State<HomePageStudent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: Text(
                               job.jobName,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 18,
+                                fontSize: 20,
+                                letterSpacing: -0.5,
                               ),
                             ),
                           ),
-                          Chip(label: Text(job.degree)),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              job.degree,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      Text('Hourly salary: ${job.salary} CHF'),
-                      const SizedBox(height: 8),
-                      Text(job.languages.join(', ')),
-                      const SizedBox(height: 8),
-                      Text('${employer.city}, ${employer.canton}'),
-                    ],
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Icon(Icons.payments_outlined, size: 18),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${job.salary} CHF',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Text(
+                            ' / hours',
+                            style: TextStyle(color: Colors.grey, fontSize: 13),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      if (job.languages.isNotEmpty) ...[
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: job.languages.map((lang) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                lang,
+                                style: const TextStyle(fontSize: 12, color: Colors.black87),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+
+                      const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                      const SizedBox(height: 12),
+
+                      Row(
+                        children: [
+                          const Icon(Icons.business_rounded, size: 16, color: Colors.grey),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              job.industry,
+                              style: const TextStyle(fontWeight: FontWeight.w500, color: Colors.black87),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              '${userData.address}, ${employer.city} (${employer.canton})',
+                              style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+
+                      Row(
+                        children: [
+                          const Icon(Icons.email_outlined, size: 16, color: Colors.grey),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              userData.email,
+                              style: TextStyle(color: Colors.grey[700], fontSize: 13),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],  
                   ),
                 ),
               ),
@@ -288,7 +390,6 @@ class _HomePageStudentState extends State<HomePageStudent> {
                 Text('Description : ${job.description}'),
                 const SizedBox(height: 8),
                 Text('Languages : ${job.languages.join(', ')}'),
-                
               ],
             ),
           ),
