@@ -11,4 +11,5 @@ abstract class JobRepository {
   Future<void> deleteJob(String jobId, String userId);
   Future<String> getCompanyName(String? ref);
   Future<String?> getEmployerUserId(String uid);
+  Future<void> updateStatus(String jobId, String userId, String status);
 }

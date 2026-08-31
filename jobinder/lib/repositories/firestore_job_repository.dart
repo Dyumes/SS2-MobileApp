@@ -57,4 +57,9 @@ class FirestoreJobRepository implements JobRepository {
     final snap = await _db.collection('employer').doc(employerId).get();
     return snap.data()?['entreprise_name'] ?? '—';
   }
+
+  @override
+  Future<void> updateStatus(String jobId, String userId, String newStatus) async {
+    await _jobsRef.doc(jobId).update({'student_application.$userId': newStatus});
+  }
 }
