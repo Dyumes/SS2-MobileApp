@@ -383,30 +383,16 @@ class RegisterViewState extends State<RegisterView> {
                   // Canton & City
                   Row(
                     children: [
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          decoration: const InputDecoration(labelText: 'Canton'),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                            color: Color(0xFF222222),
-                          ),
-                          items: AppConstants.cantons.map((country) {
-                            return DropdownMenuItem(
-                              value: country,
-                              child: Text(country),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
+                      DropdownMenu<String>(
+                        label: const Text('Canton'),
+                        dropdownMenuEntries: AppConstants.cantons
+                          .map((c) => DropdownMenuEntry(value: c, label: c))
+                          .toList(),
+                        onSelected: (value) {
+                          if (value != null) {
                             _selectedCanton = value;
-                          },
-                          validator: (value) {
-                            if (value == null) {
-                              return 'Please select a canton';
-                            }
-                            return null;
-                          },
-                        ),
+                          }
+                        },
                       ),
                       const SizedBox(width: 8),
                       Expanded(

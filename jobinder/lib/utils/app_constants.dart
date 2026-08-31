@@ -10,4 +10,10 @@ class AppConstants {
   static const List<String> degrees = [
     'Bachelor', 'Master', 'PhD',
   ];
+
+  static const List<String> industries = [
+    'Education', 'Manufacturing', 'Healthcare', 'Finance', 'IT',
+    'Energy', 'Hospitality', 'Public sector', 'Consulting',
+    'Pharma', 'Construction', 'Retail'
+  ];
 }

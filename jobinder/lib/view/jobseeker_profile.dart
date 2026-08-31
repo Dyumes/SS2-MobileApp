@@ -266,19 +266,18 @@ Future<bool?> showStudentEditDialog(
             validator: requiredValidator,
           ),
           const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
-            initialValue: degree,
-            decoration: const InputDecoration(labelText: 'Degree'),
-            hint: const Text('No diploma'),
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.normal,
-              color: Color(0xFF222222),
-            ),
-            items: AppConstants.degrees
-                .map((d) => DropdownMenuItem(value: d, child: Text(d)))
-                .toList(),
-            onChanged: (value) => setDialogState(() => degree = value),
+          DropdownMenu<String>(
+            initialSelection: degree,
+            hintText: "No diploma",
+            label: const Text('Degree'),
+            dropdownMenuEntries: AppConstants.degrees
+              .map((d) => DropdownMenuEntry(value: d, label: d))
+              .toList(),
+            onSelected: (String? value) {
+              setDialogState(() {
+                degree = value;
+              });
+            },
           ),
           const SizedBox(height: 12),
           TextFormField(

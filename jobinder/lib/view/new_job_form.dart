@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobinder/utils/app_constants.dart';
 import 'package:provider/provider.dart';
 import '../models/job_opportunities_model.dart';
 import '../providers/job_provider.dart';
@@ -115,12 +116,11 @@ class JobFormState extends State<JobForm> {
             const SizedBox(height: 16),
             DropdownMenu<String>(
               initialSelection: _degreeController.text.isNotEmpty ? _degreeController.text : null,
+              hintText: "No diploma",
               label: const Text('Degree'),
-              dropdownMenuEntries: const [
-                DropdownMenuEntry(value: 'Bachelor', label: 'Bachelor'),
-                DropdownMenuEntry(value: 'Master', label: 'Master'),
-                DropdownMenuEntry(value: 'PhD', label: 'PhD'),
-              ],
+              dropdownMenuEntries: AppConstants.degrees
+                .map((d) => DropdownMenuEntry(value: d, label: d))
+                .toList(),
               onSelected: (String? value) {
                 if (value != null) {
                   setState(() {
@@ -213,20 +213,9 @@ class JobFormState extends State<JobForm> {
             DropdownMenu<String>(
               initialSelection: _industryController.text.isNotEmpty ? _industryController.text : null,
               label: const Text('Industry'),
-              dropdownMenuEntries: const [
-                DropdownMenuEntry(value: 'Education', label: 'Education'),
-                DropdownMenuEntry(value: 'Manufacturing', label: 'Manufacturing'),
-                DropdownMenuEntry(value: 'Healthcare', label: 'Healthcare'),
-                DropdownMenuEntry(value: 'Finance', label: 'Finance'),
-                DropdownMenuEntry(value: 'IT', label: 'IT'),
-                DropdownMenuEntry(value: 'Energy', label: 'Energy'),
-                DropdownMenuEntry(value: 'Hospitality', label: 'Hospitality'),
-                DropdownMenuEntry(value: 'Public sector', label: 'Public sector'),
-                DropdownMenuEntry(value: 'Consulting', label: 'Consulting'),
-                DropdownMenuEntry(value: 'Pharma', label: 'Pharma'),
-                DropdownMenuEntry(value: 'Construction', label: 'Construction'),
-                DropdownMenuEntry(value: 'Retail', label: 'Retail'),
-              ],
+              dropdownMenuEntries: AppConstants.industries
+                .map((i) => DropdownMenuEntry(value: i, label: i))
+                .toList(),
               onSelected: (String? value) {
                 if (value != null) {
                   setState(() {

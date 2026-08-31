@@ -154,19 +154,17 @@ Future<bool?> showEmployerEditDialog(
       builder: (context, setDialogState) => ProfileEditDialog(
         title: 'Edit profile',
         fields: [
-          DropdownButtonFormField<String>(
-            initialValue: canton,
-            decoration: const InputDecoration(labelText: 'Canton'),
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.normal,
-              color: Color(0xFF222222),
-            ),
-            items: AppConstants.cantons
-                .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                .toList(),
-            onChanged: (value) => setDialogState(() => canton = value),
-            validator: (v) => v == null ? 'Field required' : null,
+          DropdownMenu<String>(
+            initialSelection: canton,
+            label: const Text('Canton'),
+            dropdownMenuEntries: AppConstants.cantons
+              .map((c) => DropdownMenuEntry(value: c, label: c))
+              .toList(),
+            onSelected: (value) {
+              if (value != null) {
+                setDialogState(() => canton = value);
+              }
+            },
           ),
           const SizedBox(height: 12),
           TextFormField(
