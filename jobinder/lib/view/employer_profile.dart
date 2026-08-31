@@ -69,7 +69,7 @@ class _EmployerProfileViewState extends State<EmployerProfileView> {
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              employer.companyName,
+              "${userData.name} ${userData.surname} / ${employer.companyName}",
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
