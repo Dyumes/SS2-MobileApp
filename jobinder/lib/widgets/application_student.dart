@@ -1,78 +1,156 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jobinder/models/job_opportunities_model.dart';
 import 'package:provider/provider.dart';
 import 'package:jobinder/providers/job_provider.dart';
 
 class ApplicationsList extends StatelessWidget {
-  const ApplicationsList({required this.status});
+  const ApplicationsList({
+    super.key,
+    required this.status,
+  });
+
   final String status;
 
   @override
   Widget build(BuildContext context) {
-    // TODO JOBS BY STATUS
     final jobProvider = Provider.of<JobProvider>(context);
-    //final List<String> jobs = jobProvider.studentjobs
 
-    if (jobs.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 32),
-        child: Center(
-          child: Text(
-            'No $status applications',
-            style: const TextStyle(color: Colors.grey),
-          ),
-        ),
+    final studentUid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (studentUid == null) {
+      return const Center(
+        child: Text('You are not logged in'),
       );
-    } else {
-                          Expanded(
-                  child: StreamBuilder<List<JobOpportunities>>(
-                    stream: jobProvider.studentjobs,
-                    builder: (context, snapshot) {
-                      final jobs = snapshot.data ?? [];
-
-                      return ScrollConfiguration(
-                        behavior: ScrollConfiguration.of(
-                          context,
-                        ).copyWith(overscroll: false),
-                        child: ListView.separated(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                          itemCount: jobs.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 12),
-                          itemBuilder: (context, index) {
-                            final job = jobs[index];
-                            return ListTile(
-                              leading: Text(job.degree),
-                              title: Text(
-                                job.jobName,
-                                textAlign: TextAlign.center,
-                              ),
-                              subtitle: Text(
-                                job.description,
-                                textAlign: TextAlign.center,
-                              ),
-                              tileColor: Colors.grey[200],
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                );
-
     }
-    
 
-    return Column(
-      children: jobs
-          .map((j) => ListTile(
-                leading: const Icon(Icons.work_outline),
-                title: Text(j),
-              ))
-          .toList(),
+    return StreamBuilder<List<JobOpportunities>>(
+      stream: jobProvider.studentjobs,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              'Error loading jobs: ${snapshot.error}',
+              style: const TextStyle(color: Colors.red),
+            ),
+          );
+        }
+
+        final jobs = snapshot.data ?? [];
+
+        // Filter jobs based on the current student's application status
+        final filteredJobs = jobs.where((job) {
+          return job.studentApplication[studentUid] == status;
+        }).toList();
+
+        if (filteredJobs.isEmpty) {
+          return Center(
+            child: Text(
+              'No $status applications',
+              style: const TextStyle(
+                color: Colors.grey,
+              ),
+            ),
+          );
+        }
+
+        return Column(
+          children: filteredJobs.map((job) {
+            return Card(
+              margin: const EdgeInsets.only(bottom: 10),
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                child: Row(
+                  children: [
+                    // Job icon
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withAlpha(25),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Icons.work_outline,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+        
+                    const SizedBox(width: 12),
+        
+                    // Job information
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            job.jobName,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+        
+                          const SizedBox(height: 4),
+        
+                          Text(
+                            job.description,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+        
+                          const SizedBox(height: 6),
+        
+                          Text(
+                            '${job.salary} CHF',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+        
+                    const SizedBox(width: 8),
+        
+                    // Indicates that the item can be opened
+                    Icon(
+                      Icons.chevron_right,
+                      color: Colors.grey[500],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }

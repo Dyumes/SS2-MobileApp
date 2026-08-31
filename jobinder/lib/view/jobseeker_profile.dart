@@ -26,7 +26,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
   final UserRepository _userRepository = FirestoreUserRepository();
   late Future<List<dynamic>> _future;
   String? _uid;
-  String _selectedStatus = 'submitted';
+  String _selectedStatus = 'applied';
 
   @override
   void didChangeDependencies() {
@@ -196,52 +196,14 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                     onTap: () => setState(() => _selectedStatus = 'refused'),
                   ),
                 ),
-                /*
-                Expanded(
-                  child: StreamBuilder<List<JobOpportunities>>(
-                    stream: jobProvider.studentjobs,
-                    builder: (context, snapshot) {
-                      final jobs = snapshot.data ?? [];
-
-                      return ScrollConfiguration(
-                        behavior: ScrollConfiguration.of(
-                          context,
-                        ).copyWith(overscroll: false),
-                        child: ListView.separated(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                          itemCount: jobs.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 12),
-                          itemBuilder: (context, index) {
-                            final job = jobs[index];
-                            return ListTile(
-                              leading: Text(job.degree),
-                              title: Text(
-                                job.jobName,
-                                textAlign: TextAlign.center,
-                              ),
-                              subtitle: Text(
-                                job.description,
-                                textAlign: TextAlign.center,
-                              ),
-                              tileColor: Colors.grey[200],
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                */
               ],
             ),
 
             const Divider(height: 1),
 
-            ApplicationsList(status: _selectedStatus),
+            const SizedBox(height: 10),
+
+            Expanded(child: ApplicationsList(status: _selectedStatus)),
 
             const SizedBox(height: 32),
 

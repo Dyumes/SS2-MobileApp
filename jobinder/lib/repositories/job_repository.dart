@@ -6,6 +6,7 @@ import '../models/job_opportunities_model.dart';
 abstract class JobRepository {
   Stream<List<JobOpportunities>> watchJobs();
   Stream<List<JobOpportunities>> watchJobsByEmployer(String employerId);
+  Stream<List<JobOpportunities>> getStudentJobsByStatus(String userId, String status);
   Future<void> addJob(JobOpportunities job, String userId);
   Future<void> updateJob(JobOpportunities job, String userId);
   Future<void> deleteJob(String jobId, String userId);
