@@ -260,12 +260,9 @@ Future<bool?> showStudentEditDialog(
   required UserRepository userRepository,
 }) {
   final addressController = TextEditingController(text: userData.address);
-  final minSalaryController = TextEditingController(
-    text: student.minSalary?.toString() ?? '',
-  );
-  final maxDistanceController = TextEditingController(
-    text: student.maxDistance?.toString() ?? '',
-  );
+
+  double minSalary = (student.minSalary ?? 0).toDouble().clamp(0, 15000);
+  double maxDistance = (student.maxDistance ?? 20).toDouble().clamp(0, 200);
 
   List<String> skills = List.from(student.skills ?? []);
   List<History> history = List.from(student.history ?? []);
@@ -299,19 +296,34 @@ Future<bool?> showStudentEditDialog(
               });
             },
           ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: minSalaryController,
-            decoration: const InputDecoration(
-              labelText: 'Minimum Salary (CHF)',
-            ),
-            keyboardType: TextInputType.number,
+          const SizedBox(height: 16),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text('Minimum salary: ${minSalary.round()} CHF'),
           ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: maxDistanceController,
-            decoration: const InputDecoration(labelText: 'Max Distance (km)'),
-            keyboardType: TextInputType.number,
+          Slider(
+            value: minSalary,
+            min: 0,
+            max: 15000,
+            divisions: 60,
+            label: '${minSalary.round()} CHF',
+            activeColor: Colors.orange,
+            onChanged: (v) => setDialogState(() => minSalary = v),
+          ),
+
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text('Max distance: ${maxDistance.round()} km'),
+          ),
+          Slider(
+            value: maxDistance,
+            min: 0,
+            max: 200,
+            divisions: 40,
+            label: '${maxDistance.round()} km',
+            activeColor: Colors.orange,
+            onChanged: (v) => setDialogState(() => maxDistance = v),
           ),
           const SizedBox(height: 16),
           ListFormField<String>(
@@ -462,8 +474,8 @@ Future<bool?> showStudentEditDialog(
             skills: skills,
             history: history,
             degree: degree,
-            minSalary: int.tryParse(minSalaryController.text.trim()),
-            maxDistance: int.tryParse(maxDistanceController.text.trim()),
+            minSalary: minSalary.round(),
+            maxDistance: maxDistance.round()
           );
         },
       ),

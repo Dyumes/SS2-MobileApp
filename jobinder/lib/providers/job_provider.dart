@@ -55,4 +55,9 @@ class JobProvider extends ChangeNotifier {
     if (employerId == null) return null;
     return _repository.getCompanyName(employerId);
   }
+
+  Future<void> updateStatus(String jobId, String studentUid, String status) async {
+    await _repository.updateStatus(jobId, studentUid, status); 
+    notifyListeners(); 
+  }
 }

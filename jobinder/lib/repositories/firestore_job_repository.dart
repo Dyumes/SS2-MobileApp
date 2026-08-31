@@ -77,4 +77,6 @@ class FirestoreJobRepository implements JobRepository {
   Future<void> updateStatus(String jobId, String userId, String newStatus) async {
     await _jobsRef.doc(jobId).update({'student_application.$userId': newStatus});
   }
+
+  
 }
