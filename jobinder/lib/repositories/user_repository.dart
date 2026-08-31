@@ -11,4 +11,10 @@ abstract class UserRepository {
   Future<Employer?> getEmployerByUid(String uid);
   Future<Student?> getStudentByUid(String uid);
   Future<AppUser?> getUser(String uid);
+  Future<void> updateStudentProfile(
+    String uid, {
+    required List<String> skills,
+    required List<History> history,
+  });
+
 }

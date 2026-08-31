@@ -71,4 +71,19 @@ class FirestoreUserRepository implements UserRepository {
     // if (!snap.exists) return null;
     return AppUser.fromMap(snap.data()!, uid);
   }
+
+  @override
+  Future<void> updateStudentProfile(
+    String uid, {
+    required List<String> skills,
+    required List<History> history,
+  }) async {
+    await FirebaseFirestore.instance
+        .collection('student')         
+        .doc(uid)                      
+        .update({
+      'skills': skills,
+      'history': history.map((h) => h.toMap()).toList(),  
+    });
+  }
 }

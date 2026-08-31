@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Student {
   final String id;
   final List<String>? skills;
@@ -8,12 +10,13 @@ class Student {
     this.skills,
     this.history,
   });
-
   factory Student.fromMap(Map<String, dynamic> map, String docId) {
     return Student(
       id: docId,
       skills: List<String>.from(map['skills'] ?? []),
-      history: List<History>.from(map['history'] ?? []),
+      history: (map['history'] as List<dynamic>? ?? [])
+          .map((h) => History.fromMap(Map<String, dynamic>.from(h)))
+          .toList(),
     );
   }
 
@@ -42,17 +45,17 @@ class History {
     return History(
       company: map['company'] ?? '',
       link: map['link'] ?? '',
-      startDate: map['start_date'],
-      endDate: map['end_date'],
+      startDate: (map['start_date'] as Timestamp?)?.toDate(),
+      endDate: (map['end_date'] as Timestamp?)?.toDate(),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'company': company,
-      'position': link,
-      'start_date': startDate,
-      'end_date': endDate,
+      'link': link,
+      'start_date': startDate == null ? null : Timestamp.fromDate(startDate!),
+      'end_date': endDate == null ? null : Timestamp.fromDate(endDate!),
     };
   }
 }
