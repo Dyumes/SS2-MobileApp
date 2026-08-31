@@ -84,6 +84,16 @@ class AuthProvider with ChangeNotifier {
     return _authenticate(() => registerUser());
   }
 
+  Future<bool> editStudentProfile(AppUser user, Student student) {
+    Future<String?> editUser() async {
+      UserRepository userRepository = FirestoreUserRepository();
+      await userRepository.addStudentUser(user, student, _authService.currentUser!.uid);
+      return null; // No error
+    }
+
+    return _authenticate(() => editUser());
+  }
+
   Future<bool> _authenticate(Future<String?> Function() action) async {
     _isLoading = true;
     _errorMessage = null;

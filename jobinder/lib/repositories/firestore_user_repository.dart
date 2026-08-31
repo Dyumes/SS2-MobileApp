@@ -55,9 +55,70 @@ class FirestoreUserRepository implements UserRepository {
   }
 
   @override
+  Future<Student> getStudentByUid(String uid) async {
+    final query = await _db
+        .collection('student')
+        .doc(uid)
+        .get();
+
+    // if (query.docs.isEmpty) return null;
+    return Student.fromMap(query.data()!, query.id);
+  }
+
+  @override
   Future<AppUser> getUser(String uid) async {
     final snap = await _db.collection('user').doc(uid).get();
     // if (!snap.exists) return null;
     return AppUser.fromMap(snap.data()!, uid);
+  }
+
+  @override
+  Future<void> updateStudentProfile(
+    String uid, {
+    required String address,
+    required List<String> skills,
+    required List<History> history,
+    String? degree,
+    int? minSalary,
+    int? maxDistance
+  }) async {
+    await FirebaseFirestore.instance
+        .collection('student')         
+        .doc(uid)                      
+        .update({
+      'skills': skills,
+      'history': history.map((h) => h.toMap()).toList(),
+      'degree': degree,
+      'minSalary': minSalary,
+      'maxDistance': maxDistance
+    });
+    await FirebaseFirestore.instance
+      .collection('user')
+      .doc(uid)
+      .update({
+        'address': address
+      });
+  }
+
+  @override
+  Future<void> updateEmployerProfile(
+    String uid, {
+    required String address,
+    required String canton,
+    required String city,
+  }) async {
+    await FirebaseFirestore.instance
+        .collection('employer')
+        .doc(uid)
+        .update({
+      'canton': canton,
+      'city': city,
+    });
+    await FirebaseFirestore.instance
+        .collection('user')
+        .doc(uid)
+        .update({
+      'address': address,
+    });
   }
 }

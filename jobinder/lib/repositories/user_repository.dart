@@ -9,5 +9,23 @@ abstract class UserRepository {
   Future<void> addEmployerUser(AppUser user, Employer employer, String userId);
 
   Future<Employer?> getEmployerByUid(String uid);
+  Future<Student?> getStudentByUid(String uid);
   Future<AppUser?> getUser(String uid);
+  
+  Future<void> updateStudentProfile(
+    String uid, {
+    required String address,
+    required List<String> skills,
+    required List<History> history,
+    String? degree,
+    int? minSalary,
+    int? maxDistance
+  });
+  Future<void> updateEmployerProfile(
+    String uid, {
+    required String address,
+    required String canton,
+    required String city,
+  });
+
 }

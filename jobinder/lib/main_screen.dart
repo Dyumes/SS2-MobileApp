@@ -3,6 +3,7 @@ import 'package:jobinder/templates/templates.dart';
 import 'package:jobinder/view/job_view.dart';
 import 'package:jobinder/view/homepage_student.dart';
 import 'package:jobinder/view/employer_profile.dart';
+import 'package:jobinder/view/jobseeker_profile.dart';
 import 'package:jobinder/services/firebase_auth_service.dart';
 import 'package:jobinder/providers/auth_provider.dart';
 import 'package:jobinder/repositories/firestore_user_repository.dart';
@@ -53,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget get finalPage {
-    if (role == 'student') return const HomePageStudent();
+    if (role == 'student') return const StudentProfileView();
     if (role == 'employer') return const EmployerProfileView();
     print("Role is null or unrecognized, defaulting to JobView");
     return const JobView(); 
