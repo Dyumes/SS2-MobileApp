@@ -5,6 +5,7 @@ import '../providers/job_provider.dart';
 import '../providers/auth_provider.dart';
 import '../repositories/job_repository.dart';
 import '../repositories/user_repository.dart';
+import 'package:jobinder/widgets/job_details_dialog.dart';
 import '../repositories/firestore_job_repository.dart';
 import '../repositories/firestore_user_repository.dart';
 import '../widgets/job_card.dart';

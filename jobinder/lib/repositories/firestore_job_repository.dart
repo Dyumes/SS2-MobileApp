@@ -28,21 +28,6 @@ class FirestoreJobRepository implements JobRepository {
   }
 
   @override
-  Stream<List<JobOpportunities>> getStudentJobsByStatus(String userId, String status) {
-    return _jobsRef
-        .where(
-          'student_application',
-          arrayContains: {'key': userId, 'value': status}
-        )
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs.map((doc) {
-            return JobOpportunities.fromMap(doc.data(), doc.id);
-          }).toList()
-        );
-  }
-
-  @override
   Future<void> addJob(JobOpportunities job, String userId) async {
     await _jobsRef.add({...job.toMap(), 'employer_user': _db.doc('employer/$userId')});
   }
@@ -77,4 +62,6 @@ class FirestoreJobRepository implements JobRepository {
   Future<void> updateStatus(String jobId, String userId, String newStatus) async {
     await _jobsRef.doc(jobId).update({'student_application.$userId': newStatus});
   }
+
+  
 }
