@@ -1,10 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:jobinder/models/job_opportunities_model.dart';
 import 'package:jobinder/repositories/firestore_user_repository.dart';
 import 'package:provider/provider.dart';
 import 'package:jobinder/providers/job_provider.dart';
 import 'package:jobinder/widgets/job_details_dialog.dart';
+import 'package:jobinder/providers/auth_provider.dart';
 
 class ApplicationsList extends StatelessWidget {
   const ApplicationsList({super.key, required this.status});
@@ -15,7 +15,7 @@ class ApplicationsList extends StatelessWidget {
   Widget build(BuildContext context) {
     final jobProvider = Provider.of<JobProvider>(context);
 
-    final studentUid = FirebaseAuth.instance.currentUser?.uid;
+    final studentUid = context.watch<AuthProvider>().user?.uid;
 
     if (studentUid == null) {
       return const Center(child: Text('You are not logged in'));

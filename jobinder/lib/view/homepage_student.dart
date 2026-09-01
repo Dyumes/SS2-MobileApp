@@ -12,7 +12,10 @@ import '../widgets/job_card.dart';
 import '../models/student_model.dart';
 
 class HomePageStudent extends StatefulWidget {
-  const HomePageStudent({super.key});
+  const HomePageStudent({super.key, this.jobRepository, this.userRepository});
+
+  final JobRepository? jobRepository;
+  final UserRepository? userRepository;
 
   @override
   State<HomePageStudent> createState() => _HomePageStudentState();
@@ -25,8 +28,8 @@ class _HomePageStudentState extends State<HomePageStudent> {
   String? _uid;
   Future<List<dynamic>>? _future;
 
-  final JobRepository _jobRepository = FirestoreJobRepository();
-  final UserRepository _userRepository = FirestoreUserRepository();
+  late final JobRepository _jobRepository = widget.jobRepository ?? FirestoreJobRepository();
+  late final UserRepository _userRepository = widget.userRepository ?? FirestoreUserRepository();
 
   // clear the search query
   @override

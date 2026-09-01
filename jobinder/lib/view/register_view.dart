@@ -104,30 +104,6 @@ class RegisterViewState extends State<RegisterView> {
                     }
                     return null;
                   },
-                  /* //MORE VALIDATION FOR PASSWORD
-                  if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
-                    }
-                    if (value.length < 8) {
-                      return 'At least 8 characters';
-                    }
-                    if (!RegExp(r'[A-Z]').hasMatch(value)) {
-                      return 'At least one uppercase letter';
-                    }
-                    if (!RegExp(r'[a-z]').hasMatch(value)) {
-                      return 'At least one lowercase letter';
-                    }
-                    if (!RegExp(r'[0-9]').hasMatch(value)) {
-                      return 'At least one digit';
-                    }
-                    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\/~`]').hasMatch(value)) {
-                      return 'At least one special character';
-                    }
-                    if (RegExp(r'(.)\1{2,}').hasMatch(value)) {
-                      return 'Avoid repeating the same character 3+ times';
-                    }
-                    return null;
-                  },*/
                 ),
                 const SizedBox(height: 16),
 
@@ -171,13 +147,37 @@ class RegisterViewState extends State<RegisterView> {
                   decoration: const InputDecoration(labelText: 'Password'),
                   obscureText: true,
                   validator: (value) {
+                    /*
                     if (value == null || value.isEmpty) {
                       return 'Please enter a password';
                     }
                     if (value.length < 6) {
                       return 'Password must be at least 6 characters long';
                     }
-                    return null;
+                    return null; */
+
+                    if (value == null || value.isEmpty) {
+                        return 'Please enter a password';
+                      }
+                      if (value.length < 8) {
+                        return 'At least 8 characters';
+                      }
+                      if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                        return 'At least one uppercase letter';
+                      }
+                      if (!RegExp(r'[a-z]').hasMatch(value)) {
+                        return 'At least one lowercase letter';
+                      }
+                      if (!RegExp(r'[0-9]').hasMatch(value)) {
+                        return 'At least one digit';
+                      }
+                      if (!RegExp(r'[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\/~`]').hasMatch(value)) {
+                        return 'At least one special character';
+                      }
+                      if (RegExp(r'(.)\1{2,}').hasMatch(value)) {
+                        return 'Avoid repeating the same character 3+ times';
+                      }
+                      return null;
                   },
                 ),
                 const SizedBox(height: 16),

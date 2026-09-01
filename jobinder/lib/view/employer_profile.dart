@@ -10,14 +10,16 @@ import '../models/appuser_model.dart';
 import '../widgets/profile_edit_dialog.dart';
 
 class EmployerProfileView extends StatefulWidget {
-  const EmployerProfileView({super.key});
+  const EmployerProfileView({super.key, this.userRepository});
+
+  final UserRepository? userRepository;
 
   @override
   State<EmployerProfileView> createState() => _EmployerProfileViewState();
 }
 
 class _EmployerProfileViewState extends State<EmployerProfileView> {
-  final UserRepository _userRepository = FirestoreUserRepository();
+  late final UserRepository _userRepository = widget.userRepository ?? FirestoreUserRepository();
   late Future<List<dynamic>> _future;
   String? _uid;
 
