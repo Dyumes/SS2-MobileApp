@@ -82,12 +82,12 @@ void main() {
     );
   }
 
-  void seedJobs() {
-    jobRepository.emitJobs([
-      buildJob(id: 'job_1', employerUser: 'emp_1', jobName: 'Flutter developer'),
-      buildJob(id: 'job_2', employerUser: 'emp_1', jobName: 'Data analyst'),
-    ]);
-  }
+  // void seedJobs() {
+  //   jobRepository.emitJobs([
+  //     buildJob(id: 'job_1', employerUser: 'emp_1', jobName: 'Flutter developer'),
+  //     buildJob(id: 'job_2', employerUser: 'emp_1', jobName: 'Data analyst'),
+  //   ]);
+  // }
 
   testWidgets('with no offer left the deck is empty',
       (tester) => mockNetworkImages(() async {
