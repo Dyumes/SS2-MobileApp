@@ -157,7 +157,7 @@ class _HomePageStudentState extends State<HomePageStudent> {
 
                 // Filter jobs 
                 final matchesDegree = (student.degree?.isEmpty ?? true) || job.degree == student.degree;
-                final matchesSalary = student.minSalary == null || (job.salary * 42 * 4) >= student.minSalary!;
+                final matchesSalary = student.minSalary == null || job.salary >= student.minSalary!;
 
                 // final matchesDistance
 
