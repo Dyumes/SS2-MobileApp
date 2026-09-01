@@ -49,6 +49,7 @@ class _ProfileEditDialogState extends State<ProfileEditDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(widget.title),
+      backgroundColor: Color.from(alpha: 1, red: 1, green: 0.97, blue: 0.98),
       content: Form(
         key: _formKey,
         child: SizedBox(

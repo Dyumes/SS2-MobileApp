@@ -133,44 +133,47 @@ class _JobDetailViewState extends State<JobDetailView> {
 
                   return Column(
                     children: applicants.map((a) {
-                      return Card(
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.orange.shade100,
-                            child: Text(
-                              '${a.user.name.isNotEmpty ? a.user.name[0] : ''}'
-                              '${a.user.surname.isNotEmpty ? a.user.surname[0] : ''}',
-                              style: const TextStyle(color: Colors.orange),
-                            ),
-                          ),
-                          title: Text('${a.user.name} ${a.user.surname}'),
-                          subtitle: Text(
-                            a.student.skills?.join(', ') ?? 'No skills listed',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: Chip(
-                            label: Text(a.status),
-                            backgroundColor: _statusColor(
-                              a.status,
-                            ).withOpacity(0.15),
-                            labelStyle: TextStyle(
-                              color: _statusColor(a.status),
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ApplicantDetailView(
-                                  job: job,
-                                  user: a.user,
-                                  student: a.student,
-                                  currentStatus: a.status,
-                                ),
+                      return Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: Card(
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.orange.shade100,
+                              child: Text(
+                                '${a.user.name.isNotEmpty ? a.user.name[0] : ''}'
+                                '${a.user.surname.isNotEmpty ? a.user.surname[0] : ''}',
+                                style: const TextStyle(color: Colors.orange),
                               ),
-                            );
-                          },
+                            ),
+                            title: Text('${a.user.name} ${a.user.surname}'),
+                            subtitle: Text(
+                              a.student.skills?.join(', ') ?? 'No skills listed',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            trailing: Chip(
+                              label: Text(a.status),
+                              backgroundColor: _statusColor(
+                                a.status,
+                              ).withAlpha(40),
+                              labelStyle: TextStyle(
+                                color: _statusColor(a.status),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ApplicantDetailView(
+                                    job: job,
+                                    user: a.user,
+                                    student: a.student,
+                                    currentStatus: a.status,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       );
                     }).toList(),
