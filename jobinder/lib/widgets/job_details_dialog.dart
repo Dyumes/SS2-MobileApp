@@ -22,6 +22,7 @@ class JobDetailsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Color.from(alpha: 1, red: 1, green: 0.97, blue: 0.98),
       title: Text(job.jobName),
       content: SingleChildScrollView(
         child: FutureBuilder(
