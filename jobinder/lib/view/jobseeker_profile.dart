@@ -300,8 +300,8 @@ Future<bool?> showStudentEditDialog(
           Slider(
             value: minSalary,
             min: 0,
-            max: 15000,
-            divisions: 60,
+            max: 200,
+            divisions: 40,
             label: '${minSalary.round()} CHF',
             activeColor: Colors.orange,
             onChanged: (v) => setDialogState(() => minSalary = v),
