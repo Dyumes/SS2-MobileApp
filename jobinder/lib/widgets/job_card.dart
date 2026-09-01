@@ -50,7 +50,7 @@ class JobCard extends StatelessWidget {
               ),
               Expanded(
                 flex: 3,
-                child: Padding(
+                child: SingleChildScrollView(child:Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,6 +136,7 @@ class JobCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                ),
                 ),
               ),
             ],

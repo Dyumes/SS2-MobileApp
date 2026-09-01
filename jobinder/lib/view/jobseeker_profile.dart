@@ -16,14 +16,16 @@ import '../widgets/status_card.dart';
 import '../widgets/application_student.dart';
 
 class StudentProfileView extends StatefulWidget {
-  const StudentProfileView({super.key});
+  const StudentProfileView({super.key,this.userRepository});
+
+  final UserRepository? userRepository;
 
   @override
   State<StudentProfileView> createState() => _StudentProfileViewState();
 }
 
 class _StudentProfileViewState extends State<StudentProfileView> {
-  final UserRepository _userRepository = FirestoreUserRepository();
+   late final UserRepository _userRepository = widget.userRepository ?? FirestoreUserRepository();
   late Future<List<dynamic>> _future;
   String? _uid;
   String _selectedStatus = 'applied';
@@ -203,7 +205,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
 
             const SizedBox(height: 10),
 
-            Expanded(child: ApplicationsList(status: _selectedStatus)),
+            ApplicationsList(status: _selectedStatus),
 
             const SizedBox(height: 32),
 

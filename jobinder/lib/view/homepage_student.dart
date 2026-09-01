@@ -12,7 +12,10 @@ import '../widgets/job_card.dart';
 import '../widgets/job_details_dialog.dart';
 
 class HomePageStudent extends StatefulWidget {
-  const HomePageStudent({super.key});
+  const HomePageStudent({super.key, this.jobRepository, this.userRepository});
+
+  final JobRepository? jobRepository;
+  final UserRepository? userRepository;
 
   @override
   State<HomePageStudent> createState() => _HomePageStudentState();
@@ -23,8 +26,8 @@ class _HomePageStudentState extends State<HomePageStudent> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  final JobRepository _jobRepository = FirestoreJobRepository();
-  final UserRepository _userRepository = FirestoreUserRepository();
+  late final JobRepository _jobRepository = widget.jobRepository ?? FirestoreJobRepository();
+  late final UserRepository _userRepository = widget.userRepository ?? FirestoreUserRepository();
 
   @override
   void dispose() {
