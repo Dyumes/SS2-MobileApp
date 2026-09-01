@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jobinder/providers/auth_provider.dart';
 import 'package:jobinder/providers/job_provider.dart';
-import 'package:jobinder/view/job_view.dart';
+import 'package:jobinder/view/homepage_employer.dart';
 import 'package:provider/provider.dart';
 
 import '../fake_repo.dart';
@@ -35,7 +35,7 @@ void main() {
         ChangeNotifierProvider<AuthProvider>.value(value: authProvider),
         ChangeNotifierProvider<JobProvider>.value(value: jobProvider),
       ],
-      child: const MaterialApp(home: JobView()),
+      child: const MaterialApp(home: HomePageEmployer()),
     );
   }
 

@@ -89,7 +89,7 @@ void main() {
       expect(find.text('John Doe'), findsOneWidget);
       expect(find.text('Dart, Flutter'), findsOneWidget);
       expect(find.text('Bachelor'), findsOneWidget);
-      expect(find.text('100 CHF'), findsOneWidget);
+      expect(find.text('100 CHF / hour'), findsOneWidget);
       expect(find.text('30 km'), findsOneWidget);
       expect(find.text('ACME SA'), findsOneWidget);
     });

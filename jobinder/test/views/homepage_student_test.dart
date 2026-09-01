@@ -12,6 +12,7 @@ import 'package:jobinder/providers/auth_provider.dart';
 import 'package:jobinder/providers/job_provider.dart';
 import 'package:jobinder/view/homepage_student.dart';
 import 'package:provider/provider.dart';
+import 'package:jobinder/models/student_model.dart';
 
 import '../fake_repo.dart';
 import '../fakes.dart';
@@ -35,7 +36,16 @@ void main() {
     jobProvider = JobProvider(jobRepository)..updateAuth(authProvider);
 
     userRepository = FakeUserRepository();
-    userRepository.users['uid_student_1'] = buildAppUser();
+
+    // dans setUp, à côté des users existants :
+    userRepository.students['uid_student_1'] = Student(
+      id: 'uid_student_1',
+      skills: const ['Dart', 'Flutter'],
+      degree: 'Bachelor',
+      minSalary: 4500,
+      maxDistance: 30,
+      history: const [],
+    );
     userRepository.users['emp_1'] = buildAppUser(
       id: 'emp_1',
       name: 'Jane',
