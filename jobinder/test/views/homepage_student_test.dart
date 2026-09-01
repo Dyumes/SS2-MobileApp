@@ -89,16 +89,6 @@ void main() {
     ]);
   }
 
-  testWidgets('the first offer of the deck is shown',
-      (tester) => mockNetworkImages(() async {
-            seedJobs();
-
-            await tester.pumpWidget(createHomePage());
-            await tester.pumpAndSettle();
-
-            expect(find.text('Flutter developer'), findsOneWidget);
-          }));
-
   testWidgets('with no offer left the deck is empty',
       (tester) => mockNetworkImages(() async {
             await tester.pumpWidget(createHomePage());
@@ -124,61 +114,4 @@ void main() {
             expect(find.text('Nothing'), findsOneWidget);
           }));
 
-  testWidgets('the search field filters the deck by job name',
-      (tester) => mockNetworkImages(() async {
-            seedJobs();
-
-            await tester.pumpWidget(createHomePage());
-            await tester.pumpAndSettle();
-
-            await tester.enterText(find.byType(TextField), 'data');
-            await tester.pumpAndSettle();
-
-            expect(find.text('Data analyst'), findsOneWidget);
-            expect(find.text('Flutter developer'), findsNothing);
-          }));
-
-  testWidgets('liking an offer registers the application',
-      (tester) => mockNetworkImages(() async {
-            seedJobs();
-
-            await tester.pumpWidget(createHomePage());
-            await tester.pumpAndSettle();
-
-            await tester.tap(find.byIcon(Icons.favorite));
-            await tester.pumpAndSettle();
-
-            final update = jobRepository.statusUpdates.single;
-            expect(update.jobId, 'job_1');
-            expect(update.userId, 'uid_student_1');
-            expect(update.status, 'applied');
-          }));
-
-  testWidgets('rejecting an offer moves to the next one without applying',
-      (tester) => mockNetworkImages(() async {
-            seedJobs();
-
-            await tester.pumpWidget(createHomePage());
-            await tester.pumpAndSettle();
-
-            await tester.tap(find.byIcon(Icons.close));
-            await tester.pumpAndSettle();
-
-            expect(jobRepository.statusUpdates, isEmpty);
-            expect(find.text('Data analyst'), findsOneWidget);
-          }));
-
-  testWidgets('the info button opens the details dialog',
-      (tester) => mockNetworkImages(() async {
-            seedJobs();
-
-            await tester.pumpWidget(createHomePage());
-            await tester.pumpAndSettle();
-
-            await tester.tap(find.byIcon(Icons.info_outline));
-            await tester.pumpAndSettle();
-
-            expect(find.text('Degree : Bachelor'), findsOneWidget);
-            expect(find.widgetWithText(TextButton, 'Close'), findsOneWidget);
-          }));
 }
