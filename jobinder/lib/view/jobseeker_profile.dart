@@ -116,7 +116,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
             _InfoRow(
               label: 'Min salary',
               value: jobseeker.minSalary != null
-                  ? '${jobseeker.minSalary} CHF'
+                  ? '${jobseeker.minSalary} CHF / hour'
                   : 'Not specified',
             ),
             _InfoRow(
@@ -295,14 +295,14 @@ Future<bool?> showStudentEditDialog(
           const SizedBox(height: 16),
           Align(
             alignment: Alignment.centerLeft,
-            child: Text('Minimum salary: ${minSalary.round()} CHF'),
+            child: Text('Minimum salary: ${minSalary.round()} CHF / hour'),
           ),
           Slider(
             value: minSalary,
             min: 0,
             max: 200,
             divisions: 40,
-            label: '${minSalary.round()} CHF',
+            label: '${minSalary.round()} CHF / hour',
             activeColor: Colors.orange,
             onChanged: (v) => setDialogState(() => minSalary = v),
           ),
