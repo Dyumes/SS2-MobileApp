@@ -1,17 +1,124 @@
-
 import 'package:flutter/material.dart';
+import 'package:jobinder/models/job_opportunities_model.dart';
+import 'package:jobinder/view/new_job_form.dart';
+import 'package:provider/provider.dart';
+import 'package:jobinder/providers/job_provider.dart';
+import 'package:jobinder/view/job_details_view.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomePageEmployer extends StatelessWidget {
+  const HomePageEmployer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          'Hello, world!',
-          style: TextStyle(color: Colors.blue),
-        ),
+    final jobProvider = Provider.of<JobProvider>(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Your Job Offers'),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+      ),
+      body: Column(
+        children: [
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(16),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const JobForm()),
+                );
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('New job offer'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                minimumSize: const Size.fromHeight(48),
+              ),
+            ),
+          ),
+          Expanded(
+            child: StreamBuilder<List<JobOpportunities>>(
+              stream: jobProvider.jobs,
+              builder: (context, snapshot) {
+                final jobs = snapshot.data ?? [];
+
+                return ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(
+                    context,
+                  ).copyWith(overscroll: false),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                    itemCount: jobs.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final job = jobs[index];
+                      return ListTile(
+                        leading: SizedBox(
+                          width: 60,
+                          child: Text(job.degree)
+                        ),
+                        title: Text(job.jobName, textAlign: TextAlign.left),
+                        subtitle: Text(
+                          job.description,
+                          textAlign: TextAlign.left,
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.red,
+                          ),
+                          onPressed: () => _confirmDelete(context, job),
+                        ),
+                        onTap: () => _showDetails(context, job),
+                        tileColor: Colors.grey[200],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDetails(BuildContext context, JobOpportunities job) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => JobDetailView(jobId: job.id)),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, JobOpportunities job) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete this offer?'),
+        content: Text(job.jobName),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              Provider.of<JobProvider>(
+                context,
+                listen: false,
+              ).deleteJob(job.id);
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
       ),
     );
   }

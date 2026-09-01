@@ -27,8 +27,7 @@ class JobFormState extends State<JobForm> {
 
   final _formKey = GlobalKey<FormState>();
 
-  bool _isUploading = false;
-  String? _uploadError;
+  final bool _isUploading = false;
 
   @override
   void initState() {
@@ -39,10 +38,10 @@ class JobFormState extends State<JobForm> {
       _descriptionController.text = widget.job!.description;
       _languageController.text = widget.job!.languages.join(', ');
       _salaryController.text = widget.job!.salary.toString();
-      _workloadPercentageController.text = widget.job!.workloadPercentage?.toString() ?? '';
+      _workloadPercentageController.text = widget.job!.workloadPercentage.toString();
       _industryController.text = widget.job!.industry;
-      _timestampController.text = widget.job!.timestamp?.toString() ?? '';
-      _deadlineController.text = widget.job!.deadline?.toString() ?? '';
+      _timestampController.text = widget.job!.timestamp.toString();
+      _deadlineController.text = widget.job!.deadline.toString();
     }
     _loadCompanyName();
   }

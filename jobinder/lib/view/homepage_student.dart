@@ -9,7 +9,6 @@ import 'package:jobinder/widgets/job_details_dialog.dart';
 import '../repositories/firestore_job_repository.dart';
 import '../repositories/firestore_user_repository.dart';
 import '../widgets/job_card.dart';
-import '../widgets/job_details_dialog.dart';
 import '../models/student_model.dart';
 
 class HomePageStudent extends StatefulWidget {
@@ -154,7 +153,7 @@ class _HomePageStudentState extends State<HomePageStudent> {
 
               final jobs = allJobs.where((job) {
                 final matchesSearch = job.jobName.toLowerCase().contains(_searchQuery);
-                final notApplied = !(job.studentApplication?.containsKey(user.uid) ?? false);
+                final notApplied = !(job.studentApplication.containsKey(user.uid));
 
                 // Filter jobs 
                 final matchesDegree = (student.degree?.isEmpty ?? true) || job.degree == student.degree;

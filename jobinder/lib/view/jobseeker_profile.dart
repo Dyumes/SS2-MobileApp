@@ -3,11 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:jobinder/repositories/firestore_user_repository.dart';
 import 'package:jobinder/repositories/user_repository.dart';
 import 'package:jobinder/utils/app_constants.dart';
-import 'package:jobinder/providers/job_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
-import 'package:jobinder/models/job_opportunities_model.dart';
 import '../models/student_model.dart';
 import '../models/appuser_model.dart';
 import '../widgets/profile_edit_dialog.dart';
@@ -47,7 +45,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
 
   @override
   Widget build(BuildContext context) {
-    final jobProvider = Provider.of<JobProvider>(context);
     final user = context.watch<AuthProvider>().user;
 
     if (user == null) {
