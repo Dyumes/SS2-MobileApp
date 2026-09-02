@@ -17,7 +17,6 @@ class FirestoreJobRepository implements JobRepository {
 
   @override
   Stream<List<JobOpportunities>> watchJobsByEmployer(String employerId) {
-    print("Employer ID : $employerId");
     return _jobsRef
         .where('employer_user', isEqualTo: _db.collection("employer").doc(employerId))
         .snapshots()

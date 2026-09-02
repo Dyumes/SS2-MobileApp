@@ -19,7 +19,7 @@ class SalaryPredictor {
   static Future<SalaryPredictor> load() async {
     if (_instance != null) return _instance!;
 
-    final raw = await rootBundle.loadString('salary_model.json');
+    final raw = await rootBundle.loadString('assets/salary_model.json');
     final json = jsonDecode(raw) as Map<String, dynamic>;
 
     final numeric = <String, _NumericFeature>{};

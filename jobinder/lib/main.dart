@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:jobinder/main_screen.dart';
 import 'package:jobinder/providers/auth_provider.dart';
+import 'package:jobinder/providers/review_provider.dart';
+import 'package:jobinder/repositories/firestore_review_repository.dart';
 import 'package:jobinder/services/firebase_auth_service.dart';
 import 'package:jobinder/services/salary_predictor.dart';
 import 'package:jobinder/view/admin_page.dart';
@@ -18,6 +21,11 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   ErrorWidget.builder = (FlutterErrorDetails details) {
     return Container(
       color: Colors.white,
@@ -29,21 +37,6 @@ void main() async {
     );
   };
   runApp(const MyApp());
-  
-
-  // final p = await SalaryPredictor.load();
-  // print(p.predictForJob(
-  //   role: 'Senior',
-  //   contract: 'Permanent',
-  //   industry: 'Finance',
-  //   canton: 'ZH',
-  //   companySize: 'Large (1000+)',
-  //   degree: 'Master',
-  //   languages: ['German', 'English'],
-  // ));
-
-  // runApp(const MyApp());
-
 }
 
 class MyApp extends StatelessWidget {
@@ -59,6 +52,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProxyProvider<AuthProvider, JobProvider>(
           create: (_) => JobProvider(FirestoreJobRepository()),
           update: (_, auth, jobProvider) => jobProvider!..updateAuth(auth),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ReviewProvider(FirestoreReviewRepository()),
         ),
       ],
       child: Consumer<AuthProvider>(

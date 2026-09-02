@@ -30,7 +30,6 @@ class JobProvider extends ChangeNotifier {
 
   Future<void> addJob(JobOpportunities job) async {
     final userId = _authProvider?.user?.uid;
-    //print('userId = $userId');
     if (userId == null) return;
     await _repository.addJob(job, userId);
   }
@@ -43,7 +42,6 @@ class JobProvider extends ChangeNotifier {
 
   Future<void> deleteJob(String jobId) async {
     final employerId = await _resolveEmployerId();
-    print("employerID : $employerId");
     if (employerId == null) return;
     await _repository.deleteJob(jobId, employerId);
   }

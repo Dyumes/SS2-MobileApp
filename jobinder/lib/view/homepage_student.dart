@@ -177,7 +177,7 @@ class _HomePageStudentState extends State<HomePageStudent> {
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       child: Stack(
                         children: [
                           if (_currentIndex + 1 < jobs.length)
@@ -196,7 +196,7 @@ class _HomePageStudentState extends State<HomePageStudent> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 24.0),
+                    padding: const EdgeInsets.only(bottom: 12.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -206,13 +206,13 @@ class _HomePageStudentState extends State<HomePageStudent> {
                           backgroundColor: Colors.white,
                           elevation: 4,
                           child: const Icon(Icons.close, color: Colors.red, size: 36),
-                        ),
-                        FloatingActionButton(
+                        ),  
+                        FloatingActionButton.large(
                           heroTag: 'info_btn',
                           onPressed: () => _showJobDetails(context, currentJob, user.uid),
                           backgroundColor: Colors.white,
                           elevation: 4,
-                          child: const Icon(Icons.info_outline, color: Colors.blue, size: 28),
+                          child: const Icon(Icons.info_outline, color: Colors.blue, size: 36),
                         ),
                         FloatingActionButton.large(
                           heroTag: 'like_btn',
