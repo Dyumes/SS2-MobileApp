@@ -46,7 +46,7 @@ class JobCard extends StatelessWidget {
             children: [
               Expanded(
                 flex: 2,
-                child: Image.network(_fixedImageUrl, fit: BoxFit.cover),
+                child: Image.network(job.imageUrl ?? _fixedImageUrl, fit: BoxFit.cover),
               ),
               Expanded(
                 flex: 3,

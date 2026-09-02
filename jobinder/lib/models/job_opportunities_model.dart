@@ -13,6 +13,7 @@ class JobOpportunities {
   final String industry;
   final DateTime timestamp;
   final DateTime deadline;
+  final String? imageUrl;
   final Map<String, String> studentApplication;
 
   JobOpportunities({
@@ -28,7 +29,7 @@ class JobOpportunities {
     required this.timestamp,
     required this.deadline,
     this.studentApplication = const {},
-    
+    this.imageUrl,
   });
 
   
@@ -46,6 +47,7 @@ class JobOpportunities {
       industry: data['industry'] ?? '',
       timestamp: (data['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
       deadline: (data['deadline'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      imageUrl: data['image_url'] ?? null,
       studentApplication: data['student_application'] == null
           ? const {}
           : Map<String, String>.from(data['student_application']),
@@ -65,6 +67,7 @@ class JobOpportunities {
       'timestamp': Timestamp.fromDate(timestamp),
       'deadline': Timestamp.fromDate(deadline),
       'student_application': studentApplication,
+      if (imageUrl != null) 'image_url': imageUrl,
 
     };
   }
@@ -82,6 +85,7 @@ class JobOpportunities {
     DateTime? timestamp,
     DateTime? deadline,
     Map<String, String>? studentApplication,
+    String? imageUrl,
   }) {
     return JobOpportunities(
       id: id ?? this.id,
@@ -96,6 +100,7 @@ class JobOpportunities {
       timestamp: timestamp ?? this.timestamp,
       deadline: deadline ?? this.deadline,
       studentApplication: studentApplication ?? this.studentApplication,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 }

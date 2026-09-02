@@ -13,9 +13,14 @@ import 'package:provider/provider.dart';
 import 'utils/firebase_options.dart';
 import 'repositories/firestore_job_repository.dart';
 import 'providers/job_provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'repositories/cloudinary_repository.dart';
+import 'utils/cloudinary_config.dart';
+import 'repositories/image_storage_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
@@ -39,6 +44,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider<ImageStorageRepository>(
+          create: (_) => CloudinaryImageRepository(
+            cloudName: CloudinaryConfig.cloudName,
+            uploadPreset: CloudinaryConfig.uploadPreset,
+          ),
+        ),
         ChangeNotifierProvider(
           create: (_) => AuthProvider(FirebaseAuthService()),
         ),
