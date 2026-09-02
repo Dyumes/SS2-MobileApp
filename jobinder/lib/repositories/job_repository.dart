@@ -10,4 +10,5 @@ abstract class JobRepository {
   Future<String?> getEmployerUserId(String uid);
   Future<void> updateStatus(String jobId, String userId, String status);
   Future<String> getCompanyCanton(String? ref);
+  Future<String> getCompanySize(String? ref);
 }

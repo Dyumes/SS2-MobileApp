@@ -27,12 +27,13 @@ class JobFormState extends State<JobForm> {
   final TextEditingController _deadlineController = TextEditingController();
   final TextEditingController _roleController = TextEditingController();
   final TextEditingController _contractController = TextEditingController();
-  final TextEditingController _companySizeController = TextEditingController();
   final TextEditingController _holidaysController = TextEditingController();
 
   String? _companyName;
   String? _companyCanton;
   double? _prediction;
+  String? _companySize;
+
 
   double? get _yearlyFullTime {
     final hourly = int.tryParse(_salaryController.text);
@@ -111,7 +112,7 @@ class JobFormState extends State<JobForm> {
   Widget build(BuildContext context) {
     print(
       'role=${_roleController.text} | contract=${_contractController.text} | '
-      'size=${_companySizeController.text} | industry=${_industryController.text} | '
+      'size=$_companySize | industry=${_industryController.text} | '
       'degree=${_degreeController.text} | holidays=${_holidaysController.text} | '
       'canton=$_companyCanton | canPredict=$_canPredict',
     );
@@ -406,23 +407,6 @@ class JobFormState extends State<JobForm> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: DropdownMenu<String>(
-                      expandedInsets: EdgeInsets.zero,
-                      initialSelection: _companySizeController.text.isNotEmpty
-                          ? _companySizeController.text
-                          : null,
-                      label: const Text('Company size'),
-                      dropdownMenuEntries: AppConstants.companySizes
-                          .map((s) => DropdownMenuEntry(value: s, label: s))
-                          .toList(),
-                      onSelected: (String? value) {
-                        if (value != null)
-                          setState(() => _companySizeController.text = value);
-                      },
-                    ),
-                  ),
                 ],
               ),
 
@@ -549,16 +533,18 @@ class JobFormState extends State<JobForm> {
     final jobProvider = Provider.of<JobProvider>(context, listen: false);
     final name = await jobProvider.currentCompanyName();
     final canton = await jobProvider.currentCompanyCanton();
+    final size = await jobProvider.currentCompanySize();
     setState(() {
       _companyName = name;
       _companyCanton = canton;
+      _companySize = size;
     });
   }
 
   bool get _canPredict =>
       _roleController.text.isNotEmpty &&
       _contractController.text.isNotEmpty &&
-      _companySizeController.text.isNotEmpty &&
+      (_companySize ?? '').isNotEmpty &&
       _industryController.text.isNotEmpty &&
       _degreeController.text.isNotEmpty &&
       (int.tryParse(_holidaysController.text) ?? 0) >= 20 &&
@@ -571,7 +557,7 @@ class JobFormState extends State<JobForm> {
       contract: _contractController.text,
       industry: _industryController.text,
       canton: _companyCanton!,
-      companySize: _companySizeController.text,
+      companySize: _companySize!,
       degree: _degreeController.text,
       languages: _languageController.text
           .split(',')

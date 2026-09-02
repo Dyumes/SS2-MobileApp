@@ -68,5 +68,10 @@ class FirestoreJobRepository implements JobRepository {
     return snap.data()?['canton'] ?? '';
   }
 
+  @override
+  Future<String> getCompanySize(String? employerId) async {
+    final snap = await _db.collection('employer').doc(employerId).get();
+    return snap.data()?['company_size'] ?? '';
+  }
   
 }

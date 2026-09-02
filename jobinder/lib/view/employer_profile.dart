@@ -80,6 +80,7 @@ class _EmployerProfileViewState extends State<EmployerProfileView> {
             _InfoRow(label: 'Canton', value: employer.canton),
             _InfoRow(label: 'City', value: employer.city),
             _InfoRow(label: 'Address', value: userData.address),
+            _InfoRow(label: 'Company Size', value: employer.companySize),
             const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: () async {
@@ -202,7 +203,7 @@ Future<bool?> showEmployerEditDialog(
             address: addressController.text.trim(),
             canton: canton ?? '',
             city: cityController.text.trim(),
-            companySize: employer.companySize,
+            companySize: companySize ?? '',
           );
         },
       ),

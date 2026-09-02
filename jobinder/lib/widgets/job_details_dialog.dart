@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jobinder/widgets/salary_estimate_block.dart';
 import '../models/job_opportunities_model.dart';
 import '../models/appuser_model.dart';
 import '../models/employer_model.dart';
@@ -44,10 +45,12 @@ class JobDetailsDialog extends StatelessWidget {
             return ListBody(
               children: [
                 Text('Degree : ${job.degree}'),
+                // const SizedBox(height: 8),
+                // Text('Hourly salary : ${job.salary} CHF'),
+                // const SizedBox(height: 8),
+                // Text('Yearly salary : ${(42 * 4 * 12 * job.salary * job.workloadPercentage / 100).toStringAsFixed(2)} CHF'),
                 const SizedBox(height: 8),
-                Text('Hourly salary : ${job.salary} CHF'),
-                const SizedBox(height: 8),
-                Text('Yearly salary : ${(42 * 4 * 12 * job.salary * job.workloadPercentage / 100).toStringAsFixed(2)} CHF'),
+                SalaryEstimateBlock(job: job, employer: employerUser),
                 const SizedBox(height: 8),
                 Text('Workload : ${job.workloadPercentage}%'),
                 const SizedBox(height: 8),

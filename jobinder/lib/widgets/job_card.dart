@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobinder/widgets/salary_estimate_block.dart';
 import '../models/job_opportunities_model.dart';
 import '../models/employer_model.dart';
 import '../models/appuser_model.dart';
@@ -77,14 +78,7 @@ class JobCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          const Icon(Icons.payments_outlined, size: 18),
-                          const SizedBox(width: 8),
-                          Text('${job.salary} CHF', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                          const Text(' / hours', style: TextStyle(color: Colors.grey, fontSize: 13)),
-                        ],
-                      ),
+                      SalaryEstimateBlock(job: job, employer: employer),
                       const SizedBox(height: 12),
                       if (job.languages.isNotEmpty) ...[
                         Wrap(

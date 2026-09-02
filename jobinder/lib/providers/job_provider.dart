@@ -66,4 +66,10 @@ class JobProvider extends ChangeNotifier {
     if (uid == null) return null;
     return _repository.getCompanyCanton(uid);
   }
+
+  Future<String?> currentCompanySize() async {
+    final uid = _authProvider?.user?.uid;
+    if (uid == null) return null;
+    return _repository.getCompanySize(uid);
+  }
 }
