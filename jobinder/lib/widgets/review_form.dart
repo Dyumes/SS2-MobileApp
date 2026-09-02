@@ -22,7 +22,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
   bool _isSending = false;
   // Workaround to reset the EasyStarsRating widget when a review is sent
   int _starsKey = 0;
-A
+
   final TextEditingController _descriptionController = TextEditingController();
 
   @override
