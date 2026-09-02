@@ -219,71 +219,61 @@ class JobFormState extends State<JobForm> {
               ),
 
               const SizedBox(height: 16),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  FilledButton.icon(
-                    onPressed: _canPredict ? _predict : null,
-                    icon: const Icon(Icons.auto_graph),
-                    label: const Text('Estimate'),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _prediction == null
-                        ? Text(
-                            'Fill role, contract, size, industry, degree and holidays',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          )
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Market: ${_prediction!.round()} CHF/year (full time)',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              if (_predictionAtWorkload != null)
+              Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 140,
+                      child: FilledButton.icon(
+                        onPressed: _canPredict ? _predict : null,
+                        icon: const Icon(Icons.auto_graph),
+                        label: const Text('Estimate'),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Flexible(
+                      child: _prediction == null
+                          ? Text(
+                              'Fill role, contract, size, industry, degree and holidays',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            )
+                          : Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Text(
-                                  'Market: ${_predictionAtWorkload!.round()} CHF/year (at ${_workload}%)',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-
-                              if (_yearlyFullTime != null)
-                                Text(
-                                  _yearlyFullTime! >= _prediction!
-                                      ? '${((_yearlyFullTime! / _prediction! - 1) * 100).round()}% above market'
-                                      : '${((1 - _yearlyFullTime! / _prediction!) * 100).round()}% below market',
-                                  style: TextStyle(
-                                    color: _yearlyFullTime! >= _prediction!
-                                        ? Colors.green.shade700
-                                        : Colors.orange.shade800,
+                                  'Market: ${_prediction!.round()} CHF/year (full time)',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                            ],
-                          ),
-                  ),
-                ],
-              ),
+                                if (_predictionAtWorkload != null)
+                                  Text(
+                                    'Market: ${_predictionAtWorkload!.round()} CHF/year (at ${_workload}%)',
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
+                                  ),
 
-              if (_prediction != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  'Market estimate: ${_prediction!.round()} CHF/year (full time)',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                if (_yearlyFullTime != null)
-                  Text(
-                    _yearlyFullTime! >= _prediction!
-                        ? '${((_yearlyFullTime! / _prediction! - 1) * 100).round()}% above market'
-                        : '${((1 - _yearlyFullTime! / _prediction!) * 100).round()}% below market',
-                    style: TextStyle(
-                      color: _yearlyFullTime! >= _prediction!
-                          ? Colors.green.shade700
-                          : Colors.orange.shade800,
+                                if (_yearlyFullTime != null)
+                                  Text(
+                                    _yearlyFullTime! >= _prediction!
+                                        ? '${((_yearlyFullTime! / _prediction! - 1) * 100).round()}% above market'
+                                        : '${((1 - _yearlyFullTime! / _prediction!) * 100).round()}% below market',
+                                    style: TextStyle(
+                                      color: _yearlyFullTime! >= _prediction!
+                                          ? Colors.green.shade700
+                                          : Colors.orange.shade800,
+                                    ),
+                                  ),
+                              ],
+                            ),
                     ),
-                  ),
-              ],
+                  ],
+                ),
+              ),
 
               const SizedBox(height: 16),
 
