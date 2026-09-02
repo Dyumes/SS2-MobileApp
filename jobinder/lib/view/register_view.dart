@@ -7,6 +7,11 @@ import 'package:jobinder/utils/app_constants.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/list_form_field.dart';
+import '../repositories/image_storage_repository.dart';
+import 'camera_view.dart';
+import 'dart:typed_data';
+import '../utils/face_crop.dart';
+
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -457,6 +462,25 @@ class RegisterViewState extends State<RegisterView> {
                     },
                   ),
                 ],
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: _isUploading ? null : _captureAndUploadImage,
+                  icon: _isUploading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Icon(
+                          _imageUrl != null ? Icons.check_circle : Icons.camera_alt,
+                          color: _imageUrl != null ? Colors.green : null,
+                        ),
+                  label: Text(
+                    _isUploading
+                        ? 'Uploading...'
+                        : (_imageUrl != null ? 'Face ID registered' : 'Register face id'),
+                  ),
+                ),
 
                 const SizedBox(height: 40),
 
@@ -494,6 +518,65 @@ class RegisterViewState extends State<RegisterView> {
     );
   }
 
+  String? _imageUrl;
+  bool _isUploading = false;
+  String? _uploadError;
+
+  Future<void> _captureAndUploadImage() async {
+    final imageRepository = context.read<ImageStorageRepository>();
+
+    final Uint8List? rawBytes = await Navigator.push<Uint8List>(
+      context,
+      MaterialPageRoute(builder: (_) => const CameraView()),
+    );
+
+    if (rawBytes == null) return;
+
+    setState(() {
+      _isUploading = true;
+      _uploadError = null;
+    });
+
+    try {
+      final Uint8List? croppedFaceBytes = await FaceCropUtils.processAndCropFace(rawBytes);
+
+      if (croppedFaceBytes == null) {
+        if (!mounted) return;
+        setState(() => _uploadError = 'No face detected. Please take the photo again.');
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No face detected. please take the photo again.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+
+      final fileName = 'face_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final url = await imageRepository.uploadImage(croppedFaceBytes, fileName);
+
+      if (!mounted) return;
+      setState(() => _imageUrl = url);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Face detected'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _uploadError = 'Failed to upload the image.');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_uploadError!), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
+  }
+
   void _authenticate(BuildContext context) async {
     FocusScope.of(context).unfocus();
 
@@ -524,6 +607,7 @@ class RegisterViewState extends State<RegisterView> {
           address: address,
           email: email,
           role: "student",
+          imageUrl: _imageUrl,
         ),
         Student(skills: skills, history: history),
       ),
@@ -536,6 +620,7 @@ class RegisterViewState extends State<RegisterView> {
           address: address,
           email: email,
           role: "employer",
+          imageUrl: _imageUrl,
         ),
         Employer(companyName: companyName, canton: canton!, city: city),
       ),

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:jobinder/view/register_view.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../providers/auth_provider.dart';
+import 'dart:typed_data';
+import '../view/camera_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -70,6 +73,18 @@ class LoginViewState extends State<LoginView> {
                 const SizedBox(height: 10),
               ],
               ElevatedButton(
+                onPressed: authProvider.isLoading ? null : () => _captureAndCompareFace(context),
+                child: authProvider.isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text('Face ID Login'),
+              ),
+              
+              const SizedBox(height: 10),
+              ElevatedButton(
                 onPressed: authProvider.isLoading ? null : () => _authenticate(context),
                 child: authProvider.isLoading
                     ? const SizedBox(
@@ -97,6 +112,16 @@ class LoginViewState extends State<LoginView> {
         ),
       ),
     );
+  }
+
+  void _captureAndCompareFace(BuildContext context) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    final Uint8List? bytes = await Navigator.push<Uint8List>(
+      context,
+      MaterialPageRoute(builder: (_) => const CameraView()),
+    );
+    if (bytes == null) return;
   }
 
   void _authenticate(BuildContext context) async {
