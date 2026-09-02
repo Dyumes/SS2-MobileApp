@@ -10,6 +10,7 @@ import '../repositories/firestore_job_repository.dart';
 import '../repositories/firestore_user_repository.dart';
 import '../widgets/job_card.dart';
 import '../models/student_model.dart';
+import '../widgets/swipeable_card.dart';
 
 class HomePageStudent extends StatefulWidget {
   const HomePageStudent({super.key, this.jobRepository, this.userRepository});
@@ -27,9 +28,12 @@ class _HomePageStudentState extends State<HomePageStudent> {
   String _searchQuery = '';
   String? _uid;
   Future<List<dynamic>>? _future;
+  final GlobalKey<SwipeableCardState> _cardKey = GlobalKey();
 
-  late final JobRepository _jobRepository = widget.jobRepository ?? FirestoreJobRepository();
-  late final UserRepository _userRepository = widget.userRepository ?? FirestoreUserRepository();
+  late final JobRepository _jobRepository =
+      widget.jobRepository ?? FirestoreJobRepository();
+  late final UserRepository _userRepository =
+      widget.userRepository ?? FirestoreUserRepository();
 
   // clear the search query
   @override
@@ -45,8 +49,8 @@ class _HomePageStudentState extends State<HomePageStudent> {
     });
   }
 
-  // Load student and user data 
- @override
+  // Load student and user data
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final user = context.watch<AuthProvider>().user;
@@ -74,7 +78,11 @@ class _HomePageStudentState extends State<HomePageStudent> {
   }
 
   // Show job details in a dialog
-  void _showJobDetails(BuildContext context, JobOpportunities job, String studentUid) {
+  void _showJobDetails(
+    BuildContext context,
+    JobOpportunities job,
+    String studentUid,
+  ) {
     showDialog(
       context: context,
       builder: (_) => JobDetailsDialog(
@@ -155,20 +163,33 @@ class _HomePageStudentState extends State<HomePageStudent> {
               final allJobs = snapshot.data ?? [];
 
               final jobs = allJobs.where((job) {
-                final matchesSearch = job.jobName.toLowerCase().contains(_searchQuery);
-                final notApplied = !(job.studentApplication.containsKey(user.uid));
+                final matchesSearch = job.jobName.toLowerCase().contains(
+                  _searchQuery,
+                );
+                final notApplied = !(job.studentApplication.containsKey(
+                  user.uid,
+                ));
 
-                // Filter jobs 
-                final matchesDegree = (student.degree?.isEmpty ?? true) || job.degree == student.degree;
-                final matchesSalary = student.minSalary == null || job.salary >= student.minSalary!;
+                // Filter jobs
+                final matchesDegree =
+                    (student.degree?.isEmpty ?? true) ||
+                    job.degree == student.degree;
+                final matchesSalary =
+                    student.minSalary == null ||
+                    job.salary >= student.minSalary!;
 
                 // final matchesDistance
 
-                return matchesSearch && notApplied && matchesDegree && matchesSalary;
+                return matchesSearch &&
+                    notApplied &&
+                    matchesDegree &&
+                    matchesSalary;
               }).toList();
 
               if (jobs.isEmpty || _currentIndex >= jobs.length) {
-                return const Center(child: Text('Nothing', style: TextStyle(fontSize: 18)));
+                return const Center(
+                  child: Text('Nothing', style: TextStyle(fontSize: 18)),
+                );
               }
 
               final currentJob = jobs[_currentIndex];
@@ -186,10 +207,15 @@ class _HomePageStudentState extends State<HomePageStudent> {
                               studentUid: user.uid,
                               userRepository: _userRepository,
                             ),
-                          JobCard(
-                            job: currentJob,
-                            studentUid: user.uid,
-                            userRepository: _userRepository,
+                          SwipeableCard(
+                            key: _cardKey,
+                            onSwipeLeft: _nextCard,
+                            onSwipeRight: () => _applyCard(currentJob),
+                            child: JobCard(
+                              job: currentJob,
+                              studentUid: user.uid,
+                              userRepository: _userRepository,
+                            ),
                           ),
                         ],
                       ),
@@ -200,26 +226,39 @@ class _HomePageStudentState extends State<HomePageStudent> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        FloatingActionButton(
+                        FloatingActionButton.large(
                           heroTag: 'dislike_btn',
-                          onPressed: _nextCard,
+                          onPressed: () => _cardKey.currentState?.swipe(false),
                           backgroundColor: Colors.white,
                           elevation: 4,
-                          child: const Icon(Icons.close, color: Colors.red, size: 36),
-                        ),  
-                        FloatingActionButton(
-                          heroTag: 'info_btn',
-                          onPressed: () => _showJobDetails(context, currentJob, user.uid),
-                          backgroundColor: Colors.white,
-                          elevation: 4,
-                          child: const Icon(Icons.info_outline, color: Colors.blue, size: 28),
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.red,
+                            size: 36,
+                          ),
                         ),
-                        FloatingActionButton(
-                          heroTag: 'like_btn',
-                          onPressed: () => _applyCard(currentJob),
+                        FloatingActionButton.large(
+                          heroTag: 'info_btn',
+                          onPressed: () =>
+                              _showJobDetails(context, currentJob, user.uid),
                           backgroundColor: Colors.white,
                           elevation: 4,
-                          child: const Icon(Icons.favorite, color: Colors.red, size: 36),
+                          child: const Icon(
+                            Icons.info_outline,
+                            color: Colors.blue,
+                            size: 36,
+                          ),
+                        ),
+                        FloatingActionButton.large(
+                          heroTag: 'like_btn',
+                          onPressed: () => _cardKey.currentState?.swipe(true),
+                          backgroundColor: Colors.white,
+                          elevation: 4,
+                          child: const Icon(
+                            Icons.favorite,
+                            color: Colors.red,
+                            size: 36,
+                          ),
                         ),
                       ],
                     ),

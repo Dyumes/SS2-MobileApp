@@ -19,7 +19,8 @@ class EmployerProfileView extends StatefulWidget {
 }
 
 class _EmployerProfileViewState extends State<EmployerProfileView> {
-  late final UserRepository _userRepository = widget.userRepository ?? FirestoreUserRepository();
+  late final UserRepository _userRepository =
+      widget.userRepository ?? FirestoreUserRepository();
   late Future<List<dynamic>> _future;
   String? _uid;
 
@@ -56,8 +57,10 @@ class _EmployerProfileViewState extends State<EmployerProfileView> {
         }
         if (snapshot.hasError) {
           return Center(
-            child: Text('Error loading profile:\n${snapshot.error}',
-                textAlign: TextAlign.center),
+            child: Text(
+              'Error loading profile:\n${snapshot.error}',
+              textAlign: TextAlign.center,
+            ),
           );
         }
         if (!snapshot.hasData) {
@@ -75,11 +78,26 @@ class _EmployerProfileViewState extends State<EmployerProfileView> {
               style: Theme.of(context).textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
+
+            const SizedBox(height: 16),
+
+            Center(
+              child: CircleAvatar(
+                radius: 50,
+                backgroundColor: Colors.orange.shade100,
+                backgroundImage:
+                    (userData.imageUrl != null && userData.imageUrl!.isNotEmpty)
+                    ? NetworkImage(userData.imageUrl!) as ImageProvider
+                    : const AssetImage('assets/images/default_avatar.png'),
+              ),
+            ),
+
             const SizedBox(height: 24),
             _InfoRow(label: 'Email', value: user.email ?? ''),
             _InfoRow(label: 'Canton', value: employer.canton),
             _InfoRow(label: 'City', value: employer.city),
             _InfoRow(label: 'Address', value: userData.address),
+            _InfoRow(label: 'Company Size', value: employer.companySize),
             const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: () async {
@@ -131,7 +149,13 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 90, child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold))),
+          SizedBox(
+            width: 90,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
           Expanded(child: Text(value)),
         ],
       ),
@@ -149,6 +173,9 @@ Future<bool?> showEmployerEditDialog(
   final addressController = TextEditingController(text: userData.address);
 
   String? canton = employer.canton.isNotEmpty ? employer.canton : null;
+  String? companySize = employer.companySize.isNotEmpty
+      ? employer.companySize
+      : null;
 
   return showDialog<bool>(
     context: context,
@@ -160,11 +187,25 @@ Future<bool?> showEmployerEditDialog(
             initialSelection: canton,
             label: const Text('Canton'),
             dropdownMenuEntries: AppConstants.cantons
-              .map((c) => DropdownMenuEntry(value: c, label: c))
-              .toList(),
+                .map((c) => DropdownMenuEntry(value: c, label: c))
+                .toList(),
             onSelected: (value) {
               if (value != null) {
                 setDialogState(() => canton = value);
+              }
+            },
+          ),
+          const SizedBox(height: 12),
+
+          DropdownMenu<String>(
+            initialSelection: companySize,
+            label: const Text('Company size'),
+            dropdownMenuEntries: AppConstants.companySizes
+                .map((s) => DropdownMenuEntry(value: s, label: s))
+                .toList(),
+            onSelected: (value) {
+              if (value != null) {
+                setDialogState(() => companySize = value);
               }
             },
           ),
@@ -187,6 +228,7 @@ Future<bool?> showEmployerEditDialog(
             address: addressController.text.trim(),
             canton: canton ?? '',
             city: cityController.text.trim(),
+            companySize: companySize ?? '',
           );
         },
       ),

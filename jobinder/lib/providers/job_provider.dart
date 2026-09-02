@@ -58,4 +58,16 @@ class JobProvider extends ChangeNotifier {
     await _repository.updateStatus(jobId, studentUid, status); 
     notifyListeners(); 
   }
+
+  Future<String?> currentCompanyCanton() async {
+    final uid = _authProvider?.user?.uid;
+    if (uid == null) return null;
+    return _repository.getCompanyCanton(uid);
+  }
+
+  Future<String?> currentCompanySize() async {
+    final uid = _authProvider?.user?.uid;
+    if (uid == null) return null;
+    return _repository.getCompanySize(uid);
+  }
 }

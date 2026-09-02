@@ -26,6 +26,7 @@ abstract class UserRepository {
     required String address,
     required String canton,
     required String city,
+    required String companySize,
   });
 
 }
