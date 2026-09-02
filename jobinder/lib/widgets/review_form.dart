@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:easy_stars/easy_stars.dart';
 import 'package:jobinder/models/review_model.dart';
 import 'package:jobinder/providers/auth_provider.dart';
 import 'package:jobinder/providers/review_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class ReviewWidget extends StatefulWidget {
   const ReviewWidget({super.key, required this.revieweeId});
@@ -17,8 +20,9 @@ class ReviewWidget extends StatefulWidget {
 class _ReviewWidgetState extends State<ReviewWidget> {
   int _rating = 0;
   bool _isSending = false;
-  int _starsKey = 0; // Workaround to reset the EasyStarsRating widget when a review is sent
-
+  // Workaround to reset the EasyStarsRating widget when a review is sent
+  int _starsKey = 0;
+A
   final TextEditingController _descriptionController = TextEditingController();
 
   @override
@@ -41,6 +45,34 @@ class _ReviewWidgetState extends State<ReviewWidget> {
     setState(() {
       _isSending = true;
     });
+
+    // Check for profanity in text
+    final response = await http.post(
+      Uri.parse('https://vector.profanity.dev'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'message': comment}),
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      final bool isProfanity = data['isProfanity'] as bool;
+
+      if (isProfanity) {
+        if (!mounted) return;
+
+        setState(() {
+          _isSending = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Your review contains inappropriate language. Please modify it.',
+            ),
+          ),
+        );
+        return;
+      }
+    }
 
     try {
       await reviewProvider.addReview(review);
@@ -86,7 +118,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [ 
+      children: [
         // Title
         const Text(
           'Rate your experience',
