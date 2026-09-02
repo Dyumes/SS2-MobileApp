@@ -43,7 +43,6 @@ void main() {
       skills: const ['Dart', 'Flutter'],
       degree: 'Bachelor',
       minSalary: 4500,
-      maxDistance: 30,
       history: const [],
     );
     userRepository.users['emp_1'] = buildAppUser(

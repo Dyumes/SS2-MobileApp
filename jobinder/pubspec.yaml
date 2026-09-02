@@ -48,6 +48,7 @@ dependencies:
   url_launcher: ^6.3.0
   easy_stars: ^1.0.9
   http: ^1.6.0
+  flutter_litert: ^3.8.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.1
@@ -84,7 +85,7 @@ flutter:
   assets:
     - images/
     - .env
-    - assets/
+    - assets/mobile_face_net.tflite
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

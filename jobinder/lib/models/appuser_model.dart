@@ -6,6 +6,7 @@ class AppUser {
   final String email;
   final String role;
   final String? imageUrl;
+  final List<double>? faceVector;
 
   AppUser({
     this.id = '',
@@ -15,6 +16,7 @@ class AppUser {
     required this.email,
     required this.role,
     this.imageUrl,
+    this.faceVector,
   });
 
   factory AppUser.fromMap(Map<String, dynamic> map, String docId) {
@@ -26,6 +28,10 @@ class AppUser {
       email: map['email'] ?? '',
       role: map['role'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
+      faceVector: map['faceVector'] != null
+          ? List<double>.from(
+              (map['faceVector'] as List<dynamic>).map((e) => e.toDouble()))
+          : null,
     );
   }
 
@@ -37,6 +43,7 @@ class AppUser {
       'email': email,
       'role': role,
       'imageUrl': imageUrl ?? '',
+      'faceVector': faceVector,
     };
   }
 }

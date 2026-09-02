@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'dart:typed_data';
 import '../view/camera_view.dart';
+import '../services/face_service.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -25,6 +26,8 @@ class LoginViewState extends State<LoginView> {
     _passwordController.dispose();
     super.dispose();
   }
+  final FaceRecognitionService _faceService = FaceRecognitionService();
+  bool _isProcessingFace = false;
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +175,67 @@ class LoginViewState extends State<LoginView> {
       context,
       MaterialPageRoute(builder: (_) => const CameraView()),
     );
+
     if (bytes == null) return;
+
+    setState(() => _isProcessingFace = true);
+
+    try {
+      final faces = await _faceService.detectFaces(bytes);
+      if (faces.isEmpty) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No face detected. Please try again.')),
+        );
+        return;
+      }
+
+      final currentVector =
+          await _faceService.recognizeFace(bytes, faces.first);
+      if (currentVector.isEmpty) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to extract face features.')),
+        );
+        return;
+      }
+
+      final provider = Provider.of<AuthProvider>(context, listen: false);
+      final matchedEmail = await provider.findUserEmailByFaceVector(
+        currentVector,
+        _faceService,
+      );
+
+      if (matchedEmail != null) {
+        if (!mounted) return;
+
+        setState(() {
+          _emailController.text = matchedEmail;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('User recognized! Email set to $matchedEmail'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Face not recognized. No matching account found.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Face ID Error: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isProcessingFace = false);
+    }
   }
 
   void _authenticate(BuildContext context) async {
@@ -180,11 +243,11 @@ class LoginViewState extends State<LoginView> {
 
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final provider = Provider.of<AuthProvider>(context, listen: false);
     final email = _emailController.text;
     final password = _passwordController.text;
 
-    // Sign in
-    await authProvider.signInWithEmailAndPassword(email, password);
+    await provider.signInWithEmailAndPassword(email, password);
   }
+
 }

@@ -89,9 +89,9 @@ class _ApplicantDetailViewState extends State<ApplicantDetailView> {
           _Row('Email', u.email),
           _Row('Address', u.address),
           _Row('Degree', (s.degree?.isNotEmpty ?? false) ? s.degree! : 'Not specified'),
+          _Row('Industry', (s.industry?.isNotEmpty ?? false) ? s.industry! : 'Not specified'),
           _Row('Skills', s.skills?.join(', ') ?? 'No skills listed'),
           _Row('Min salary', s.minSalary != null ? '${s.minSalary} CHF' : 'Not specified'),
-          _Row('Max distance', s.maxDistance != null ? '${s.maxDistance} km' : 'Not specified'),
 
           const SizedBox(height: 16),
           const Text('Work history',

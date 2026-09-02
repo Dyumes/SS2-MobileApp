@@ -34,7 +34,6 @@ void main() {
         skills: const ['Dart', 'Flutter'],
         degree: 'Bachelor',
         minSalary: 4500,
-        maxDistance: 30,
         history: [
           History(
             company: 'ACME SA',

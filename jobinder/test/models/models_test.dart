@@ -90,7 +90,6 @@ void main() {
         ],
         'degree': 'Bachelor',
         'minSalary': 4500,
-        'maxDistance': 30,
       }, 'std_1');
 
       expect(student.id, 'std_1');
@@ -101,7 +100,6 @@ void main() {
       expect(student.history!.single.endDate, DateTime(2025, 6, 30));
       expect(student.degree, 'Bachelor');
       expect(student.minSalary, 4500);
-      expect(student.maxDistance, 30);
     });
 
     test('fromMap tolerates a brand new profile with no data', () {
@@ -111,7 +109,6 @@ void main() {
       expect(student.history, isEmpty);
       expect(student.degree, isNull);
       expect(student.minSalary, isNull);
-      expect(student.maxDistance, isNull);
     });
 
     test('an ongoing job keeps a null end date', () {

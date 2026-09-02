@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jobinder/models/appuser_model.dart';
@@ -5,12 +6,13 @@ import 'package:jobinder/models/employer_model.dart';
 import 'package:jobinder/models/student_model.dart';
 import 'package:jobinder/utils/app_constants.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/auth_provider.dart';
-import '../widgets/list_form_field.dart';
 import '../repositories/image_storage_repository.dart';
-import 'camera_view.dart';
-import 'dart:typed_data';
+import '../services/face_service.dart';
 import '../utils/face_crop.dart';
+import '../widgets/list_form_field.dart';
+import 'camera_view.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -31,10 +33,18 @@ class RegisterViewState extends State<RegisterView> {
   final TextEditingController _companyNameController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  String? _selectedRole = _studentRole; // For ToggleButtons
+
+  String? _selectedRole = _studentRole;
   List<Skill> _skills = [];
   List<History> _companies = [];
   String? _selectedCanton;
+
+  String? _imageUrl;
+  List<double>? _faceVector;
+  bool _isUploading = false;
+  String? _uploadError;
+
+  final FaceRecognitionService _faceService = FaceRecognitionService();
 
   static const String _studentRole = "student";
   static const String _employerRole = "employer";
@@ -570,9 +580,6 @@ class RegisterViewState extends State<RegisterView> {
     );
   }
 
-  String? _imageUrl;
-  bool _isUploading = false;
-  String? _uploadError;
 
   Future<void> _captureAndUploadImage() async {
     final imageRepository = context.read<ImageStorageRepository>();
@@ -590,40 +597,49 @@ class RegisterViewState extends State<RegisterView> {
     });
 
     try {
-      final Uint8List? croppedFaceBytes =
-          await FaceCropUtils.processAndCropFace(rawBytes);
-
-      if (croppedFaceBytes == null) {
+      final faces = await _faceService.detectFaces(rawBytes);
+      if (faces.isEmpty) {
         if (!mounted) return;
-        setState(
-          () => _uploadError = 'No face detected. Please take the photo again.',
-        );
-
+        setState(() => _uploadError = 'No face detected.');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('No face detected. please take the photo again.'),
+            content: Text('No face detected. Please take photo again.'),
             backgroundColor: Colors.orange,
           ),
         );
         return;
       }
 
+      final vector = await _faceService.recognizeFace(rawBytes, faces.first);
+
+      final Uint8List? croppedFaceBytes =
+          await FaceCropUtils.processAndCropFace(rawBytes);
+
+      if (croppedFaceBytes == null) {
+        if (!mounted) return;
+        setState(() => _uploadError = 'Failed face crop.');
+        return;
+      }
+
       final fileName = 'face_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final url = await imageRepository.uploadImage(croppedFaceBytes, fileName);
+      final url =
+          await imageRepository.uploadImage(croppedFaceBytes, fileName);
 
       if (!mounted) return;
-      setState(() => _imageUrl = url);
+      setState(() {
+        _imageUrl = url;
+        _faceVector = vector;
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Face detected'),
+          content: Text('Face ID registered successfully!'),
           backgroundColor: Colors.green,
         ),
       );
     } catch (e) {
       if (!mounted) return;
-      setState(() => _uploadError = 'Failed to upload the image.');
-
+      setState(() => _uploadError = 'Failed to upload image.');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(_uploadError!), backgroundColor: Colors.red),
       );
@@ -654,31 +670,33 @@ class RegisterViewState extends State<RegisterView> {
 
     final success = switch (_selectedRole) {
       _studentRole => await authProvider.registerStudentWithEmailAndPassword(
-        email,
-        password,
-        AppUser(
-          name: name,
-          surname: surname,
-          address: address,
-          email: email,
-          role: "student",
-          imageUrl: _imageUrl,
+          email,
+          password,
+          AppUser(
+            name: name,
+            surname: surname,
+            address: address,
+            email: email,
+            role: "student",
+            imageUrl: _imageUrl,
+            faceVector: _faceVector,
+          ),
+          Student(skills: skills, history: history),
         ),
-        Student(skills: skills, history: history),
-      ),
       _employerRole => await authProvider.registerEmployerWithEmailAndPassword(
-        email,
-        password,
-        AppUser(
-          name: name,
-          surname: surname,
-          address: address,
-          email: email,
-          role: "employer",
-          imageUrl: _imageUrl,
+          email,
+          password,
+          AppUser(
+            name: name,
+            surname: surname,
+            address: address,
+            email: email,
+            role: "employer",
+            imageUrl: _imageUrl,
+            faceVector: _faceVector,
+          ),
+          Employer(companyName: companyName, canton: canton!, city: city),
         ),
-        Employer(companyName: companyName, canton: canton!, city: city),
-      ),
       _ => false,
     };
 
@@ -692,13 +710,12 @@ class RegisterViewState extends State<RegisterView> {
       );
 
       context.read<AuthProvider>().clearError();
-      navigator.pop(); // Navigate back to the previous screen
+      navigator.pop();
     }
   }
 }
 
 class Skill {
   final String name;
-
   Skill(this.name);
 }

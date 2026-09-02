@@ -19,7 +19,7 @@ abstract class UserRepository {
     required List<History> history,
     String? degree,
     int? minSalary,
-    int? maxDistance
+    String? industry,
   });
   Future<void> updateEmployerProfile(
     String uid, {
