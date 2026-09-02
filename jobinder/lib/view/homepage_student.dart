@@ -208,7 +208,7 @@ class _HomePageStudentState extends State<HomePageStudent> {
                               userRepository: _userRepository,
                             ),
                           SwipeableCard(
-                            key: ValueKey(currentJob.id),
+                            key: _cardKey,
                             onSwipeLeft: _nextCard,
                             onSwipeRight: () => _applyCard(currentJob),
                             child: JobCard(
