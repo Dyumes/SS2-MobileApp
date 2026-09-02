@@ -22,6 +22,16 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.all(8),
+      child: Text(
+        'Erreur : ${details.exceptionAsString()}',
+        style: const TextStyle(color: Colors.red, fontSize: 10),
+      ),
+    );
+  };
   runApp(const MyApp());
 }
 
