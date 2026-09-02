@@ -116,15 +116,15 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                   : 'Not specified',
             ),
             _InfoRow(
-              label: 'Min salary',
-              value: jobseeker.minSalary != null
-                  ? '${jobseeker.minSalary} CHF / hour'
+              label: 'Industry',
+              value: (jobseeker.industry?.isNotEmpty ?? false)
+                  ? jobseeker.industry!
                   : 'Not specified',
             ),
             _InfoRow(
-              label: 'Max distance',
-              value: jobseeker.maxDistance != null
-                  ? '${jobseeker.maxDistance} km'
+              label: 'Min salary',
+              value: jobseeker.minSalary != null
+                  ? '${jobseeker.minSalary} CHF / hour'
                   : 'Not specified',
             ),
 
@@ -260,12 +260,15 @@ Future<bool?> showStudentEditDialog(
   final addressController = TextEditingController(text: userData.address);
 
   double minSalary = (student.minSalary ?? 0).toDouble().clamp(0, 15000);
-  double maxDistance = (student.maxDistance ?? 20).toDouble().clamp(0, 200);
 
   List<String> skills = List.from(student.skills ?? []);
   List<History> history = List.from(student.history ?? []);
   String? degree = (student.degree?.isNotEmpty ?? false)
       ? student.degree
+      : null;
+
+  String? industry = (student.industry?.isNotEmpty ?? false)
+      ? student.industry
       : null;
 
   return showDialog<bool>(
@@ -294,6 +297,20 @@ Future<bool?> showStudentEditDialog(
               });
             },
           ),
+          const SizedBox(height: 12),
+          DropdownMenu<String>(
+            initialSelection: student.industry,
+            hintText: "No industry",
+            label: const Text('Industry'),
+            dropdownMenuEntries: AppConstants.industries
+                .map((d) => DropdownMenuEntry(value: d, label: d))
+                .toList(),
+            onSelected: (String? value) {
+              setDialogState(() {
+                industry = value;
+              });
+            },
+          ),
           const SizedBox(height: 16),
           Align(
             alignment: Alignment.centerLeft,
@@ -309,20 +326,7 @@ Future<bool?> showStudentEditDialog(
             onChanged: (v) => setDialogState(() => minSalary = v),
           ),
 
-          const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text('Max distance: ${maxDistance.round()} km'),
-          ),
-          Slider(
-            value: maxDistance,
-            min: 0,
-            max: 200,
-            divisions: 40,
-            label: '${maxDistance.round()} km',
-            activeColor: Colors.orange,
-            onChanged: (v) => setDialogState(() => maxDistance = v),
-          ),
+
           const SizedBox(height: 16),
           ListFormField<String>(
             label: 'Skills',
@@ -473,7 +477,7 @@ Future<bool?> showStudentEditDialog(
             history: history,
             degree: degree,
             minSalary: minSalary.round(),
-            maxDistance: maxDistance.round()
+            industry: industry,
           );
         },
       ),

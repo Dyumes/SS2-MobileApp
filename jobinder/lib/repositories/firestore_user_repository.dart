@@ -80,7 +80,7 @@ class FirestoreUserRepository implements UserRepository {
     required List<History> history,
     String? degree,
     int? minSalary,
-    int? maxDistance
+    String? industry,
   }) async {
     await FirebaseFirestore.instance
         .collection('student')         
@@ -90,7 +90,7 @@ class FirestoreUserRepository implements UserRepository {
       'history': history.map((h) => h.toMap()).toList(),
       'degree': degree,
       'minSalary': minSalary,
-      'maxDistance': maxDistance
+      'industry': industry
     });
     await FirebaseFirestore.instance
       .collection('user')

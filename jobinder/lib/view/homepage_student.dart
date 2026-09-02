@@ -161,10 +161,10 @@ class _HomePageStudentState extends State<HomePageStudent> {
                 // Filter jobs 
                 final matchesDegree = (student.degree?.isEmpty ?? true) || job.degree == student.degree;
                 final matchesSalary = student.minSalary == null || job.salary >= student.minSalary!;
+                final matchesIndustry = (student.industry?.isEmpty ?? true) || job.industry == student.industry;
 
-                // final matchesDistance
 
-                return matchesSearch && notApplied && matchesDegree && matchesSalary;
+                return matchesSearch && notApplied && matchesDegree && matchesSalary && matchesIndustry;
               }).toList();
 
               if (jobs.isEmpty || _currentIndex >= jobs.length) {

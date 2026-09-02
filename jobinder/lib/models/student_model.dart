@@ -6,7 +6,7 @@ class Student {
   final List<History>? history;
   final String? degree;
   final int? minSalary;
-  final int? maxDistance;
+  final String? industry;
 
   Student({
     this.id = '',
@@ -14,8 +14,9 @@ class Student {
     this.history,
     this.degree,
     this.minSalary,
-    this.maxDistance
+    this.industry,
   });
+
   factory Student.fromMap(Map<String, dynamic> map, String docId) {
     return Student(
       id: docId,
@@ -25,7 +26,7 @@ class Student {
           .toList(),
       degree: map['degree'],
       minSalary: map['minSalary'],
-      maxDistance: map['maxDistance']
+      industry: map['industry'],
     );
   }
 
@@ -35,7 +36,7 @@ class Student {
       'history': history?.map((h) => h.toMap()).toList(),
       'degree': degree,
       'minSalary': minSalary,
-      'maxDistance': maxDistance
+      'industry': industry,
     };
   }
 }

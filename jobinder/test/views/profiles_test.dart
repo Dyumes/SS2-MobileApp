@@ -65,7 +65,6 @@ void main() {
         skills: const ['Dart', 'Flutter'],
         degree: 'Bachelor',
         minSalary: 100,
-        maxDistance: 30,
         history: [History(company: 'ACME SA', link: 'https://acme.example')],
       );
     });

@@ -186,7 +186,7 @@ class FakeUserRepository implements UserRepository {
     required List<History> history,
     String? degree,
     int? minSalary,
-    int? maxDistance,
+    String? industry,
   }) async {
     lastStudentUpdate = StudentProfileUpdate(
       uid: uid,
@@ -195,7 +195,7 @@ class FakeUserRepository implements UserRepository {
       history: history,
       degree: degree,
       minSalary: minSalary,
-      maxDistance: maxDistance,
+      industry: industry,
     );
   }
 
@@ -225,7 +225,7 @@ class StudentProfileUpdate {
     required this.history,
     this.degree,
     this.minSalary,
-    this.maxDistance,
+    this.industry,
   });
 
   final String uid;
@@ -234,7 +234,7 @@ class StudentProfileUpdate {
   final List<History> history;
   final String? degree;
   final int? minSalary;
-  final int? maxDistance;
+  final String? industry;
 }
 
 class EmployerProfileUpdate {
