@@ -48,11 +48,15 @@ class SwipeableCardState extends State<SwipeableCard>
     _start = _drag;
     _end = target;
     _controller.forward(from: 0).whenComplete(() {
-      if (then != null) {
+      if (then == null) return;
+
+      _controller.stop();
+      setState(() {
+        _start = Offset.zero;
+        _end = Offset.zero;
         _drag = Offset.zero;
-        _controller.reset();
-        then();
-      }
+      });
+      then();
     });
   }
 
