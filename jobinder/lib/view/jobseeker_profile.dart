@@ -89,9 +89,9 @@ class _StudentProfileViewState extends State<StudentProfileView> {
               child: CircleAvatar(
                 radius: 50,
                 backgroundColor: Colors.orange.shade100,
-                backgroundImage: const AssetImage(
-                  'images/placeholder_PROFILE.jpg',
-                ),
+                backgroundImage: (userData.imageUrl != null && userData.imageUrl!.isNotEmpty)
+                    ? NetworkImage(userData.imageUrl!) as ImageProvider
+                    : const AssetImage('assets/images/default_avatar.png'),
               ),
             ),
 
