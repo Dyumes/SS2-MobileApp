@@ -42,28 +42,27 @@ class JobDetailsDialog extends StatelessWidget {
             final studentUser = snapshot.data![0] as AppUser;
             final employerUser = snapshot.data![1] as Employer;
 
+            final yearly = (42 * 4 * 12 * job.salary * job.workloadPercentage / 100).toStringAsFixed(2);
+
             return ListBody(
               children: [
-                Text('Degree : ${job.degree}'),
+                _Row('Degree', job.degree),
+                _Row('Description', job.description),
+                _Row('Languages', job.languages.join(', ')),
+                _Row('Hourly salary', '${job.salary} CHF'),
+                _Row('Yearly salary', '$yearly CHF'),
+                _Row('Workload', '${job.workloadPercentage}%'),
+                _Row('Industry', job.industry),
+                _Row(
+                  'Start date',
+                  DateFormat('yyyy-MM-dd').format(job.timestamp),
+                ),
+                _Row('Deadline', DateFormat('yyyy-MM-dd').format(job.deadline)),
+
                 const SizedBox(height: 8),
-                Text('Hourly salary : ${job.salary} CHF'),
-                const SizedBox(height: 8),
-                Text('Yearly salary : ${(42 * 4 * 12 * job.salary * job.workloadPercentage / 100).toStringAsFixed(2)} CHF'),
-                const SizedBox(height: 8),
-                Text('Workload : ${job.workloadPercentage}%'),
-                const SizedBox(height: 8),
-                Text('Industry : ${job.industry}'),
-                const SizedBox(height: 8),
-                Text('Start date : ${DateFormat('yyyy-MM-dd').format(job.timestamp)}'),
-                const SizedBox(height: 8),
-                Text('Deadline : ${DateFormat('yyyy-MM-dd').format(job.deadline)}'),
-                const SizedBox(height: 8),
-                Text('Description : ${job.description}'),
-                const SizedBox(height: 8),
-                Text('Languages : ${job.languages.join(', ')}'),
-                const SizedBox(height: 16),
                 const Divider(height: 1, color: Colors.black38),
-                ReviewWidget(),
+                const SizedBox(height: 16),
+                ReviewWidget(revieweeId: job.employer_user),
                 const Divider(),
                 const SizedBox(height: 8),
 
@@ -203,4 +202,28 @@ void showJobDetails(BuildContext context, JobOpportunities job) {
     },
   );
 }
+}
+
+class _Row extends StatelessWidget {
+  const _Row(this.label, this.value);
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(label,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          Expanded(child: Text(value)),
+        ],
+      ),
+    );
+  }
 }

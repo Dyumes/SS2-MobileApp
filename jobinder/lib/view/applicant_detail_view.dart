@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jobinder/widgets/review_form.dart';
-import 'package:jobinder/widgets/review_list.dart';
 import 'package:provider/provider.dart';
 import 'package:jobinder/models/appuser_model.dart';
 import 'package:jobinder/models/student_model.dart';
@@ -77,7 +76,7 @@ class _ApplicantDetailViewState extends State<ApplicantDetailView> {
           Center(
             child: Chip(
               label: Text(_status),
-              backgroundColor: _color(_status).withAlpha(38),
+              backgroundColor: _color(_status).withOpacity(0.15),
               labelStyle: TextStyle(
                 color: _color(_status),
                 fontWeight: FontWeight.bold,
@@ -114,6 +113,11 @@ class _ApplicantDetailViewState extends State<ApplicantDetailView> {
             ),
 
           const SizedBox(height: 32),
+
+          ReviewWidget(revieweeId: widget.user.id),
+
+          const SizedBox(height: 32),
+
 
           Row(
             children: [
@@ -154,14 +158,6 @@ class _ApplicantDetailViewState extends State<ApplicantDetailView> {
               ),
             ],
           ),
-
-          const SizedBox(height: 32),
-
-          ReviewWidget(),
-
-          // const SizedBox(height: 5),
-
-          // ReviewList(reviews: reviews)
         ],
       ),
     );
