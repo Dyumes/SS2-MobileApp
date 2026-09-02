@@ -1,23 +1,29 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:easy_stars/easy_stars.dart';
 import 'package:jobinder/models/review_model.dart';
 import 'package:jobinder/providers/auth_provider.dart';
 import 'package:jobinder/providers/review_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
-class ReviewWidget extends StatefulWidget {
-  const ReviewWidget({super.key, required this.revieweeId});
+class ReviewForm extends StatefulWidget {
+  const ReviewForm({super.key, required this.revieweeId});
 
   final String revieweeId;
 
   @override
-  State<ReviewWidget> createState() => _ReviewWidgetState();
+  State<ReviewForm> createState() => _ReviewFormState();
 }
 
-class _ReviewWidgetState extends State<ReviewWidget> {
+class _ReviewFormState extends State<ReviewForm> {
   int _rating = 0;
   bool _isSending = false;
-  int _starsKey = 0; // Workaround to reset the EasyStarsRating widget when a review is sent
+  // Workaround to reset the EasyStarsRating widget when a review is sent
+  int _starsKey = 0;
+
+  String? _errorText;
 
   final TextEditingController _descriptionController = TextEditingController();
 
@@ -42,6 +48,27 @@ class _ReviewWidgetState extends State<ReviewWidget> {
       _isSending = true;
     });
 
+    // Check for profanity in text
+    final response = await http.post(
+      Uri.parse('https://vector.profanity.dev'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'message': comment}),
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      final bool isProfanity = data['isProfanity'] as bool;
+
+      if (isProfanity) {
+        if (!mounted) return;
+
+        setState(() {
+          _isSending = false;
+          _errorText = 'Your review contains inappropriate language.';
+        });
+        return;
+      }
+    }
+
     try {
       await reviewProvider.addReview(review);
 
@@ -59,13 +86,8 @@ class _ReviewWidgetState extends State<ReviewWidget> {
 
       setState(() {
         _isSending = false;
+        _errorText = 'Failed to send review. Please try again.';
       });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to send review. Please try again.'),
-        ),
-      );
     }
   }
 
@@ -73,9 +95,9 @@ class _ReviewWidgetState extends State<ReviewWidget> {
     final description = _descriptionController.text.trim();
 
     if (_rating == 0 || description.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please provide a rating and a review.')),
-      );
+      setState(() {
+        _errorText = 'Please provide a rating and a review.';
+      });
       return;
     }
 
@@ -86,7 +108,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [ 
+      children: [
         // Title
         const Text(
           'Rate your experience',
@@ -108,6 +130,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                 : (value) {
                     setState(() {
                       _rating = value.round();
+                      _errorText = null;
                     });
                   },
           ),
@@ -121,11 +144,20 @@ class _ReviewWidgetState extends State<ReviewWidget> {
           maxLines: 5,
           maxLength: 500,
           enabled: !_isSending,
-          decoration: const InputDecoration(
+          onChanged: (_) {
+            // Clear error text when typing
+            if (_errorText != null) {
+              setState(() {
+                _errorText = null;
+              });
+            }
+          },
+          decoration: InputDecoration(
             labelText: 'Review',
             hintText: 'Write your review...',
             border: OutlineInputBorder(),
             alignLabelWithHint: true,
+            errorText: _errorText,
           ),
         ),
 

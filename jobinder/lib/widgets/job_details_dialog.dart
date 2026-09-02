@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:jobinder/widgets/review_form.dart';
+import 'package:jobinder/widgets/review_list.dart';
 import '../models/job_opportunities_model.dart';
 import '../models/appuser_model.dart';
 import '../models/employer_model.dart';
@@ -22,29 +23,50 @@ class JobDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: Color.from(alpha: 1, red: 1, green: 0.97, blue: 0.98),
-      title: Text(job.jobName),
-      content: SingleChildScrollView(
-        child: FutureBuilder(
-          future: Future.wait([
-            userRepository.getUser(studentUid),
-            userRepository.getEmployerByUid(job.employer_user),
-          ]),
-          builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()));
-            }
-            if (snapshot.hasError || !snapshot.hasData) {
-              return const Text('Error loading user information.');
-            }
+    return FutureBuilder(
+      future: Future.wait([
+        userRepository.getUser(studentUid),
+        userRepository.getEmployerByUid(job.employer_user),
+      ]),
+      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()));
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const Text('Error loading user information.');
+        }
 
-            final studentUser = snapshot.data![0] as AppUser;
-            final employerUser = snapshot.data![1] as Employer;
+        final studentUser = snapshot.data![0] as AppUser;
+        final employerUser = snapshot.data![1] as Employer;
 
-            final yearly = (42 * 4 * 12 * job.salary * job.workloadPercentage / 100).toStringAsFixed(2);
+        final yearly = (42 * 4 * 12 * job.salary * job.workloadPercentage / 100).toStringAsFixed(2);
 
-            return ListBody(
+        return AlertDialog(
+          backgroundColor: Color.from(alpha: 1, red: 1, green: 0.97, blue: 0.98),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                employerUser.companyName,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                job.jobName,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
               children: [
                 _Row('Degree', job.degree),
                 _Row('Description', job.description),
@@ -59,12 +81,18 @@ class JobDetailsDialog extends StatelessWidget {
                 ),
                 _Row('Deadline', DateFormat('yyyy-MM-dd').format(job.deadline)),
 
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
                 const Divider(height: 1, color: Colors.black38),
                 const SizedBox(height: 16),
-                ReviewWidget(revieweeId: job.employer_user),
-                const Divider(),
-                const SizedBox(height: 8),
+                ReviewForm(revieweeId: job.employer_user),
+                const SizedBox(height: 32),
+                ReviewList(revieweeId: job.employer_user),
+                const SizedBox(height: 48),
+                const Text(
+                  'How to get there',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
 
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 4.0),
@@ -150,16 +178,16 @@ class JobDetailsDialog extends StatelessWidget {
                   },
                 )
               ],
-            );
-          },
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Close'),
-        ),
-      ],
+            )
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:jobinder/models/review_model.dart';
-import 'auth_provider.dart';
 import '/repositories/review_repository.dart';
 
 class ReviewProvider extends ChangeNotifier {
   final ReviewRepository _repository;
-  AuthProvider? _authProvider;
 
   ReviewProvider(this._repository);
 

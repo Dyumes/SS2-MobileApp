@@ -2,67 +2,56 @@ import 'package:easy_stars/easy_stars.dart';
 import 'package:flutter/material.dart';
 import 'package:jobinder/models/appuser_model.dart';
 import 'package:jobinder/models/review_model.dart';
+import 'package:jobinder/providers/review_provider.dart';
 import 'package:jobinder/repositories/firestore_user_repository.dart';
 import 'package:jobinder/repositories/user_repository.dart';
+import 'package:provider/provider.dart';
 
-class ReviewList extends StatefulWidget {
-  final List<Review> reviews;
-  final UserRepository? userRepository;
+class ReviewList extends StatelessWidget {
+  final String revieweeId;
 
   const ReviewList({
     super.key,
-    required this.reviews,
-    this.userRepository,
+    required this.revieweeId,
   });
 
   @override
-  State<ReviewList> createState() => _ReviewListState();
-}
-
-class _ReviewListState extends State<ReviewList> {
-  late final UserRepository _userRepository =
-      widget.userRepository ?? FirestoreUserRepository();
-
-  final Map<String, AppUser> _users = {};
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUsers();
-  }
-
-  Future<void> _loadUsers() async {
-    final userIds = widget.reviews
-        .map((review) => review.reviewer_user)
-        .where((uid) => uid.isNotEmpty)
-        .toSet();
-
-    print('USER IDS: $userIds');
-
-    for (final uid in userIds) {
-      final user = await _userRepository.getUser(uid);
-
-      if (user != null && mounted) {
-        setState(() {
-          _users[uid] = user;
-        });
-      }
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: widget.reviews.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 24),
-      itemBuilder: (context, index) {
-        final review = widget.reviews[index];
+    return StreamBuilder<List<Review>>(
+      stream: context
+          .read<ReviewProvider>()
+          .getReviewsForAUser(revieweeId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
 
-        return _ReviewItem(
-          review: review,
-          user: _users[review.reviewer_user],
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              'Error loading reviews: ${snapshot.error}',
+            ),
+          );
+        }
+
+        final reviews = snapshot.data ?? [];
+
+        if (reviews.isEmpty) {
+          return const Center(
+            child: Text('No reviews yet.'),
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (int index = 0; index < reviews.length; index++) ...[
+              if (index > 0) const SizedBox(height: 24),
+              _ReviewItem(review: reviews[index]),
+            ],
+          ],
         );
       },
     );
@@ -71,9 +60,43 @@ class _ReviewListState extends State<ReviewList> {
 
 class _ReviewItem extends StatelessWidget {
   final Review review;
-  final AppUser? user;
 
   const _ReviewItem({
+    required this.review,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final UserRepository userRepository = FirestoreUserRepository();
+
+    return FutureBuilder<AppUser?>(
+      future: userRepository.getUser(review.reviewer_user),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            height: 80,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        final user = snapshot.data;
+
+        return _ReviewContent(
+          review: review,
+          user: user,
+        );
+      },
+    );
+  }
+}
+
+class _ReviewContent extends StatelessWidget {
+  final Review review;
+  final AppUser? user;
+
+  const _ReviewContent({
     required this.review,
     required this.user,
   });
@@ -118,7 +141,7 @@ class _ReviewItem extends StatelessWidget {
                         _formatDate(review.timestamp),
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey.shade600,
+                          color: Colors.grey,
                         ),
                       ),
                     ],
