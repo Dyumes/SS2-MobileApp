@@ -149,6 +149,7 @@ Future<bool?> showEmployerEditDialog(
   final addressController = TextEditingController(text: userData.address);
 
   String? canton = employer.canton.isNotEmpty ? employer.canton : null;
+  String? companySize = employer.companySize.isNotEmpty ? employer.companySize : null;
 
   return showDialog<bool>(
     context: context,
@@ -165,6 +166,20 @@ Future<bool?> showEmployerEditDialog(
             onSelected: (value) {
               if (value != null) {
                 setDialogState(() => canton = value);
+              }
+            },
+          ),
+          const SizedBox(height: 12),
+
+          DropdownMenu<String>(
+            initialSelection: companySize,
+            label: const Text('Company size'),
+            dropdownMenuEntries: AppConstants.companySizes
+                .map((s) => DropdownMenuEntry(value: s, label: s))
+                .toList(),
+            onSelected: (value) {
+              if (value != null) {
+                setDialogState(() => companySize = value);
               }
             },
           ),
@@ -187,6 +202,7 @@ Future<bool?> showEmployerEditDialog(
             address: addressController.text.trim(),
             canton: canton ?? '',
             city: cityController.text.trim(),
+            companySize: employer.companySize,
           );
         },
       ),

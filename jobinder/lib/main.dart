@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:jobinder/main_screen.dart';
 import 'package:jobinder/providers/auth_provider.dart';
 import 'package:jobinder/services/firebase_auth_service.dart';
+import 'package:jobinder/services/salary_predictor.dart';
 import 'package:jobinder/view/admin_page.dart';
 import 'package:jobinder/view/login_view.dart';
 import 'package:jobinder/utils/theme.dart';
@@ -28,6 +29,21 @@ void main() async {
     );
   };
   runApp(const MyApp());
+  
+
+  // final p = await SalaryPredictor.load();
+  // print(p.predictForJob(
+  //   role: 'Senior',
+  //   contract: 'Permanent',
+  //   industry: 'Finance',
+  //   canton: 'ZH',
+  //   companySize: 'Large (1000+)',
+  //   degree: 'Master',
+  //   languages: ['German', 'English'],
+  // ));
+
+  // runApp(const MyApp());
+
 }
 
 class MyApp extends StatelessWidget {

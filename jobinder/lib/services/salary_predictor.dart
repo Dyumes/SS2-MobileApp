@@ -19,7 +19,7 @@ class SalaryPredictor {
   static Future<SalaryPredictor> load() async {
     if (_instance != null) return _instance!;
 
-    final raw = await rootBundle.loadString('assets/salary_model.json');
+    final raw = await rootBundle.loadString('salary_model.json');
     final json = jsonDecode(raw) as Map<String, dynamic>;
 
     final numeric = <String, _NumericFeature>{};
@@ -110,6 +110,11 @@ class SalaryPredictor {
 
     double has(String lang) => languages.contains(lang) ? 1.0 : 0.0;
 
+    const knownCantons = {
+      'AG', 'BE', 'BL', 'BS', 'FR', 'GE', 'LU',
+      'SG', 'SO', 'TG', 'TI', 'VD', 'VS', 'ZH',
+    };
+
     return predict(
       numericValues: {
         'Holidays': holidays.toDouble(),
@@ -125,7 +130,7 @@ class SalaryPredictor {
         'Role': role,
         'Contract': contract,
         'Industry': industry,
-        'Canton': canton,
+        'Canton': knownCantons.contains(canton) ? canton : 'Other',
       },
       workloadPercent: workloadPercent,
     );
