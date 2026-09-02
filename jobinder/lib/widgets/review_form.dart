@@ -23,6 +23,8 @@ class _ReviewWidgetState extends State<ReviewWidget> {
   // Workaround to reset the EasyStarsRating widget when a review is sent
   int _starsKey = 0;
 
+  String? _errorText;
+
   final TextEditingController _descriptionController = TextEditingController();
 
   @override
@@ -61,15 +63,8 @@ class _ReviewWidgetState extends State<ReviewWidget> {
 
         setState(() {
           _isSending = false;
+          _errorText = 'Your review contains inappropriate language.';
         });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Your review contains inappropriate language. Please modify it.',
-            ),
-          ),
-        );
         return;
       }
     }
@@ -91,13 +86,8 @@ class _ReviewWidgetState extends State<ReviewWidget> {
 
       setState(() {
         _isSending = false;
+        _errorText = 'Failed to send review. Please try again.';
       });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to send review. Please try again.'),
-        ),
-      );
     }
   }
 
@@ -105,9 +95,9 @@ class _ReviewWidgetState extends State<ReviewWidget> {
     final description = _descriptionController.text.trim();
 
     if (_rating == 0 || description.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please provide a rating and a review.')),
-      );
+      setState(() {
+        _errorText = 'Please provide a rating and a review.';
+      });
       return;
     }
 
@@ -140,6 +130,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
                 : (value) {
                     setState(() {
                       _rating = value.round();
+                      _errorText = null;
                     });
                   },
           ),
@@ -153,11 +144,20 @@ class _ReviewWidgetState extends State<ReviewWidget> {
           maxLines: 5,
           maxLength: 500,
           enabled: !_isSending,
-          decoration: const InputDecoration(
+          onChanged: (_) {
+            // Clear error text when typing
+            if (_errorText != null) {
+              setState(() {
+                _errorText = null;
+              });
+            }
+          },
+          decoration: InputDecoration(
             labelText: 'Review',
             hintText: 'Write your review...',
             border: OutlineInputBorder(),
             alignLabelWithHint: true,
+            errorText: _errorText,
           ),
         ),
 
