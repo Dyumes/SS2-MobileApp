@@ -76,6 +76,19 @@ class _JobDetailViewState extends State<JobDetailView> {
           body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              if (job.imageUrl != null && job.imageUrl!.isNotEmpty) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    job.imageUrl!,
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 16),
               _Row('Degree', job.degree),
               _Row('Description', job.description),
               _Row('Languages', job.languages.join(', ')),

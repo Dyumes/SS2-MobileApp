@@ -3,6 +3,8 @@ import 'package:jobinder/utils/app_constants.dart';
 import 'package:provider/provider.dart';
 import '../models/job_opportunities_model.dart';
 import '../providers/job_provider.dart';
+import '../repositories/image_storage_repository.dart';
+import 'package:image_picker/image_picker.dart';
 
 class JobForm extends StatefulWidget {
   final JobOpportunities? job;
@@ -27,7 +29,10 @@ class JobFormState extends State<JobForm> {
 
   final _formKey = GlobalKey<FormState>();
 
-  final bool _isUploading = false;
+  final ImagePicker _picker = ImagePicker();  
+  bool _isUploading = false;
+  String? _imageUrl;
+  String? _uploadError;
 
   @override
   void initState() {
@@ -260,6 +265,10 @@ class JobFormState extends State<JobForm> {
             ),
 
             const SizedBox(height: 16),
+
+            _buildImageSection(context),
+
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _isUploading ? null : () => _saveJob(context),
               child: Text(widget.job == null ? 'Save Job' : 'Update Job'),
@@ -288,6 +297,7 @@ class JobFormState extends State<JobForm> {
           industry: _industryController.text,
           deadline: DateTime.tryParse(_deadlineController.text) ?? DateTime.now(),
           timestamp: DateTime.now(),
+          imageUrl: _imageUrl,
         ));
       } else {
         jobProvider.updateJob(widget.job!.copyWith(
@@ -301,6 +311,7 @@ class JobFormState extends State<JobForm> {
           industry: _industryController.text,
           deadline: DateTime.tryParse(_deadlineController.text) ?? DateTime.now(),
           timestamp: DateTime.now(),
+          imageUrl: _imageUrl,
         ));
       }
       Navigator.of(context).pop();
@@ -313,5 +324,67 @@ class JobFormState extends State<JobForm> {
     setState(() {
       _companyName = name;
     });
+  }
+
+  // Code app test
+  Widget _buildImageSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (_imageUrl != null) ...[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              _imageUrl!,
+              height: 160,
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+        if (_uploadError != null) ...[
+          Text(
+            _uploadError!,
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
+          const SizedBox(height: 8),
+        ],
+        ElevatedButton.icon(
+          onPressed: _isUploading ? null : _pickAndUploadImage,
+          icon: _isUploading
+              ? const SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.image),
+          label: Text(_imageUrl == null ? 'Add Image' : 'Change Image'),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    final imageRepository = context.read<ImageStorageRepository>();
+
+    final picked = await _picker.pickImage(source: ImageSource.gallery);
+    if (picked == null) return;
+
+    setState(() {
+      _isUploading = true;
+      _uploadError = null;
+    });
+
+    try {
+      final bytes = await picked.readAsBytes();
+      final url = await imageRepository.uploadImage(bytes, picked.name);
+      if (!mounted) return;
+      setState(() => _imageUrl = url);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _uploadError = 'Image upload failed. Please try again.');
+    } finally {
+      if (mounted) setState(() => _isUploading = false);
+    }
   }
 }
