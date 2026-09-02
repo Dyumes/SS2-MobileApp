@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobinder/view/register_view.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../providers/auth_provider.dart';
 import 'dart:typed_data';
@@ -120,8 +119,6 @@ class LoginViewState extends State<LoginView> {
   }
 
   void _captureAndCompareFace(BuildContext context) async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
     final Uint8List? bytes = await Navigator.push<Uint8List>(
       context,
       MaterialPageRoute(builder: (_) => const CameraView()),

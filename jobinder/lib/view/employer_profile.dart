@@ -88,7 +88,7 @@ class _EmployerProfileViewState extends State<EmployerProfileView> {
                 backgroundImage:
                     (userData.imageUrl != null && userData.imageUrl!.isNotEmpty)
                     ? NetworkImage(userData.imageUrl!) as ImageProvider
-                    : const AssetImage('assets/images/default_avatar.png'),
+                    : const AssetImage('images/placeholder_PROFILE.jpg'),
               ),
             ),
 

@@ -6,7 +6,6 @@ import 'package:jobinder/providers/auth_provider.dart';
 import 'package:jobinder/providers/review_provider.dart';
 import 'package:jobinder/repositories/firestore_review_repository.dart';
 import 'package:jobinder/services/firebase_auth_service.dart';
-import 'package:jobinder/services/salary_predictor.dart';
 import 'package:jobinder/view/admin_page.dart';
 import 'package:jobinder/view/login_view.dart';
 import 'package:jobinder/utils/theme.dart';
