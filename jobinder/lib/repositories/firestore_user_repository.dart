@@ -3,6 +3,7 @@ import 'package:jobinder/models/appuser_model.dart';
 import 'package:jobinder/models/employer_model.dart';
 import 'package:jobinder/models/student_model.dart';
 import 'package:jobinder/repositories/user_repository.dart';
+import 'package:flutter/foundation.dart';
 
 class FirestoreUserRepository implements UserRepository {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -122,5 +123,31 @@ class FirestoreUserRepository implements UserRepository {
         .update({
       'address': address,
     });
+  }
+
+  @override
+  Future<Map<String, List<double>>> getAllUsersFaceEmbeddings() async {
+    final Map<String, List<double>> registeredUsers = {};
+
+    try {
+      final querySnapshot = await _usersRef.get();
+
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data();
+
+        final rawEmbedding = data['faceEmbedding'] ?? data['faceVector'];
+
+        if (rawEmbedding != null && rawEmbedding is List && rawEmbedding.isNotEmpty) {
+          final List<double> vector = rawEmbedding.map((e) => (e as num).toDouble()).toList();
+          
+          if (vector.length == 192) {
+            registeredUsers[doc.id] = vector;
+          }        
+        }
+      }
+    } catch (e) {
+    }
+
+    return registeredUsers;
   }
 }
