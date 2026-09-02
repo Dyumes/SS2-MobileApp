@@ -29,12 +29,10 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> _loadRole() async {
-    final uid = context.read<AuthProvider>().user?.uid;    
-    print(uid);
+    final uid = context.read<AuthProvider>().user?.uid;
     if (uid != null) {
       final user = await FirestoreUserRepository().getUser(uid);
       role = user.role;
-      print('User role: $role');
     }
     if (mounted) setState(() => loading = false);
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jobinder/models/employer_model.dart';
 import 'package:jobinder/models/job_opportunities_model.dart';
 import 'package:jobinder/repositories/firestore_user_repository.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +15,7 @@ class ApplicationsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final jobProvider = Provider.of<JobProvider>(context);
-
+    final userRepository = FirestoreUserRepository();
     final studentUid = context.watch<AuthProvider>().user?.uid;
 
     if (studentUid == null) {
@@ -55,99 +56,148 @@ class ApplicationsList extends StatelessWidget {
 
         return Column(
           children: filteredJobs.map((job) {
-            return Card(
-              margin: const EdgeInsets.only(bottom: 10),
-              elevation: 1,
-              clipBehavior:
-                  Clip.antiAlias, // pour que le ripple respecte les coins
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: InkWell(
-                onTap: () => showDialog(
-                  context: context,
-                  builder: (_) => JobDetailsDialog(
-                    job: job,
-                    studentUid: studentUid,
-                    userRepository: FirestoreUserRepository(),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: Row(
-                    children: [
-                      // Job icon
-                      Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withAlpha(25),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Icon(
-                          Icons.work_outline,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      // Job information
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              job.jobName,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-
-                            const SizedBox(height: 4),
-
-                            Text(
-                              job.description,
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey[600],
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-
-                            const SizedBox(height: 6),
-
-                            Text(
-                              '${job.salary} CHF',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(width: 8),
-
-                      // Indicates that the item can be opened
-                      Icon(Icons.chevron_right, color: Colors.grey[500]),
-                    ],
-                  ),
-                ),
-              ),
+            return _ApplicationJobCard(
+              job: job,
+              studentUid: studentUid,
+              userRepository: userRepository,
             );
           }).toList(),
+        );
+      },
+    );
+  }
+}
+
+class _ApplicationJobCard extends StatelessWidget {
+  const _ApplicationJobCard({
+    required this.job,
+    required this.studentUid,
+    required this.userRepository,
+  });
+
+  final JobOpportunities job;
+  final String studentUid;
+  final FirestoreUserRepository userRepository;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Employer>(
+      future: userRepository.getEmployerByUid(job.employer_user),
+      builder: (context, snapshot) {
+        final companyName = snapshot.data?.companyName ?? 'Loading...';
+
+        return Card(
+          margin: const EdgeInsets.only(bottom: 10),
+          elevation: 1,
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: InkWell(
+            onTap: () => showDialog(
+              context: context,
+              builder: (_) => JobDetailsDialog(
+                job: job,
+                studentUid: studentUid,
+                userRepository: userRepository,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withAlpha(25),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      Icons.work_outline,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Company
+                        Text(
+                          companyName,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                        const SizedBox(height: 2),
+
+                        // Job name
+                        Text(
+                          job.jobName,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                        const SizedBox(height: 4),
+
+                        // Description
+                        Text(
+                          job.description,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[600],
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                        const SizedBox(height: 6),
+
+                        // Salary
+                        Text(
+                          '${job.salary} CHF',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(width: 8),
+
+                  Icon(
+                    Icons.chevron_right,
+                    color: Colors.grey[500],
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );

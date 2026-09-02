@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jobinder/widgets/review_form.dart';
+import 'package:jobinder/widgets/review_list.dart';
 import '../models/job_opportunities_model.dart';
 import '../models/appuser_model.dart';
 import '../models/employer_model.dart';
@@ -21,48 +23,76 @@ class JobDetailsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: Color.from(alpha: 1, red: 1, green: 0.97, blue: 0.98),
-      title: Text(job.jobName),
-      content: SingleChildScrollView(
-        child: FutureBuilder(
-          future: Future.wait([
-            userRepository.getUser(studentUid),
-            userRepository.getEmployerByUid(job.employer_user),
-          ]),
-          builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()));
-            }
-            if (snapshot.hasError || !snapshot.hasData) {
-              return const Text('Error loading user information.');
-            }
+    return FutureBuilder(
+      future: Future.wait([
+        userRepository.getUser(studentUid),
+        userRepository.getEmployerByUid(job.employer_user),
+      ]),
+      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()));
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const Text('Error loading user information.');
+        }
 
-            final studentUser = snapshot.data![0] as AppUser;
-            final employerUser = snapshot.data![1] as Employer;
+        final studentUser = snapshot.data![0] as AppUser;
+        final employerUser = snapshot.data![1] as Employer;
 
-            return ListBody(
+        final yearly = (42 * 4 * 12 * job.salary * job.workloadPercentage / 100).toStringAsFixed(2);
+
+        return AlertDialog(
+          backgroundColor: Color.from(alpha: 1, red: 1, green: 0.97, blue: 0.98),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                employerUser.companyName,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                job.jobName,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
               children: [
-                Text('Degree : ${job.degree}'),
-                const SizedBox(height: 8),
-                Text('Hourly salary : ${job.salary} CHF'),
-                const SizedBox(height: 8),
-                Text('Yearly salary : ${(42 * 4 * 12 * job.salary * job.workloadPercentage / 100).toStringAsFixed(2)} CHF'),
-                const SizedBox(height: 8),
-                Text('Workload : ${job.workloadPercentage}%'),
-                const SizedBox(height: 8),
-                Text('Industry : ${job.industry}'),
-                const SizedBox(height: 8),
-                Text('Start date : ${DateFormat('yyyy-MM-dd').format(job.timestamp)}'),
-                const SizedBox(height: 8),
-                Text('Deadline : ${DateFormat('yyyy-MM-dd').format(job.deadline)}'),
-                const SizedBox(height: 8),
-                Text('Description : ${job.description}'),
-                const SizedBox(height: 8),
-                Text('Languages : ${job.languages.join(', ')}'),
+                _Row('Degree', job.degree),
+                _Row('Description', job.description),
+                _Row('Languages', job.languages.join(', ')),
+                _Row('Hourly salary', '${job.salary} CHF'),
+                _Row('Yearly salary', '$yearly CHF'),
+                _Row('Workload', '${job.workloadPercentage}%'),
+                _Row('Industry', job.industry),
+                _Row(
+                  'Start date',
+                  DateFormat('yyyy-MM-dd').format(job.timestamp),
+                ),
+                _Row('Deadline', DateFormat('yyyy-MM-dd').format(job.deadline)),
+
                 const SizedBox(height: 16),
-                const Divider(),
-                const SizedBox(height: 8),
+                const Divider(height: 1, color: Colors.black38),
+                const SizedBox(height: 16),
+                ReviewForm(revieweeId: job.employer_user),
+                const SizedBox(height: 32),
+                ReviewList(revieweeId: job.employer_user),
+                const SizedBox(height: 48),
+                const Text(
+                  'How to get there',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
 
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 4.0),
@@ -148,16 +178,16 @@ class JobDetailsDialog extends StatelessWidget {
                   },
                 )
               ],
-            );
-          },
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Close'),
-        ),
-      ],
+            )
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -200,4 +230,28 @@ void showJobDetails(BuildContext context, JobOpportunities job) {
     },
   );
 }
+}
+
+class _Row extends StatelessWidget {
+  const _Row(this.label, this.value);
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(label,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          Expanded(child: Text(value)),
+        ],
+      ),
+    );
+  }
 }
