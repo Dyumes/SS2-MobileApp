@@ -19,7 +19,6 @@ class AboutPage extends StatelessWidget {
       name: 'David Braz Jorge',
       username: 'Dav0105',
       avatarUrl: 'https://avatars.githubusercontent.com/u/120047730?v=4',
-      // avatarUrl: 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/6cd0e71a-b00b-4729-b98c-7ad3551e823e/dj9yhf8-403d6490-25e0-4f83-9e3b-4feacee2ed5a.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi82Y2QwZTcxYS1iMDBiLTQ3MjktYjk4Yy03YWQzNTUxZTgyM2UvZGo5eWhmOC00MDNkNjQ5MC0yNWUwLTRmODMtOWUzYi00ZmVhY2VlMmVkNWEuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.HK54xApb0XVDHP0v2zgKFgUls9YeDbQxNR9iBFTTl08'
     ),
     _Developer(
       name: 'Gaëtan Veuillet',
@@ -59,16 +58,52 @@ class AboutPage extends StatelessWidget {
             style: TextStyle(fontSize: 13, color: Colors.grey[600]),
           ),
           const SizedBox(height: 24),
-          Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 24,
-            runSpacing: 24,
-            children: developers
-                .map((dev) => _DeveloperAvatar(
-                      developer: dev,
-                      onTap: () => _openUrl('https://github.com/${dev.username}'),
-                    ))
-                .toList(),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final columns = constraints.maxWidth >= 1000
+                  ? 4
+                  : constraints.maxWidth >= 500
+                      ? 2
+                      : 1;
+
+              final rows = <Widget>[];
+
+              for (var i = 0; i < developers.length; i += columns) {
+                final row = developers
+                    .skip(i)
+                    .take(columns)
+                    .map(
+                      (dev) => _DeveloperAvatar(
+                        developer: dev,
+                        onTap: () => _openUrl(
+                          'https://github.com/${dev.username}',
+                        ),
+                      ),
+                    )
+                    .toList();
+
+                rows.add(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      for (var j = 0; j < row.length; j++) ...[
+                        if (j > 0) const SizedBox(width: 24),
+                        row[j],
+                      ],
+                    ],
+                  ),
+                );
+              }
+
+              return Column(
+                children: [
+                  for (var i = 0; i < rows.length; i++) ...[
+                    if (i > 0) const SizedBox(height: 16),
+                    rows[i],
+                  ],
+                ],
+              );
+            },
           ),
         ],
       ),

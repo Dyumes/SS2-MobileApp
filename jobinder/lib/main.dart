@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:jobinder/main_screen.dart';
 import 'package:jobinder/providers/auth_provider.dart';
 import 'package:jobinder/providers/review_provider.dart';
@@ -23,6 +24,11 @@ void main() async {
   await dotenv.load(fileName: ".env");
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   ErrorWidget.builder = (FlutterErrorDetails details) {
     return Container(

@@ -91,7 +91,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                 backgroundColor: Colors.orange.shade100,
                 backgroundImage: (userData.imageUrl != null && userData.imageUrl!.isNotEmpty)
                     ? NetworkImage(userData.imageUrl!) as ImageProvider
-                    : const AssetImage('assets/images/default_avatar.png'),
+                    : const AssetImage('images/placeholder_PROFILE.jpg'),
               ),
             ),
 

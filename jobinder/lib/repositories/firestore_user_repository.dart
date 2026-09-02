@@ -106,6 +106,7 @@ class FirestoreUserRepository implements UserRepository {
     required String address,
     required String canton,
     required String city,
+    required String companySize,
   }) async {
     await FirebaseFirestore.instance
         .collection('employer')
@@ -113,6 +114,7 @@ class FirestoreUserRepository implements UserRepository {
         .update({
       'canton': canton,
       'city': city,
+      'company_size': companySize,
     });
     await FirebaseFirestore.instance
         .collection('user')
