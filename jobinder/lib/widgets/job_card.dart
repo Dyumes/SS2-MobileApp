@@ -66,7 +66,7 @@ class JobCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: Colors.grey.withOpacity(0.2),
+                              color: Colors.grey.withAlpha(51),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
@@ -94,7 +94,7 @@ class JobCard extends StatelessWidget {
                             return Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
-                                color: Colors.grey.withOpacity(0.2),
+                                color: Colors.grey.withAlpha(51),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(lang, style: const TextStyle(fontSize: 12, color: Colors.black87)),
