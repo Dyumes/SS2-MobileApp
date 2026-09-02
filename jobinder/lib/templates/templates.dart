@@ -53,7 +53,7 @@ class AuthenticatedTemplate extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 24),
+            const SizedBox(height: 4),
 
             const Align(
               alignment: Alignment.centerLeft,
@@ -63,7 +63,7 @@ class AuthenticatedTemplate extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             Expanded(
               child: child,
             ),
