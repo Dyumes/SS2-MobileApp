@@ -21,7 +21,6 @@ import '../fake_repo.dart';
 import '../fakes.dart';
 import '../helpers/test_asset_bundle.dart';
 import '../helpers/test_surface.dart';
-import 'admin_page_test.dart';
 
 void main() {
   late FakeAuthService authService;

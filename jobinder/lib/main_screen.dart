@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobinder/templates/templates.dart';
+import 'package:jobinder/view/about_page.dart';
 import 'package:jobinder/view/homepage_employer.dart';
 import 'package:jobinder/view/homepage_student.dart';
 import 'package:jobinder/view/employer_profile.dart';
@@ -38,13 +39,6 @@ class _MainScreenState extends State<MainScreen> {
     if (mounted) setState(() => loading = false);
   }
 
-  Widget get firstPage {
-    if (role == 'student') return const HomePageStudent();
-    if (role == 'employer') return const HomePageEmployer();
-    print("Role is null or unrecognized, defaulting to JobView");
-    return const HomePageEmployer(); 
-  }
-
   Widget get middlePage {
     if (role == 'student') return const HomePageStudent();
     if (role == 'employer') return const HomePageEmployer();
@@ -60,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   List<Widget> get pages => [
-        firstPage,
+        const AboutPage(),
         middlePage,
         finalPage,
       ];
