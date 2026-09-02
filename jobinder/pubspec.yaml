@@ -41,6 +41,7 @@ dependencies:
   firebase_auth: ^6.6.0
   intl: ^0.20.3
   url_launcher: ^6.3.0
+  easy_stars: ^1.0.9
 
 dev_dependencies:
   flutter_test:

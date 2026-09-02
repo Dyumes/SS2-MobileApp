@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jobinder/widgets/review_form.dart';
 import 'package:provider/provider.dart';
 import 'package:jobinder/models/appuser_model.dart';
 import 'package:jobinder/models/student_model.dart';
@@ -112,6 +113,11 @@ class _ApplicantDetailViewState extends State<ApplicantDetailView> {
             ),
 
           const SizedBox(height: 32),
+
+          ReviewWidget(),
+
+          const SizedBox(height: 32),
+
 
           Row(
             children: [

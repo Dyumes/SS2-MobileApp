@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jobinder/widgets/review_form.dart';
 import '../models/job_opportunities_model.dart';
 import '../models/appuser_model.dart';
 import '../models/employer_model.dart';
@@ -61,6 +62,8 @@ class JobDetailsDialog extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text('Languages : ${job.languages.join(', ')}'),
                 const SizedBox(height: 16),
+                const Divider(height: 1, color: Colors.black38),
+                ReviewWidget(),
                 const Divider(),
                 const SizedBox(height: 8),
 
