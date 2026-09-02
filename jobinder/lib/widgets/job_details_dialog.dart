@@ -43,9 +43,6 @@ class JobDetailsDialog extends StatelessWidget {
         final studentUser = snapshot.data![0] as AppUser;
         final employerUser = snapshot.data![1] as Employer;
 
-        final yearly = (42 * 4 * 12 * job.salary * job.workloadPercentage / 100)
-            .toStringAsFixed(2);
-
         return AlertDialog(
           backgroundColor: Color.from(
             alpha: 1,
