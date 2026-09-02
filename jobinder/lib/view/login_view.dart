@@ -74,6 +74,11 @@ class LoginViewState extends State<LoginView> {
               ],
               ElevatedButton(
                 onPressed: authProvider.isLoading ? null : () => _captureAndCompareFace(context),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
                 child: authProvider.isLoading
                     ? const SizedBox(
                         height: 20,

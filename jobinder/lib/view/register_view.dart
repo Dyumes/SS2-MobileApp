@@ -465,6 +465,11 @@ class RegisterViewState extends State<RegisterView> {
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: _isUploading ? null : _captureAndUploadImage,
+                  style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
                   icon: _isUploading
                       ? const SizedBox(
                           width: 20,
