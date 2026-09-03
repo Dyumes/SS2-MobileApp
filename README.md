@@ -257,6 +257,48 @@ flutter run
 ```
 _Make sure that the right device is selected before running the command._
 
+## Troubleshooting
+If you get an error similar to this when running `flutter run`:
+
+```
+FAILURE: Build failed with an exception.
+
+* Where:
+Build file '/.../jobinder/android/app/build.gradle.kts' line: 44
+
+* What went wrong:
+null cannot be cast to non-null type kotlin.String
+```
+
+Replace those lines: 
+```kotlin
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
+            storePassword = keystoreProperties["storePassword"] as String
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+```
+
+To:
+```kotlin
+    // Remove signingConfigs
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("debug") // <-- Here
+        }
+    }
+```
+
 # Testing
 Tests are stored in the `test` folder. In order to launch the tests, execute the following:
 ```bash
