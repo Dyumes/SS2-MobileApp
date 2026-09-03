@@ -111,6 +111,97 @@ final tasks = context.watch<JobProvider>().tasks;   // rebuild on change
 context.read<JobProvider>().deleteTask(id);         // call once, no rebuild
 ```
 
+## Data model
+### Users
+Users can be either students (aka job seekers) and employers (who create job offers).
+Their info is stored across multiple documents, as follows: 
+
+**AppUser**: contains common informations about students and employers
+
+| field    | Description                               |
+|----------|-------------------------------------------|
+| name     | Name of the user                          |
+| surname  | Surname of the user                       |
+| address  | Home/Company address of the user          |
+| email    | Email of the user                         |
+| role     | Role of the user (student/employer/admin) |
+| imageUrl | URL of their profile picture              |
+
+_Do not confuse `User` (from Firebase) which contains data about Authentication and `AppUser` which contains personal data about the users._
+
+----
+**Student**: contains information about a user if they are a student
+
+| field       | Description                                               |
+|-------------|-----------------------------------------------------------|
+| skills      | List of String containing skills of the student           |
+| history     | List of `History` objects representing their previous jobs  |
+| degree      | Degree that the student has                               |
+| minSalary   | Min salary the student wants (for filtering job offers)   |
+| maxDistance | Max distance the student wants to travel (to filter jobs) |
+
+----
+**Employer**: contains informations about a user if they are an employer
+
+| field       | Description                                                                   |
+|-------------|-------------------------------------------------------------------------------|
+| companyName | Name of the company                                                           |
+| canton      | Canton where the company is                                                   |
+| city        | City where the company is                                                     |
+| companySize | Number of employees working for the company (startup, small, medium or large) |
+
+----
+**History**: A history item, containing info about a previous job experience.
+
+| field     | Description                 |
+|-----------|-----------------------------|
+| company   | Name of the company         |
+| link      | Link to the company website |
+| startDate | Date when the job started   |
+| endDate   | Date when the job ended     |
+
+## Job opportunities
+**Job opportunities**: Represents a job opportunity, where a student can submit their application
+
+| field              | Description                                                       |
+|--------------------|-------------------------------------------------------------------|
+| employer_user      | ID of the employer that created the offer                         |
+| degree             | Minimal degree the student needs to have to submit an application |
+| jobName            | Title of the job                                                  |
+| description        | Description of the job                                            |
+| languages          | Languages required for the job                                    |
+| salary             | Salary of the job (yearly)                                        |
+| workloadPercentage | Percentage of workload                                            |
+| industry           | Industry of the job                                               |
+| timestamp          | DateTime when the job opportunity is created                      |
+| deadline           | DateTime representing the deadline to submit an application       |
+| imageUrl           | URL of the thumbnail image in the job application                 |
+| studentApplication | Map containing the ID and status of student applications          |
+| role               | Role of the job                                                   |
+| contract           | Duration of the contract                                          |
+| holidays           | Number of holidays                                                |
+
+
+## Review system
+**Review**: Students can post a review about their Employers and vice-versa, with a rating and a comment.
+
+| field         | Description                                      |
+|---------------|--------------------------------------------------|
+| reviewer_user | User that created the review                     |
+| reviewee_user | User concerned by the review                     |
+| comment       | Message of the review                            |
+| note          | Star rating of the review (from 1 to 5 included) |
+| timestamp     | Date of creation of the review                   |
+
+## Transport 
+**Transport**: Represents data about a trip (with a departure, destination and steps).
+
+| field         | Description                                        |
+|---------------|----------------------------------------------------|
+| departureTime | DateTime of departure                              |
+| arrivalTime   | DateTime of arrival                                |
+| sections      | Steps to arrive at destinations (trains, bus, ...) |
+
 # Configuration
 
 ## 0. Prerequisites

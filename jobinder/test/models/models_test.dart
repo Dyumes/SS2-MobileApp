@@ -4,7 +4,7 @@ import 'package:jobinder/models/appuser_model.dart';
 import 'package:jobinder/models/employer_model.dart';
 import 'package:jobinder/models/job_opportunities_model.dart';
 import 'package:jobinder/models/student_model.dart';
-import 'package:jobinder/models/transport.dart';
+import 'package:jobinder/models/transport_model.dart';
 
 void main() {
   group('AppUser', () {
