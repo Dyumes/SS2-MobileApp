@@ -206,8 +206,13 @@ _Do not confuse `User` (from Firebase) which contains data about Authentication 
 
 ## 0. Prerequisites
 - Flutter SDK 
+- For Android SDK (recommended): 
+  - JDK 17
 - A Firebase project
 - Cloudinary account
+
+*In case an error with jdk version occurs, try changing to the recommended JDK version above.*  
+*You can do that by installing another java version (with a tool such as `javm`) and executing `flutter config --jdk-dir "{path_to_the_jdk_folder_you_installed}` in the project root.*
 
 ## 1. Firebase
 Before anything, make sure to create a project on Firebase.
