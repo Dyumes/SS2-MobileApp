@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import '../models/transport.dart';
+import '../models/transport_model.dart';
 
 class TransportService {
   static Future<List<Transport>> fetchTransports(String origin, String destination) async {

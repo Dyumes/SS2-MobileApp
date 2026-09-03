@@ -6,7 +6,7 @@ import 'package:jobinder/widgets/review_list.dart';
 import '../models/job_opportunities_model.dart';
 import '../models/appuser_model.dart';
 import '../models/employer_model.dart';
-import '../models/transport.dart';
+import '../models/transport_model.dart';
 import '../repositories/user_repository.dart';
 import '../services/transport_service.dart';
 
