@@ -85,7 +85,7 @@ flutter:
   assets:
     - images/
     - .env
-    - assets/mobile_face_net.tflite
+    - assets/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
