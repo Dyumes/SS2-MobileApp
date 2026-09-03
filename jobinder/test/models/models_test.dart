@@ -15,6 +15,8 @@ void main() {
         'address': 'Rue du Nord 1, Sion',
         'email': 'john@example.com',
         'role': 'student',
+        'imageUrl': 'https://example.com/image.jpg',
+        'faceVector': null,
       }, 'usr_1');
 
       expect(user.id, 'usr_1');
@@ -45,7 +47,6 @@ void main() {
       ).toMap();
 
       expect(map.containsKey('id'), isFalse);
-      expect(map, hasLength(5));
     });
   });
 

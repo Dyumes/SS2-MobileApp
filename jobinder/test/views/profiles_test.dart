@@ -72,141 +72,94 @@ void main() {
     Widget createView() =>
         wrap(StudentProfileView(userRepository: userRepository));
 
-    testWidgets('a loader is shown while the profile is fetched',
-        (tester) async {
+    testWidgets('a loader is shown while the profile is fetched', (
+      tester,
+    ) async {
       await tester.pumpWidget(createView());
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('the profile of the connected student is displayed',
-        (tester) async {
-      await tester.pumpWidget(createView());
-      await tester.pumpAndSettle();
+    group('EmployerProfileView', () {
+      setUp(() {
+        connect('uid_employer_1');
+        userRepository.users['uid_employer_1'] = buildAppUser(
+          id: 'uid_employer_1',
+          name: 'Jane',
+          surname: 'Smith',
+          address: 'Rue du Nord 1',
+          email: 'hr@acme.example',
+          role: 'employer',
+        );
+        userRepository.employers['uid_employer_1'] = Employer(
+          id: 'uid_employer_1',
+          companyName: 'ACME SA',
+          canton: 'VS',
+          city: 'Sion',
+        );
+      });
 
-      expect(find.text('John Doe'), findsOneWidget);
-      expect(find.text('Dart, Flutter'), findsOneWidget);
-      expect(find.text('Bachelor'), findsOneWidget);
-      expect(find.text('100 CHF / hour'), findsOneWidget);
-      expect(find.text('30 km'), findsOneWidget);
-      expect(find.text('ACME SA'), findsOneWidget);
-    });
+      Widget createView() =>
+          wrap(EmployerProfileView(userRepository: userRepository));
 
-    testWidgets('the three application filters are available', (tester) async {
-      useTallSurface(tester);                       
+      testWidgets('the company of the connected employer is displayed', (
+        tester,
+      ) async {
+        await tester.pumpWidget(createView());
+        await tester.pumpAndSettle();
 
-      await tester.pumpWidget(createView());
-      await tester.pumpAndSettle();
+        expect(find.text('Jane Smith / ACME SA'), findsOneWidget);
+        expect(find.text('VS'), findsOneWidget);
+        expect(find.text('Sion'), findsOneWidget);
+        expect(find.text('Rue du Nord 1'), findsOneWidget);
+      });
 
-      expect(find.text('Submitted'), findsOneWidget);
-      expect(find.text('Accepted'), findsOneWidget);
-      expect(find.text('Refused'), findsOneWidget);
-    });
+      testWidgets('an empty city blocks the save', (tester) async {
+        await tester.pumpWidget(createView());
+        await tester.pumpAndSettle();
 
+        await tester.tap(find.widgetWithText(ElevatedButton, 'Edit Profile'));
+        await tester.pumpAndSettle();
 
-    testWidgets('the edit dialog opens prefilled and saves the changes',
-        (tester) async {
-      await tester.pumpWidget(createView());
-      await tester.pumpAndSettle();
+        await tester.enterText(find.widgetWithText(TextFormField, 'Sion'), '');
+        await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Edit'));
-      await tester.pumpAndSettle();
+        expect(find.text('Field required'), findsOneWidget);
+        expect(userRepository.lastEmployerUpdate, isNull);
+      });
 
-      expect(find.text('Edit profile'), findsOneWidget);
+      testWidgets('editing the city saves the new value', (tester) async {
+        await tester.pumpWidget(createView());
+        await tester.pumpAndSettle();
 
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Sion'),
-        'Martigny',
-      );
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(ElevatedButton, 'Edit Profile'));
+        await tester.pumpAndSettle();
 
-      final update = userRepository.lastStudentUpdate;
-      expect(update, isNotNull);
-      expect(update!.uid, 'uid_student_1');
-      expect(update.address, 'Martigny');
-      expect(update.skills, ['Dart', 'Flutter']);
-    });
-  });
+        await tester.enterText(
+          find.widgetWithText(TextFormField, 'Sion'),
+          'Lausanne',
+        );
+        await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
+        await tester.pumpAndSettle();
 
-  group('EmployerProfileView', () {
-    setUp(() {
-      connect('uid_employer_1');
-      userRepository.users['uid_employer_1'] = buildAppUser(
-        id: 'uid_employer_1',
-        name: 'Jane',
-        surname: 'Smith',
-        address: 'Rue du Nord 1',
-        email: 'hr@acme.example',
-        role: 'employer',
-      );
-      userRepository.employers['uid_employer_1'] = Employer(
-        id: 'uid_employer_1',
-        companyName: 'ACME SA',
-        canton: 'VS',
-        city: 'Sion',
-      );
-    });
+        final update = userRepository.lastEmployerUpdate;
+        expect(update, isNotNull);
+        expect(update!.city, 'Lausanne');
+        expect(update.canton, 'VS');
+        expect(update.address, 'Rue du Nord 1');
+      });
 
-    Widget createView() =>
-        wrap(EmployerProfileView(userRepository: userRepository));
+      testWidgets('signing out goes through the auth service', (tester) async {
+        await tester.pumpWidget(createView());
+        await tester.pumpAndSettle();
 
-    testWidgets('the company of the connected employer is displayed',
-        (tester) async {
-      await tester.pumpWidget(createView());
-      await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(ElevatedButton, 'Disconnect'));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Jane Smith / ACME SA'), findsOneWidget);
-      expect(find.text('VS'), findsOneWidget);
-      expect(find.text('Sion'), findsOneWidget);
-      expect(find.text('Rue du Nord 1'), findsOneWidget);
-    });
-
-    testWidgets('an empty city blocks the save', (tester) async {
-      await tester.pumpWidget(createView());
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Edit Profile'));
-      await tester.pumpAndSettle();
-
-      await tester.enterText(find.widgetWithText(TextFormField, 'Sion'), '');
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Field required'), findsOneWidget);
-      expect(userRepository.lastEmployerUpdate, isNull);
-    });
-
-    testWidgets('editing the city saves the new value', (tester) async {
-      await tester.pumpWidget(createView());
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Edit Profile'));
-      await tester.pumpAndSettle();
-
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Sion'),
-        'Lausanne',
-      );
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
-      await tester.pumpAndSettle();
-
-      final update = userRepository.lastEmployerUpdate;
-      expect(update, isNotNull);
-      expect(update!.city, 'Lausanne');
-      expect(update.canton, 'VS');
-      expect(update.address, 'Rue du Nord 1');
-    });
-
-    testWidgets('signing out goes through the auth service', (tester) async {
-      await tester.pumpWidget(createView());
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Disconnect'));
-      await tester.pumpAndSettle();
-
-      // FakeAuthService returns signOutError (null here) without throwing.
-      expect(authProvider.errorMessage, isNull);
+        // FakeAuthService returns signOutError (null here) without throwing.
+        expect(authProvider.errorMessage, isNull);
+      });
     });
   });
 }

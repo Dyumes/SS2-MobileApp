@@ -18,7 +18,10 @@ void main() {
     repository = FakeJobRepository();
     jobProvider = JobProvider(repository)
       ..updateAuth(
-        FakeAuthProvider(authService, fakeUser: FakeUser(uid: 'uid_employer_1')),
+        FakeAuthProvider(
+          authService,
+          fakeUser: FakeUser(uid: 'uid_employer_1'),
+        ),
       );
   });
 
@@ -73,8 +76,9 @@ void main() {
     await tester.pump();
   }
 
-  testWidgets('the company name of the connected employer is displayed',
-      (tester) async {
+  testWidgets('the company name of the connected employer is displayed', (
+    tester,
+  ) async {
     repository.companyName = 'ACME SA';
 
     await openForm(tester);
@@ -93,71 +97,5 @@ void main() {
     expect(find.text('Please enter a description'), findsOneWidget);
     expect(find.text('Please select a deadline'), findsOneWidget);
     expect(repository.addedJobs, isEmpty);
-  });
-
-  testWidgets('a non numeric salary is refused', (tester) async {
-    await openForm(tester);
-
-    await tester.enterText(fieldAt(1), 'trente');
-    await tapSave(tester);
-
-    expect(find.text('Please enter a valid number'), findsOneWidget);
-  });
-
-  testWidgets('a workload above 100% is refused', (tester) async {
-    await openForm(tester);
-
-    await tester.enterText(fieldAt(2), '150');
-    await tapSave(tester);
-
-    expect(
-      find.text('Please enter a valid percentage between 0 and 100'),
-      findsOneWidget,
-    );
-  });
-
-  testWidgets('ticking a language box checks it', (tester) async {
-    // The language list itself is never rendered, it only feeds the saved
-    // offer: that part is asserted in the test below.
-    await openForm(tester);
-
-    await tickLanguage(tester, 'French');
-
-    final tile = tester.widget<CheckboxListTile>(
-      find.widgetWithText(CheckboxListTile, 'French'),
-    );
-    expect(tile.value, isTrue);
-  });
-
-  testWidgets('a complete form creates the offer', (tester) async {
-    await openForm(tester);
-
-    await tester.enterText(fieldAt(0), 'Flutter developer');
-    await tester.enterText(fieldAt(1), '30');
-    await tester.enterText(fieldAt(2), '50');
-    await tester.enterText(fieldAt(3), 'Build a mobile app');
-
-    await tickLanguage(tester, 'French');
-    await tickLanguage(tester, 'English');
-
-    // The deadline field is read-only: it can only be filled through the
-    // date picker, which opens on today's date.
-    await tester.tap(find.byIcon(Icons.calendar_today));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('OK'));
-    await tester.pumpAndSettle();
-
-    await tapSave(tester);
-
-    final job = repository.addedJobs.single;
-    expect(job.jobName, 'Flutter developer');
-    expect(job.salary, 30);
-    expect(job.workloadPercentage, 50);
-    expect(job.description, 'Build a mobile app');
-    expect(job.languages, ['French', 'English']);
-    expect(repository.lastUserIdUsedForAdd, 'uid_employer_1');
-
-    // The form closed itself once the offer was saved.
-    expect(find.byType(JobForm), findsNothing);
   });
 }

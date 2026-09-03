@@ -32,7 +32,9 @@ class JobCard extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Card(child: Center(child: CircularProgressIndicator()));
         }
-        if (snapshot.hasError) {
+        if (snapshot.hasError ||
+            !snapshot.hasData ||
+            snapshot.data![0] == null)  {
           return Card(
             child: Center(
               child: Padding(

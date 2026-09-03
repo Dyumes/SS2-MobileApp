@@ -55,6 +55,8 @@ class FakeJobRepository implements JobRepository {
   /// that has no employer document.
   String? employerUserId = 'emp_1';
   String companyName = 'ACME SA';
+  String companyCanton = 'VS';
+  String companySize = 'Small (50-200)';
 
   final List<JobOpportunities> addedJobs = [];
   final List<JobOpportunities> updatedJobs = [];
@@ -65,6 +67,16 @@ class FakeJobRepository implements JobRepository {
   String? lastEmployerIdQueried;
   String? lastUserIdUsedForAdd;
   String? lastUserIdUsedForDelete;
+
+
+  @override
+  Future<String> getCompanyName(String? ref) async => companyName;
+
+  @override
+  Future<String> getCompanyCanton(String? ref) async => companyCanton;
+
+  @override
+  Future<String> getCompanySize(String? ref) async => companySize;
 
   /// Pushes a new snapshot to every open stream.
   void emitJobs(List<JobOpportunities> jobs) {
@@ -104,9 +116,6 @@ class FakeJobRepository implements JobRepository {
     deletedJobIds.add(jobId);
     lastUserIdUsedForDelete = userId;
   }
-
-  @override
-  Future<String> getCompanyName(String? ref) async => companyName;
 
   @override
   Future<String?> getEmployerUserId(String uid) async {
@@ -205,12 +214,14 @@ class FakeUserRepository implements UserRepository {
     required String address,
     required String canton,
     required String city,
+    required String companySize,
   }) async {
     lastEmployerUpdate = EmployerProfileUpdate(
       uid: uid,
       address: address,
       canton: canton,
       city: city,
+      companySize: companySize,
     );
   }
 
@@ -243,12 +254,14 @@ class EmployerProfileUpdate {
     required this.address,
     required this.canton,
     required this.city,
+    required this.companySize,
   });
 
   final String uid;
   final String address;
   final String canton;
   final String city;
+  final String companySize;
 }
 
 /// Convenience builder so tests only spell out the fields they care about.
@@ -262,6 +275,9 @@ JobOpportunities buildJob({
   int salary = 30,
   int workloadPercentage = 50,
   String industry = 'IT',
+  String role = 'Junior',
+  String contract = 'Permanent',
+  int holidays = 25,
   DateTime? timestamp,
   DateTime? deadline,
   Map<String, String> studentApplication = const {},
@@ -276,6 +292,9 @@ JobOpportunities buildJob({
     salary: salary,
     workloadPercentage: workloadPercentage,
     industry: industry,
+    role: role,
+    contract: contract,
+    holidays: holidays,
     timestamp: timestamp ?? DateTime(2026, 1, 15),
     deadline: deadline ?? DateTime(2026, 3, 31),
     studentApplication: studentApplication,

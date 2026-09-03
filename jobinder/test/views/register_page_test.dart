@@ -24,11 +24,11 @@ void main() {
     );
 
     await tester.ensureVisible(
-      find.widgetWithText(ElevatedButton, 'Register'),
+      find.widgetWithText(FilledButton, 'Register'),
     );
 
     await tester.tap(
-      find.widgetWithText(ElevatedButton, 'Register'),
+      find.widgetWithText(FilledButton, 'Register'),
     );
 
     await tester.pumpAndSettle();
@@ -82,11 +82,11 @@ void main() {
     );
 
     await tester.ensureVisible(
-      find.widgetWithText(ElevatedButton, 'Register'),
+      find.widgetWithText(FilledButton, 'Register'),
     );
 
     await tester.tap(
-      find.widgetWithText(ElevatedButton, 'Register'),
+      find.widgetWithText(FilledButton, 'Register'),
     );
 
     await tester.pumpAndSettle();
@@ -135,11 +135,11 @@ void main() {
     );
 
     await tester.ensureVisible(
-      find.widgetWithText(ElevatedButton, 'Register'),
+      find.widgetWithText(FilledButton, 'Register'),
     );
 
     await tester.tap(
-      find.widgetWithText(ElevatedButton, 'Register'),
+      find.widgetWithText(FilledButton, 'Register'),
     );
 
     await tester.pumpAndSettle();
