@@ -43,24 +43,24 @@ talks to Firebase or Cloudinary directly.
 ```
 ┌───────────────────────────────────────────────┐
 │  Views & Widgets (UI)                         │  what the user sees
-│  login_screen, task_list_screen, task_form…   │
+│  login_view, job_details_view, about_page, ...│
 └───────────────┬───────────────────────────────┘
                 │ reads state / calls methods
 ┌───────────────▼───────────────────────────────┐
 │  Providers (state management)                 │  app logic + UI state
-│  AuthProvider, TaskProvider                   │  lets us refresh content when new update
+│  AuthProvider, JobProvider, ...               │  lets us refresh content when new update
 └───────────────┬───────────────────────────────┘
                 │ depends on interfaces (not Firebase!)
 ┌───────────────▼───────────────────────────────┐
 │  Repositories & Services (abstractions)       │  data access contracts
-│  TaskRepository, AuthService,                 │
-│  ImageStorageRepository                       │
+│  JobRepository, AuthService,                  │
+│  ImageStorageRepository, ...                  │
 └───────────────┬───────────────────────────────┘
                 │ implemented by
 ┌───────────────▼───────────────────────────────┐
 │  Concrete implementations                     │  the real integrations
-│  FirestoreTaskRepository, FirebaseAuthService,│
-│  CloudinaryImageRepository                    │
+│  FirestoreJobRepository, FirebaseAuthService, │
+│  CloudinaryImageRepository, ...               │
 └───────────────┬───────────────────────────────┘
                 │
 ┌───────────────▼───────────────────────────────┐
@@ -99,16 +99,16 @@ MultiProvider(
 - **`ChangeNotifierProxyProvider`** is used because `JobProvider` *depends on*
   `AuthProvider`: it needs the current user's id to know whose data to load.
   Whenever auth changes, the proxy hands the latest `AuthProvider` to
-  `TaskProvider`.
+  `JobProvider`.
 - **Dependency injection**: the providers receive their data sources through
   their constructors (`AuthProvider(FirebaseAuthService())`,
-  `JobProvider(FirestoreTaskRepository())`). This is what makes them testable.
+  `JobProvider(FirestoreJobRepository())`). This is what makes them testable.
 
 In widgets you typically:
 
 ```dart
-final tasks = context.watch<JobProvider>().tasks;   // rebuild on change
-context.read<JobProvider>().deleteTask(id);         // call once, no rebuild
+final user = context.watch<AuthProvider>();   // rebuild on change
+context.read<JobProvider>().signOut();        // call once, no rebuild
 ```
 
 ## Data model
