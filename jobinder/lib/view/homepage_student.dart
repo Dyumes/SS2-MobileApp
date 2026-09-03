@@ -23,7 +23,12 @@ class HomePageStudent extends StatefulWidget {
 }
 
 class _HomePageStudentState extends State<HomePageStudent> {
-  int _currentIndex = 0;
+  // Ids of the offers already handled in this session, liked or skipped.
+  // A Set instead of an index: the list of offers shrinks under us every time
+  // Firestore pushes an update, so any position we stored would drift and end
+  // up past the end of the list, showing "Nothing" while offers remain.
+  final Set<String> _handled = {};
+
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String? _uid;
@@ -40,13 +45,6 @@ class _HomePageStudentState extends State<HomePageStudent> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  // Move to the next card
-  void _nextCard() {
-    setState(() {
-      _currentIndex++;
-    });
   }
 
   // Load student and user data
@@ -67,14 +65,26 @@ class _HomePageStudentState extends State<HomePageStudent> {
     ]);
   }
 
+  // Skip the current offer: it stays in Firestore, we just stop showing it
+  void _skipCard(JobOpportunities job) {
+    setState(() => _handled.add(job.id));
+  }
+
   // Apply for a job
-  void _applyCard(JobOpportunities job) {
-    _jobRepository.updateStatus(
-      job.id,
-      context.read<AuthProvider>().user!.uid,
-      'applied',
-    );
-    _nextCard();
+  Future<void> _applyCard(JobOpportunities job) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final uid = context.read<AuthProvider>().user!.uid;
+
+    // Hide the card straight away, without waiting for Firestore to echo back
+    setState(() => _handled.add(job.id));
+
+    try {
+      await _jobRepository.updateStatus(job.id, uid, 'applied');
+    } catch (e) {
+      // The write failed, so put the offer back in the deck
+      if (mounted) setState(() => _handled.remove(job.id));
+      messenger.showSnackBar(SnackBar(content: Text('Could not apply: $e')));
+    }
   }
 
   // Show job details in a dialog
@@ -114,7 +124,6 @@ class _HomePageStudentState extends State<HomePageStudent> {
               onChanged: (value) {
                 setState(() {
                   _searchQuery = value.toLowerCase();
-                  _currentIndex = 0;
                 });
               },
               decoration: InputDecoration(
@@ -127,7 +136,6 @@ class _HomePageStudentState extends State<HomePageStudent> {
                           _searchController.clear();
                           setState(() {
                             _searchQuery = '';
-                            _currentIndex = 0;
                           });
                         },
                       )
@@ -160,6 +168,21 @@ class _HomePageStudentState extends State<HomePageStudent> {
           return StreamBuilder<List<JobOpportunities>>(
             stream: jobProvider.studentjobs,
             builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    'Error loading offers: ${snapshot.error}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                );
+              }
+
+              // Without this the first frame has no data yet and shows
+              // "Nothing" for a moment every time the page is rebuilt
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
               final allJobs = snapshot.data ?? [];
 
               final jobs = allJobs.where((job) {
@@ -169,23 +192,25 @@ class _HomePageStudentState extends State<HomePageStudent> {
                 final notApplied = !(job.studentApplication.containsKey(
                   user.uid,
                 ));
+                final notHandled = !_handled.contains(job.id);
 
-                // Filter jobs 
-                final matchesDegree = (student.degree?.isEmpty ?? true) || job.degree == student.degree;
+                // Filter jobs
+                final matchesDegree = (student.degree?.isEmpty ?? true) || student.degree == 'All' || job.degree == student.degree ;
                 final matchesSalary = student.minSalary == null || job.salary >= student.minSalary!;
-                final matchesIndustry = (student.industry?.isEmpty ?? true) || job.industry == student.industry;
+                final matchesIndustry = (student.industry?.isEmpty ?? true) || student.industry == 'All' || job.industry == student.industry ;
 
 
-                return matchesSearch && notApplied && matchesDegree && matchesSalary && matchesIndustry;
+                return matchesSearch && notApplied && notHandled && matchesDegree && matchesSalary && matchesIndustry;
               }).toList();
 
-              if (jobs.isEmpty || _currentIndex >= jobs.length) {
+              if (jobs.isEmpty) {
                 return const Center(
                   child: Text('Nothing', style: TextStyle(fontSize: 18)),
                 );
               }
 
-              final currentJob = jobs[_currentIndex];
+              // Always the head of the list: no index to keep in sync
+              final currentJob = jobs.first;
 
               return Column(
                 children: [
@@ -194,17 +219,20 @@ class _HomePageStudentState extends State<HomePageStudent> {
                       padding: const EdgeInsets.all(12),
                       child: Stack(
                         children: [
-                          if (_currentIndex + 1 < jobs.length)
+                          // Card underneath, drawn first so it stays behind
+                          if (jobs.length > 1)
                             JobCard(
-                              job: jobs[_currentIndex + 1],
+                              key: ValueKey(jobs[1].id),
+                              job: jobs[1],
                               studentUid: user.uid,
                               userRepository: _userRepository,
                             ),
                           SwipeableCard(
                             key: _cardKey,
-                            onSwipeLeft: _nextCard,
+                            onSwipeLeft: () => _skipCard(currentJob),
                             onSwipeRight: () => _applyCard(currentJob),
                             child: JobCard(
+                              key: ValueKey(currentJob.id),
                               job: currentJob,
                               studentUid: user.uid,
                               userRepository: _userRepository,

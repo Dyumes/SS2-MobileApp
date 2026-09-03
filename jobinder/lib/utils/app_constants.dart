@@ -15,7 +15,7 @@ class AppConstants {
 
   // le modèle connaît aussi None et Apprenticeship
   static const List<String> degrees = [
-    'None', 'Apprenticeship', 'Bachelor', 'Master', 'PhD',
+    'All', 'Apprenticeship', 'Bachelor', 'Master', 'PhD',
   ];
 
   static const List<String> cantons = [
@@ -25,7 +25,7 @@ class AppConstants {
   ];
 
   static const List<String> industries = [
-    'Education', 'Manufacturing', 'Healthcare', 'Finance', 'IT',
+    'All', 'Education', 'Manufacturing', 'Healthcare', 'Finance', 'IT',
     'Energy', 'Hospitality', 'Public Sector', 'Consulting',
     'Pharma', 'Construction', 'Retail'
   ];

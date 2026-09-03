@@ -36,6 +36,31 @@ class AdminPage extends StatelessWidget {
     }
   }
 
+    Future<bool> _confirm(BuildContext context, String message) async {
+    final answer = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Are you sure?'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(dialogContext).colorScheme.error,
+            ),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    return answer ?? false;
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final usersProvider = Provider.of<AuthProvider>(context);
@@ -103,6 +128,25 @@ class AdminPage extends StatelessWidget {
                       _run(context, SeedService.clear, 'Seed data removed'),
                   icon: const Icon(Icons.delete_outline),
                   tooltip: 'Clear seed data',
+                ),
+                                IconButton.filled(
+                  onPressed: () async {
+                    final confirmed = await _confirm(
+                      context,
+                      'This deletes every non-admin user, generated or not, '
+                      'with their profile and their job offers. Admins are '
+                      'kept. Auth accounts survive except for seeded users.',
+                    );
+                    if (!confirmed) return;
+                    if (!context.mounted) return;
+                    await _run(
+                      context,
+                      SeedService.clearAll,
+                      'All non-admin users removed',
+                    );
+                  },
+                  icon: const Icon(Icons.delete_forever),
+                  tooltip: 'Delete all non-admin users',
                 ),
                 IconButton.filled(
                   onPressed: () => context.read<AuthProvider>().signOut(),

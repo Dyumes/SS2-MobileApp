@@ -197,24 +197,12 @@ class SeedService {
         '$jobCount offers, password "$password"');
   }
 
-  static Future<void> clear() async {
-    var deleted = 0;
+// Remplace la méthode clear() existante dans lib/services/seed_service.dart
+// par les trois méthodes ci-dessous. Le reste du fichier ne change pas.
 
-    for (final collection in [
-      'job_opportunities',
-      'employer',
-      'student',
-      'user',
-    ]) {
-      final snap = await _db
-          .collection(collection)
-          .where('seeded', isEqualTo: true)
-          .get();
-      for (final doc in snap.docs) {
-        await doc.reference.delete();
-        deleted++;
-      }
-    }
+  /// Deletes the Auth accounts created by [seed]. Only works for those: it
+  /// signs in with the known seed password, which we do not have for real users.
+  static Future<int> _deleteSeededAccounts() async {
     final app = await _seederApp();
     final auth = FirebaseAuth.instanceFor(app: app);
     var accounts = 0;
@@ -233,10 +221,93 @@ class SeedService {
         await cred.user!.delete();
         accounts++;
       } on FirebaseAuthException {
-        // account already gone, nothing to do
+        // account already gone, or password changed by hand: nothing to do
+      }
+    }
+    return accounts;
+  }
+
+  /// Removes only what [seed] created, using the `seeded` flag.
+  static Future<void> clear() async {
+    var deleted = 0;
+
+    for (final collection in [
+      'job_opportunities',
+      'employer',
+      'student',
+      'user',
+    ]) {
+      final snap = await _db
+          .collection(collection)
+          .where('seeded', isEqualTo: true)
+          .get();
+      for (final doc in snap.docs) {
+        await doc.reference.delete();
+        deleted++;
       }
     }
 
+    final accounts = await _deleteSeededAccounts();
     print('Seed cleared: $deleted documents, $accounts accounts');
+  }
+
+  /// Removes every user that is not an admin, generated or not, along with
+  /// their `student` / `employer` profile and the job offers they posted.
+  ///
+  /// Admins are identified by `role == 'admin'` in the `user` collection. The
+  /// account currently signed in is skipped as well, so a mislabelled admin
+  /// cannot delete itself.
+  ///
+  /// Firebase Auth accounts are only deleted for the seeded users. The others
+  /// keep an Auth account with no document behind it.
+  static Future<void> clearAll() async {
+    final currentUid = FirebaseAuth.instance.currentUser?.uid;
+
+    // 1. Who gets deleted
+    final usersSnap = await _db.collection('user').get();
+    final victims = <String>{};
+    for (final doc in usersSnap.docs) {
+      if (doc.id == currentUid) continue;
+      if ((doc.data()['role'] ?? '') == 'admin') continue;
+      victims.add(doc.id);
+    }
+
+    // 2. Their job offers. `employer_user` is a DocumentReference to
+    // employer/{uid}, so we match on its id.
+    final jobsSnap = await _db.collection('job_opportunities').get();
+    final jobRefs = jobsSnap.docs
+        .where((doc) {
+          final ref = doc.data()['employer_user'];
+          return ref is DocumentReference && victims.contains(ref.id);
+        })
+        .map((doc) => doc.reference)
+        .toList();
+
+    // 3. Everything to delete. Profiles first, `user` last: if the connection
+    // drops halfway, a user document without a profile is still visible in the
+    // admin page and can be cleaned up again. The opposite leaves invisible
+    // orphans.
+    final targets = <DocumentReference>[
+      ...jobRefs,
+      for (final uid in victims) ...[
+        _db.collection('student').doc(uid),   // no-op if the document is absent
+        _db.collection('employer').doc(uid),
+        _db.collection('user').doc(uid),
+      ],
+    ];
+
+    // 4. A WriteBatch is capped at 500 operations
+    const chunkSize = 400;
+    for (var i = 0; i < targets.length; i += chunkSize) {
+      final batch = _db.batch();
+      for (final ref in targets.skip(i).take(chunkSize)) {
+        batch.delete(ref);
+      }
+      await batch.commit();
+    }
+
+    final accounts = await _deleteSeededAccounts();
+    print('Cleared everything: ${victims.length} users, ${jobRefs.length} '
+        'offers, $accounts Auth accounts removed');
   }
 }
